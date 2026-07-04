@@ -64,15 +64,32 @@ class DatabaseManagementRepository {
     await File(path.join(directoryPath, databaseName)).delete();
   }
 
+  //
   Future<String> backupCurrentDatabase() async {
+    // Get current database.
     final databaseName = await _databaseHelper.currentDatabaseName;
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
-    final backupDirectory = Directory(path.join(directoryPath, 'backups'));
-    await backupDirectory.create(recursive: true);
+
+    // Local database path.
+    final sourcePath = path.join(
+      directoryPath,
+      databaseName,
+    );
+
+    // Close SQLite before copying.
     await _databaseHelper.closeDatabase();
-    final backupPath = path.join(backupDirectory.path, databaseName);
-    await File(path.join(directoryPath, databaseName)).copy(backupPath);
-    return backupPath;
+
+    try {
+      // Export through SAF (Android)
+      // or Downloads (Desktop).
+      return await _exportService.exportFile(
+        sourcePath: sourcePath,
+        artifactFolder: AppConstants.backupFolder,
+      );
+    } finally {
+      // Reopen database.
+      await _databaseHelper.database;
+    }
   }
 
   Future<List<String>> getBackups() async {
