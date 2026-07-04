@@ -122,16 +122,29 @@ class DatabaseManagementRepository {
     }
   }
 
+  // this function handles csv export making sure it goes to userselectedfolder/appname/csv/
+  /// Exports all transactions from the database into a CSV file,
+  /// saves it temporarily, moves it to the user's selected export folder,
+  /// cleans up the temporary file, and returns the final file path
   Future<String> exportTransactionsCsv() async {
+    // 1. Fetch the data and database metadata asynchronously
     final transactions = await _transactionRepository.getAll();
     final databaseName = await _databaseHelper.currentDatabaseName;
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
+
+    // 2. Prepare the temporary export directory within the app's internal storage. path.join safely combines paths regardless of platform (Android/iOS)
     final exportDirectory = Directory(path.join(directoryPath, 'exports'));
+
+    // Creates the directory if it doesn't exist yet (recursive: true creates parent folders too)
     await exportDirectory.create(recursive: true);
+
+    // 3. Construct the CSV filename based on the current database name
     final csvName =
         '${path.basenameWithoutExtension(databaseName)}_transactions.csv';
     final csvFile = File(path.join(exportDirectory.path, csvName));
+    // 4. Building the CSV String. // Initialize a StringBuffer to efficiently construct the file's text content.
     final buffer = StringBuffer()..writeln('ID,Type,Amount,Category,Note,Date');
+    // 5. Loop through the fetched transactions and append them as CSV rows
     for (final transaction in transactions) {
       buffer.writeln(
         <String>[
@@ -144,8 +157,20 @@ class DatabaseManagementRepository {
         ].join(','),
       );
     }
-    await csvFile.writeAsString(buffer.toString(), flush: true);
-    return csvFile.path;
+    // 6. Write the accumulated buffer string into the temporary file.
+    await csvFile.writeAsString(
+      buffer.toString(),
+      flush: true,
+    );
+    // 7. Hand off the temporary file to the export service.
+    final exportedPath = await _exportService.exportFile(
+      sourcePath: csvFile.path,
+      artifactFolder: AppConstants.csvExportFolder,
+    );
+    // 8. Delete the temporary file from internal storage to save device space
+    await csvFile.delete();
+
+    return exportedPath;
   }
 
   Future<void> clearTransactions() {
