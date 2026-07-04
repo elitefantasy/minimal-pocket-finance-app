@@ -8,13 +8,10 @@ class DatabaseManagerState {
   DatabaseManagerState({
     required this.currentDatabase,
     required List<String> databases,
-    required List<String> backups,
-  }) : databases = List<String>.unmodifiable(databases),
-       backups = List<String>.unmodifiable(backups);
+  }) : databases = List<String>.unmodifiable(databases);
 
   final String currentDatabase;
   final List<String> databases;
-  final List<String> backups;
 }
 
 class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
@@ -88,19 +85,27 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
     return location;
   }
 
-  bool importWouldReplace(String backupName) {
-    return _databaseExists(backupName);
-  }
-
-  Future<void> importBackup(String backupName, {required bool replace}) async {
-    final isCurrent = backupName == state.requireValue.currentDatabase;
-    await ref
+  Future<String?> importDatabase({
+    required bool replace,
+  }) async {
+    final databaseName = await ref
         .read(databaseManagementRepositoryProvider)
-        .importBackup(backupName, replace: replace);
-    if (isCurrent) {
+        .importDatabase(
+          replace: replace,
+        );
+
+    if (databaseName == null) {
+      // User cancelled the picker.
+      return null;
+    }
+
+    if (databaseName == state.requireValue.currentDatabase) {
       _invalidateDataProviders();
     }
+
     await _refresh();
+
+    return databaseName;
   }
 
   Future<String> exportCurrentDatabase() {
@@ -126,7 +131,6 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
     return DatabaseManagerState(
       currentDatabase: await repository.getCurrentDatabaseName(),
       databases: await repository.getDatabases(),
-      backups: await repository.getBackups(),
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:akm_finance_manager/core/constants/app_constants.dart';
 import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/repositories/transaction_repository.dart';
 import 'package:akm_finance_manager/services/export/export_service.dart';
+import 'package:akm_finance_manager/services/import/android_saf_import_service.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 
@@ -11,12 +12,16 @@ class DatabaseManagementRepository {
   DatabaseManagementRepository(
     this._databaseHelper,
     this._transactionRepository,
-    this._exportService,
-  );
+    this._exportService, {
+    AndroidSafImportService? importService,
+  }) : _importService =
+          importService ?? AndroidSafImportService();
+  
 
   final DatabaseHelper _databaseHelper;
   final TransactionRepository _transactionRepository;
   final ExportService _exportService;
+  final AndroidSafImportService _importService;
 
   Future<String> getCurrentDatabaseName() {
     return _databaseHelper.currentDatabaseName;
@@ -91,37 +96,68 @@ class DatabaseManagementRepository {
       await _databaseHelper.database;
     }
   }
+  //
+  
 
-  Future<List<String>> getBackups() async {
-    final directoryPath = await _databaseHelper.databaseDirectoryPath;
-    final backupDirectory = Directory(path.join(directoryPath, 'backups'));
-    if (!await backupDirectory.exists()) {
-      return const <String>[];
-    }
-    final backups = await backupDirectory
-        .list()
-        .where((entity) => entity is File && entity.path.endsWith('.db'))
-        .map((entity) => path.basename(entity.path))
-        .toList();
-    backups.sort((first, second) => first.compareTo(second));
-    return backups;
-  }
+  /// Imports a database selected by the user through Android SAF.
+  /// If a database with the same name already exists:
+  /// - replace = false → throws an exception.
+  /// - replace = true  → overwrites the existing database.
+  Future<String?> importDatabase({
+    required bool replace,
+  }) async {
+    // Let the user choose a database.
+    final importedPath = await _importService.pickDatabase();
 
-  Future<void> importBackup(String backupName, {required bool replace}) async {
-    final directoryPath = await _databaseHelper.databaseDirectoryPath;
-    final backupPath = path.join(directoryPath, 'backups', backupName);
-    await _validateDatabase(backupPath);
-
-    final destination = File(path.join(directoryPath, backupName));
-    if (await destination.exists() && !replace) {
-      throw StateError('A database with this name already exists.');
+    if (importedPath == null) {
+      return null;
     }
 
-    final isCurrent = await _databaseHelper.currentDatabaseName == backupName;
+    // Validate the selected SQLite database.
+    await _validateDatabase(importedPath);
+
+    final importedFile = File(importedPath);
+
+    final databaseName = path.basename(importedFile.path);
+
+    final directoryPath = await _databaseHelper.databaseDirectoryPath;
+
+    final destination = File(
+      path.join(
+        directoryPath,
+        databaseName,
+      ),
+    );
+
+    final exists = await destination.exists();
+
+    if (exists && !replace) {
+      throw StateError(
+        'A database with this name already exists.',
+      );
+    }
+
+    final isCurrent =
+        await _databaseHelper.currentDatabaseName == databaseName;
+
     if (isCurrent) {
       await _databaseHelper.closeDatabase();
     }
-    await File(backupPath).copy(destination.path);
+
+    if (exists) {
+      await destination.delete();
+    }
+
+    await importedFile.copy(destination.path);
+
+    if (isCurrent) {
+      await _databaseHelper.database;
+    }
+
+    // Remove temporary file.
+    await importedFile.delete();
+
+    return databaseName;
   }
 
   Future<String> exportCurrentDatabase() async {
@@ -139,7 +175,6 @@ class DatabaseManagementRepository {
     }
   }
 
-  // this function handles csv export making sure it goes to userselectedfolder/appname/csv/
   /// Exports all transactions from the database into a CSV file,
   /// saves it temporarily, moves it to the user's selected export folder,
   /// cleans up the temporary file, and returns the final file path
