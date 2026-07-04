@@ -59,9 +59,7 @@ class DataManagementScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             BackupCard(
-              backups: state.backups,
-              onBackup: () => _backup(context, ref),
-              onImport: (backup) => _import(context, ref, backup),
+              onImport: () => _import(context, ref),
               onExportDatabase: () => _exportDatabase(context, ref),
               onExportCsv: () => _exportCsv(context, ref),
             ),
@@ -149,40 +147,52 @@ class DataManagementScreen extends ConsumerWidget {
     });
   }
 
-  Future<void> _backup(BuildContext context, WidgetRef ref) async {
-    await _perform(context, () async {
-      final location = await ref
-          .read(databaseManagerProvider.notifier)
-          .backupCurrentDatabase();
-      if (context.mounted) {
-        _showMessage(context, 'Backup created at $location');
-      }
-    });
-  }
-
   Future<void> _import(
     BuildContext context,
     WidgetRef ref,
-    String backup,
   ) async {
     final notifier = ref.read(databaseManagerProvider.notifier);
-    var replace = false;
-    if (notifier.importWouldReplace(backup)) {
-      replace = await _confirm(
+
+    try {
+      final database = await notifier.importDatabase(
+        replace: false,
+      );
+
+      if (database == null || !context.mounted) {
+        return;
+      }
+
+      _showMessage(
+        context,
+        'Database imported.',
+      );
+    } on StateError {
+      if (!context.mounted) {
+        return;
+      }
+
+      final replace = await _confirm(
         context,
         title: 'Replace Database?',
-        message: '$backup already exists. Replace it with this backup?',
+        message:
+            'A database with this name already exists.\nReplace it?',
       );
+
       if (!replace || !context.mounted) {
         return;
       }
-    }
-    await _perform(context, () async {
-      await notifier.importBackup(backup, replace: replace);
+
+      await notifier.importDatabase(
+        replace: true,
+      );
+
       if (context.mounted) {
-        _showMessage(context, 'Database imported.');
+        _showMessage(
+          context,
+          'Database replaced.',
+        );
       }
-    });
+    }
   }
 
   Future<void> _exportDatabase(BuildContext context, WidgetRef ref) async {
