@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:saf_util/saf_util.dart';
 
@@ -47,13 +47,25 @@ class AndroidExportLocationService {
     return _saf.hasPersistedPermission(uri, checkWrite: true);
   }
 
-  /// Returns a valid export URI.
+  /// Returns the selected export folder.
+  ///
+  /// If the user has already granted access, reuse it.
+  /// Otherwise ask them to choose a folder.
   Future<String?> getExportRootUri() async {
-    final uri = await getSavedUri();
+    final savedUri = await getSavedUri();
 
-    if (uri != null &&
-        await _saf.hasPersistedPermission(uri, checkWrite: true)) {
-      return uri;
+    if (savedUri != null) {
+      final hasPermission = await _saf.hasPersistedPermission(
+        savedUri,
+        checkWrite: true,
+      );
+
+      if (hasPermission) {
+        return savedUri;
+      }
+
+      // Permission was revoked.
+      await _preferences.clearExportRootUri();
     }
 
     return selectExportFolder();

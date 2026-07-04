@@ -36,23 +36,19 @@ class AndroidSafExportService {
   /// Used to copy local files into SAF.
   final SafStream _safStream;
 
-  /// Exports a file into:
-  ///
-  /// AKM Finance Manager/
-  ///     Database/
-  ///         finance.db
+  /// Export a local file into the selected SAF folder.
   Future<String> exportFile({
     required String sourcePath,
     required String artifactFolder,
   }) async {
-    // Make sure the source file actually exists.
+    // Make sure the source file exists.
     final sourceFile = File(sourcePath);
 
     if (!await sourceFile.exists()) {
       throw Exception('Source file not found.');
     }
 
-    // Get (or ask for) the export folder.
+    // Ask for the export folder if needed.
     final rootUri = await _locationService.getExportRootUri();
 
     if (rootUri == null) {
@@ -60,9 +56,10 @@ class AndroidSafExportService {
     }
 
     // Create:
+    //
     // AKM Finance Manager/
     //     Database/
-
+    //
     final destinationFolder = await _safUtil.mkdirp(
       rootUri,
       <String>[
@@ -71,19 +68,15 @@ class AndroidSafExportService {
       ],
     );
 
-    // URI of the final folder
-    final destinationFolderUri = destinationFolder.uri;
-
-    // Copy the file into SAF.
     await _safStream.pasteLocalFile(
       sourcePath,
-      destinationFolderUri,
+      destinationFolder.uri,
       path.basename(sourcePath),
-      'application/x-sqlite3',
+      'application/octet-stream',
       overwrite: true,
     );
 
-    // Return only the exported filename.
+    // Return exported filename.
     return path.basename(sourcePath);
   }
 }

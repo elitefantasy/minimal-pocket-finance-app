@@ -50,8 +50,8 @@ dependencies:
   shared_preferences: ^2.5.3
 
   # Android Storage Access Framework (SAF)
-  # saf_util: ^3.1.0
-  # saf_stream: ^3.0.0
+  saf_util: ^3.1.0
+  saf_stream: ^3.0.0
 
   
 dev_dependencies:
