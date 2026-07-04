@@ -1,0 +1,14 @@
+Project Update
+=========================
+
+Please update my project using ONLY the files contained in this folder.
+
+Added Files
+-----------------
+- lib/services/export/android_saf_export_service.dart
+
+Modified Files
+-----------------
+- lib/services/export/export_service.dart
+
+Assume every other file in the project remains unchanged.

@@ -1,12 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
+import 'package:saf/saf.dart';
+
+import 'android_export_location_service.dart';
+
+
 import 'package:path_provider/path_provider.dart' as path_provider;
-
-import 'package:akm_finance_manager/services/export/android_saf_export_service.dart';
-import 'package:akm_finance_manager/core/constants/app_constants.dart';
-
-
 
 /// Resolves the platform's public Downloads directory.
 ///
@@ -48,22 +51,13 @@ class PathProviderExportDestinationResolver
 
 /// Copies application artifacts into a managed folder under Downloads.
 class ExportService {
-  ExportService({
-    ExportDestinationResolver? destinationResolver,
-    AndroidSafExportService? androidSafExportService,
-  })  : _destinationResolver =
-            destinationResolver ??
-            const PathProviderExportDestinationResolver(),
-        _androidSafExportService =
-            androidSafExportService ??
-            AndroidSafExportService();
+  ExportService({ExportDestinationResolver? destinationResolver})
+    : _destinationResolver =
+          destinationResolver ?? const PathProviderExportDestinationResolver();
 
-  static const String _applicationFolder =
-      AppConstants.appName;
+  static const String _applicationFolder = 'AKM Finance Manager';
 
   final ExportDestinationResolver _destinationResolver;
-
-  final AndroidSafExportService _androidSafExportService;
 
   /// Exports [sourcePath] while preserving its original file name.
   Future<String> exportFile({
@@ -71,53 +65,29 @@ class ExportService {
     required String artifactFolder,
   }) async {
     final source = File(sourcePath);
-
     if (!await source.exists()) {
-      throw ExportException(
-        'The source file does not exist: $sourcePath',
-      );
+      throw ExportException('The source file does not exist: $sourcePath');
     }
 
     try {
-      // Android uses Storage Access Framework.
-      if (!kIsWeb && Platform.isAndroid) {
-        return _androidSafExportService.exportFile(
-          sourcePath: sourcePath,
-          artifactFolder: artifactFolder,
-        );
-      }
-
-      // Desktop platforms.
-      final downloadsDirectory =
-          await _destinationResolver.getDownloadsDirectory();
-
+      final downloadsDirectory = await _destinationResolver
+          .getDownloadsDirectory();
       final destinationDirectory = Directory(
-        path.join(
-          downloadsDirectory.path,
-          _applicationFolder,
-          artifactFolder,
-        ),
+        path.join(downloadsDirectory.path, _applicationFolder, artifactFolder),
       );
-
-      await destinationDirectory.create(
-        recursive: true,
-      );
+      await destinationDirectory.create(recursive: true);
 
       final destinationPath = path.join(
         destinationDirectory.path,
         path.basename(sourcePath),
       );
-
-      final exportedFile = await source.copy(
-        destinationPath,
-      );
-
+      final exportedFile = await source.copy(destinationPath);
       return exportedFile.absolute.path;
     } on ExportException {
       rethrow;
     } on FileSystemException catch (error) {
       throw ExportException(
-        'Unable to export ${path.basename(sourcePath)}.',
+        'Unable to export ${path.basename(sourcePath)} to Downloads.',
         cause: error,
       );
     }

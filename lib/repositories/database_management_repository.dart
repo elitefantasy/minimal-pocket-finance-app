@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:akm_finance_manager/core/constants/app_constants.dart';
 import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/repositories/transaction_repository.dart';
 import 'package:akm_finance_manager/services/export/export_service.dart';
@@ -114,7 +115,7 @@ class DatabaseManagementRepository {
     try {
       return await _exportService.exportFile(
         sourcePath: sourcePath,
-        artifactFolder: 'Database',
+        artifactFolder: AppConstants.databaseExportFolder,
       );
     } finally {
       await _databaseHelper.database;
