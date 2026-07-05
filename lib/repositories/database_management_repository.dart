@@ -6,6 +6,7 @@ import 'package:akm_finance_manager/repositories/transaction_repository.dart';
 import 'package:akm_finance_manager/services/export/export_service.dart';
 import 'package:akm_finance_manager/services/import/android_saf_import_service.dart';
 import 'package:akm_finance_manager/models/export_result.dart';
+import 'package:akm_finance_manager/models/import_selection.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
@@ -109,18 +110,19 @@ class DatabaseManagementRepository {
     required bool replace,
   }) async {
     // Let the user choose a database.
-    final importedPath = await _importService.pickDatabase();
+    // ------------------------------------
+    final selection = await _importService.pickDatabase();
 
-    if (importedPath == null) {
+    if (selection == null) {
       return null;
     }
 
-    // Validate the selected SQLite database.
-    await _validateDatabase(importedPath);
+    await _validateDatabase(selection.localPath);
 
-    final importedFile = File(importedPath);
+    final importedFile = File(selection.localPath);
 
-    final databaseName = path.basename(importedFile.path);
+    final databaseName = selection.databaseName;
+    // ----------------------------
 
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
 

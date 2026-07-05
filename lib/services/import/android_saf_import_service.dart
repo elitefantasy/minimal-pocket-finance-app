@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:saf_stream/saf_stream.dart';
 import 'package:saf_util/saf_util.dart';
 
+import 'package:akm_finance_manager/models/import_selection.dart';
+
 /// Imports a SQLite database through Android's
 /// Storage Access Framework (SAF).
 ///
@@ -25,7 +27,7 @@ class AndroidSafImportService {
   final SafUtil _safUtil;
   final SafStream _safStream;
 
-  Future<String?> pickDatabase() async {
+  Future<ImportSelection?> pickDatabase() async {
     // Let the user choose a SQLite database.
     final file = await _safUtil.pickFile(
       mimeTypes: const <String>[
@@ -63,6 +65,6 @@ class AndroidSafImportService {
       localPath,
     );
 
-    return localPath;
+    return ImportSelection(localPath: localPath, databaseName: fileName);
   }
 }
