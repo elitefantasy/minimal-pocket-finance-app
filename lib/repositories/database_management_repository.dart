@@ -5,6 +5,8 @@ import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/repositories/transaction_repository.dart';
 import 'package:akm_finance_manager/services/export/export_service.dart';
 import 'package:akm_finance_manager/services/import/android_saf_import_service.dart';
+import 'package:akm_finance_manager/models/export_result.dart';
+
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 
@@ -70,7 +72,7 @@ class DatabaseManagementRepository {
   }
 
   //
-  Future<String> backupCurrentDatabase() async {
+  Future<ExportResult> backupCurrentDatabase() async {
     // Get current database.
     final databaseName = await _databaseHelper.currentDatabaseName;
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
@@ -160,7 +162,7 @@ class DatabaseManagementRepository {
     return databaseName;
   }
 
-  Future<String> exportCurrentDatabase() async {
+  Future<ExportResult> exportCurrentDatabase() async {
     final databaseName = await _databaseHelper.currentDatabaseName;
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
     final sourcePath = path.join(directoryPath, databaseName);
@@ -178,7 +180,7 @@ class DatabaseManagementRepository {
   /// Exports all transactions from the database into a CSV file,
   /// saves it temporarily, moves it to the user's selected export folder,
   /// cleans up the temporary file, and returns the final file path
-  Future<String> exportTransactionsCsv() async {
+  Future<ExportResult> exportTransactionsCsv() async {
     // 1. Fetch the data and database metadata asynchronously
     final transactions = await _transactionRepository.getAll();
     final databaseName = await _databaseHelper.currentDatabaseName;

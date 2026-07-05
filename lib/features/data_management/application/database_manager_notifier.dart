@@ -2,6 +2,9 @@ import 'package:akm_finance_manager/app/providers.dart';
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
+import 'package:akm_finance_manager/models/export_result.dart';
+
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DatabaseManagerState {
@@ -77,7 +80,8 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
     await _refresh();
   }
 
-  Future<String> backupCurrentDatabase() async {
+  Future<ExportResult> backupCurrentDatabase() async {
+    // 1. Fetch the database repository using Riverpod (ref.read).
     final location = await ref
         .read(databaseManagementRepositoryProvider)
         .backupCurrentDatabase();
@@ -108,13 +112,13 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
     return databaseName;
   }
 
-  Future<String> exportCurrentDatabase() {
+  Future<ExportResult> exportCurrentDatabase() {
     return ref
         .read(databaseManagementRepositoryProvider)
         .exportCurrentDatabase();
   }
 
-  Future<String> exportTransactionsCsv() {
+  Future<ExportResult> exportTransactionsCsv() {
     return ref
         .read(databaseManagementRepositoryProvider)
         .exportTransactionsCsv();

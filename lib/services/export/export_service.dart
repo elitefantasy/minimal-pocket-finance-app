@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 
 import 'package:akm_finance_manager/services/export/android_saf_export_service.dart';
 import 'package:akm_finance_manager/core/constants/app_constants.dart';
-
+import 'package:akm_finance_manager/models/export_result.dart';
 
 
 /// Resolves the platform's public Downloads directory.
@@ -66,7 +66,7 @@ class ExportService {
   final AndroidSafExportService _androidSafExportService;
 
   /// Exports [sourcePath] while preserving its original file name.
-  Future<String> exportFile({
+  Future<ExportResult> exportFile({
     required String sourcePath,
     required String artifactFolder,
   }) async {
@@ -112,7 +112,13 @@ class ExportService {
         destinationPath,
       );
 
-      return exportedFile.absolute.path;
+      // Desktop return
+      return ExportResult(
+        fileName: path.basename(sourcePath),
+        relativePath: '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}',
+        absolutePath: exportedFile.absolute.path,
+        );
+        
     } on ExportException {
       rethrow;
     } on FileSystemException catch (error) {

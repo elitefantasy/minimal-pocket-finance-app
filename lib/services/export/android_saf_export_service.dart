@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:akm_finance_manager/services/export/android_export_location_service.dart';
 import 'package:akm_finance_manager/core/constants/app_constants.dart';
+import 'package:akm_finance_manager/models/export_result.dart';
 
 
 import 'package:path/path.dart' as path;
@@ -37,7 +38,7 @@ class AndroidSafExportService {
   final SafStream _safStream;
 
   /// Export a local file into the selected SAF folder.
-  Future<String> exportFile({
+  Future<ExportResult> exportFile({
     required String sourcePath,
     required String artifactFolder,
   }) async {
@@ -77,6 +78,9 @@ class AndroidSafExportService {
     );
 
     // Return exported filename.
-    return path.basename(sourcePath);
+    return ExportResult(
+      fileName: path.basename(sourcePath),
+      relativePath: '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}'
+      );
   }
 }

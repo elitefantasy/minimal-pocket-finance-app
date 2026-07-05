@@ -197,23 +197,24 @@ class DataManagementScreen extends ConsumerWidget {
 
   Future<void> _exportDatabase(BuildContext context, WidgetRef ref) async {
     await _perform(context, () async {
-      final location = await ref
-          .read(databaseManagerProvider.notifier)
-          .exportCurrentDatabase();
-      if (context.mounted) {
-        _showMessage(context, 'Database exported to $location');
-      }
+      final result = await ref
+      .read(databaseManagerProvider.notifier)
+      .exportCurrentDatabase();
+
+      _showMessage(
+        context,
+        'Database exported successfully.\n\n'
+        'Location:\n${result.relativePath}',);
     });
   }
 
   Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
     await _perform(context, () async {
-      final location = await ref
-          .read(databaseManagerProvider.notifier)
-          .exportTransactionsCsv();
-      if (context.mounted) {
-        _showMessage(context, 'CSV exported to $location');
-      }
+      final result = await ref
+        .read(databaseManagerProvider.notifier)
+        .exportTransactionsCsv();
+
+      _showMessage(context, 'CSV exported successfully.\n\n Location:\n${result.relativePath}');
     });
   }
 
