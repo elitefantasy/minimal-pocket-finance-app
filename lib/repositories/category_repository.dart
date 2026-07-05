@@ -1,0 +1,64 @@
+import 'package:akm_finance_manager/core/database/database_helper.dart';
+import 'package:akm_finance_manager/models/category.dart';
+import 'package:sqflite/sqflite.dart' show Database, Sqflite;
+
+/// Provides persistence operations for transaction categories.
+class CategoryRepository {
+  CategoryRepository(this._databaseHelper);
+
+  static const String _tableName = 'categories';
+  static const String _transactionsTableName = 'transactions';
+
+  final DatabaseHelper _databaseHelper;
+
+  Future<int> insert(Category category) async {
+    final Database database = await _databaseHelper.database;
+    return database.insert(_tableName, category.toMap());
+  }
+
+  Future<List<Category>> getAll() async {
+    final Database database = await _databaseHelper.database;
+    final maps = await database.query(_tableName, orderBy: 'name ASC');
+
+    return maps.map(Category.fromMap).toList(growable: false);
+  }
+
+  Future<void> update(Category category) async {
+    final id = category.id;
+    if (id == null) {
+      throw ArgumentError.value(
+        category,
+        'category',
+        'The category must have an ID before it can be updated.',
+      );
+    }
+
+    final Database database = await _databaseHelper.database;
+    await database.update(
+      _tableName,
+      category.toMap(),
+      where: 'id = ?',
+      whereArgs: <Object?>[id],
+    );
+  }
+
+  Future<void> delete(int id) async {
+    final Database database = await _databaseHelper.database;
+    await database.delete(
+      _tableName,
+      where: 'id = ?',
+      whereArgs: <Object?>[id],
+    );
+  }
+
+  Future<bool> isCategoryInUse(String name) async {
+    final Database database = await _databaseHelper.database;
+    final result = await database.rawQuery(
+      'SELECT COUNT(*) FROM $_transactionsTableName WHERE category = ?',
+      <Object?>[name],
+    );
+    final count = Sqflite.firstIntValue(result) ?? 0;
+
+    return count > 0;
+  }
+}
