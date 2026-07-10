@@ -11,7 +11,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int _databaseVersion = 2;
+  static const int _databaseVersion = 3;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -95,6 +95,7 @@ class DatabaseHelper {
     return openDatabase(
       databasePath,
       version: _databaseVersion,
+      onConfigure: _onConfigure,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -116,24 +117,12 @@ class DatabaseHelper {
     }
   }
 
+  Future<void> _onConfigure(Database database) async {
+    await database.execute('PRAGMA foreign_keys = ON');
+  }
+
   Future<void> _onCreate(Database database, int version) async {
     final batch = database.batch()
-      ..execute('''
-        CREATE TABLE transactions (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          type TEXT NOT NULL CHECK(type IN ('Income', 'Expense')),
-          amount REAL NOT NULL,
-          category TEXT NOT NULL,
-          note TEXT NOT NULL,
-          date TEXT NOT NULL
-        )
-      ''')
-      ..execute('''
-        CREATE TABLE categories (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL UNIQUE
-        )
-      ''')
       ..execute('''
         CREATE TABLE recurring_transactions (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -148,11 +137,36 @@ class DatabaseHelper {
           updated_at TEXT NOT NULL
         )
       ''')
+      ..execute('''
+        CREATE TABLE transactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          type TEXT NOT NULL CHECK(type IN ('Income', 'Expense')),
+          amount REAL NOT NULL,
+          category TEXT NOT NULL,
+          note TEXT NOT NULL,
+          date TEXT NOT NULL,
+          recurring_transaction_id INTEGER,
+          generated_at TEXT,
+          FOREIGN KEY (recurring_transaction_id)
+            REFERENCES recurring_transactions(id)
+            ON DELETE SET NULL
+        )
+      ''')
+      ..execute('''
+        CREATE TABLE categories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE
+        )
+      ''')
       ..execute('CREATE INDEX index_transactions_date ON transactions(date)')
       ..execute(
         'CREATE INDEX index_transactions_category ON transactions(category)',
       )
-      ..execute('CREATE INDEX index_transactions_type ON transactions(type)');
+      ..execute('CREATE INDEX index_transactions_type ON transactions(type)')
+      ..execute(
+        'CREATE INDEX index_transactions_recurring_transaction_id '
+        'ON transactions(recurring_transaction_id)',
+      );
 
     await batch.commit(noResult: true);
     await _insertDefaultCategoriesIfEmpty(database);
@@ -213,6 +227,22 @@ class DatabaseHelper {
           FROM recurring_transactions_legacy
         ''');
         await transaction.execute('DROP TABLE recurring_transactions_legacy');
+      });
+    }
+
+    if (oldVersion < 3) {
+      await database.transaction((transaction) async {
+        await transaction.execute(
+          'ALTER TABLE transactions ADD COLUMN recurring_transaction_id INTEGER',
+        );
+        await transaction.execute(
+          'ALTER TABLE transactions ADD COLUMN generated_at TEXT',
+        );
+        await transaction.execute(
+          'CREATE INDEX IF NOT EXISTS '
+          'index_transactions_recurring_transaction_id '
+          'ON transactions(recurring_transaction_id)',
+        );
       });
     }
   }

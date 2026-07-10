@@ -43,6 +43,17 @@ class TransactionTile extends ConsumerWidget {
                     formattedDate,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
+                  if (transaction.isRecurring) ...<Widget>[
+                    const SizedBox(height: 6),
+                    Chip(
+                      avatar: const Icon(Icons.repeat, size: 14),
+                      label: const Text('Monthly'),
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      padding: EdgeInsets.zero,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -89,19 +100,17 @@ class TransactionTile extends ConsumerWidget {
       return;
     }
 
-    await ref
-        .read(transactionNotifierProvider.notifier)
-        .deleteTransaction(transaction.id!);
+    // Read dependencies before this widget gets disposed.
+    final transactionNotifier = ref.read(transactionNotifierProvider.notifier);
+    final snackbarService = ref.read(appSnackbarProvider);
 
-    ref
-        .read(appSnackbarProvider)
-        .showUndo(
-          message: 'Transaction deleted',
-          onUndo: () async {
-            await ref
-                .read(transactionNotifierProvider.notifier)
-                .restoreDeletedTransaction(transaction);
-          },
-        );
+    await transactionNotifier.deleteTransaction(transaction.id!);
+
+    snackbarService.showUndo(
+      message: 'Transaction deleted',
+      onUndo: () async {
+        await transactionNotifier.restoreDeletedTransaction(transaction);
+      },
+    );
   }
 }
