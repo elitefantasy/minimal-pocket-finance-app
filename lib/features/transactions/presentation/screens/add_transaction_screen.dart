@@ -50,31 +50,47 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     setState(() => _isSaving = true);
 
     try {
-      final transaction = Transaction(
-        type: type,
-        amount: double.parse(_amountController.text.trim()),
-        category: _selectedCategory!,
-        note: _noteController.text.trim(),
-        date: _selectedDate,
-      );
-
-      await ref.read(transactionNotifierProvider.notifier).add(transaction);
       if (_repeatMonthly) {
-        final recurring = RecurringTransaction(
-          type: type,
-          amount: transaction.amount,
-          category: transaction.category,
-          note: transaction.note,
-          dayOfMonth: int.parse(_dayOfMonthController.text.trim()),
-          isEnabled: true,
-          lastProcessedDate: null,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        );
-        await ref
-            .read(recurringNotifierProvider.notifier)
-            .addRecurring(recurring);
-      }
+		  final recurring = RecurringTransaction(
+			type: type,
+			amount: double.parse(_amountController.text.trim()),
+			category: _selectedCategory!,
+			note: _noteController.text.trim(),
+			dayOfMonth: int.parse(_dayOfMonthController.text.trim()),
+			isEnabled: true,
+			lastProcessedDate: null,
+			createdAt: _selectedDate,
+			updatedAt: DateTime.now(),
+		  );
+
+		  await ref
+			  .read(recurringNotifierProvider.notifier)
+			  .addRecurring(recurring);
+
+		  // NEW
+		  final generatedCount = await ref
+			.read(recurringProcessingServiceProvider)
+			.processDueTransactions();
+
+		if (generatedCount > 0) {
+		  ref
+			..invalidate(transactionNotifierProvider)
+			..invalidate(recurringNotifierProvider);
+		}
+
+		  // Refresh transactions after processing.
+		  await ref.read(transactionNotifierProvider.notifier).refresh();
+		} else {
+		  final transaction = Transaction(
+			type: type,
+			amount: double.parse(_amountController.text.trim()),
+			category: _selectedCategory!,
+			note: _noteController.text.trim(),
+			date: _selectedDate,
+		  );
+
+		  await ref.read(transactionNotifierProvider.notifier).add(transaction);
+		}
       if (!mounted) {
         return;
       }
@@ -87,7 +103,15 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         _selectedDate = DateTime.now();
         _repeatMonthly = false;
       });
-      ref.read(appSnackbarProvider).showSuccess('Transaction added');
+      if (_repeatMonthly) {
+		  ref.read(appSnackbarProvider).showSuccess(
+			'Recurring transaction created.',
+		  );
+		} else {
+		  ref.read(appSnackbarProvider).showSuccess(
+			'Transaction added.',
+		  );
+		}
     } on Object catch (error) {
       if (!mounted) {
         return;
