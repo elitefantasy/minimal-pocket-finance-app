@@ -1,9 +1,12 @@
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_dropdown.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/date_picker_field.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -44,19 +47,6 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     super.dispose();
   }
 
-  Future<void> _selectDate() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-    );
-
-    if (date != null && mounted) {
-      setState(() => _selectedDate = date);
-    }
-  }
-
   Future<void> _save() async {
     if (_isSaving || !(_formKey.currentState?.validate() ?? false)) {
       return;
@@ -83,9 +73,9 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to update transaction: $error')),
-      );
+      ref
+          .read(appSnackbarProvider)
+          .showError('Unable to update transaction: $error');
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -122,12 +112,13 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                 const SizedBox(height: 16),
                 NoteField(controller: _noteController),
                 const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: _selectDate,
-                  icon: const Icon(Icons.calendar_today_outlined),
-                  label: Text(
-                    '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                  ),
+                DatePickerField(
+                  selectedDate: _selectedDate,
+                  onDateChanged: (date) {
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                  },
                 ),
                 const SizedBox(height: 24),
                 FilledButton(

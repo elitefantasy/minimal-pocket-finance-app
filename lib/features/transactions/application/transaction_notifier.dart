@@ -20,6 +20,13 @@ class TransactionNotifier extends AsyncNotifier<List<Transaction>> {
     await refresh();
   }
 
+  Future<void> restoreDeletedTransaction(Transaction transaction) async {
+    await ref
+        .read(transactionServiceProvider)
+        .restoreDeletedTransaction(transaction);
+    await refresh();
+  }
+
   Future<void> deleteTransaction(int id) async {
     await ref.read(transactionServiceProvider).deleteTransaction(id);
     await refresh();

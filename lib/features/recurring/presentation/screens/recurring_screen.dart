@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/recurring_transaction_card.dart';
@@ -74,16 +75,20 @@ class RecurringScreen extends ConsumerWidget {
       final notifier = ref.read(recurringNotifierProvider.notifier);
       if (recurring == null) {
         await notifier.addRecurring(result);
+        ref
+            .read(appSnackbarProvider)
+            .showSuccess('Recurring transaction created.');
       } else {
         await notifier.updateRecurring(result);
+        ref
+            .read(appSnackbarProvider)
+            .showSuccess('Recurring transaction updated.');
       }
     } on Object catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Unable to save recurring transaction: $error'),
-          ),
-        );
+        ref
+            .read(appSnackbarProvider)
+            .showError('Unable to save recurring transaction: $error');
       }
     }
   }
@@ -122,13 +127,14 @@ class RecurringScreen extends ConsumerWidget {
       await ref
           .read(recurringNotifierProvider.notifier)
           .deleteRecurring(recurring.id!);
+      ref
+          .read(appSnackbarProvider)
+          .showSuccess('Recurring transaction deleted.');
     } on Object catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Unable to delete recurring transaction: $error'),
-          ),
-        );
+        ref
+            .read(appSnackbarProvider)
+            .showError('Unable to delete recurring transaction: $error');
       }
     }
   }

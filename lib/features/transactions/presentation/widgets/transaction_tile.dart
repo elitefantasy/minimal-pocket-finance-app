@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/delete_confirmation_dialog.dart';
@@ -88,26 +89,19 @@ class TransactionTile extends ConsumerWidget {
       return;
     }
 
-    final messenger = ScaffoldMessenger.of(context);
     await ref
         .read(transactionNotifierProvider.notifier)
         .deleteTransaction(transaction.id!);
-    if (!messenger.mounted) {
-      return;
-    }
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: const Text('Transaction deleted'),
-        action: SnackBarAction(
-          label: 'UNDO',
-          onPressed: () async {
+    ref
+        .read(appSnackbarProvider)
+        .showUndo(
+          message: 'Transaction deleted',
+          onUndo: () async {
             await ref
                 .read(transactionNotifierProvider.notifier)
-                .add(transaction);
+                .restoreDeletedTransaction(transaction);
           },
-        ),
-      ),
-    );
+        );
   }
 }

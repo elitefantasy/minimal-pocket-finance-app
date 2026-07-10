@@ -53,6 +53,8 @@ dependencies:
   saf_util: ^3.1.0
   saf_stream: ^3.0.0
 
+  intl: ^0.20.2
+
   
 dev_dependencies:
   flutter_test:

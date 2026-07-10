@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/features/data_management/application/database_manager_notifier.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/backup_card.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/danger_zone_card.dart';
@@ -78,12 +79,12 @@ class DataManagementScreen extends ConsumerWidget {
     if (name == null || !context.mounted) {
       return;
     }
-    await _perform(context, () async {
+    await _perform(context, ref, () async {
       final message = await ref
           .read(databaseManagerProvider.notifier)
           .createDatabase(name);
       if (context.mounted) {
-        _showMessage(context, message ?? 'Database created.');
+        _showMessage(ref, message ?? 'Database created.');
       }
     });
   }
@@ -101,12 +102,12 @@ class DataManagementScreen extends ConsumerWidget {
     if (name == null || !context.mounted) {
       return;
     }
-    await _perform(context, () async {
+    await _perform(context, ref, () async {
       final message = await ref
           .read(databaseManagerProvider.notifier)
           .renameDatabase(database, name);
       if (context.mounted) {
-        _showMessage(context, message ?? 'Database renamed.');
+        _showMessage(ref, message ?? 'Database renamed.');
       }
     });
   }
@@ -124,12 +125,12 @@ class DataManagementScreen extends ConsumerWidget {
     if (!confirmed || !context.mounted) {
       return;
     }
-    await _perform(context, () async {
+    await _perform(context, ref, () async {
       final message = await ref
           .read(databaseManagerProvider.notifier)
           .deleteDatabase(database);
       if (context.mounted) {
-        _showMessage(context, message ?? 'Database deleted.');
+        _showMessage(ref, message ?? 'Database deleted.');
       }
     });
   }
@@ -139,33 +140,25 @@ class DataManagementScreen extends ConsumerWidget {
     WidgetRef ref,
     String database,
   ) async {
-    await _perform(context, () async {
+    await _perform(context, ref, () async {
       await ref.read(databaseManagerProvider.notifier).switchDatabase(database);
       if (context.mounted) {
-        _showMessage(context, 'Switched to $database.');
+        _showMessage(ref, 'Switched to $database.');
       }
     });
   }
 
-  Future<void> _import(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> _import(BuildContext context, WidgetRef ref) async {
     final notifier = ref.read(databaseManagerProvider.notifier);
 
     try {
-      final database = await notifier.importDatabase(
-        replace: false,
-      );
+      final database = await notifier.importDatabase(replace: false);
 
       if (database == null || !context.mounted) {
         return;
       }
 
-      _showMessage(
-        context,
-        'Database imported.',
-      );
+      _showMessage(ref, 'Database imported.');
     } on StateError {
       if (!context.mounted) {
         return;
@@ -174,47 +167,45 @@ class DataManagementScreen extends ConsumerWidget {
       final replace = await _confirm(
         context,
         title: 'Replace Database?',
-        message:
-            'A database with this name already exists.\nReplace it?',
+        message: 'A database with this name already exists.\nReplace it?',
       );
 
       if (!replace || !context.mounted) {
         return;
       }
 
-      await notifier.importDatabase(
-        replace: true,
-      );
+      await notifier.importDatabase(replace: true);
 
       if (context.mounted) {
-        _showMessage(
-          context,
-          'Database replaced.',
-        );
+        _showMessage(ref, 'Database replaced.');
       }
     }
   }
 
   Future<void> _exportDatabase(BuildContext context, WidgetRef ref) async {
-    await _perform(context, () async {
+    await _perform(context, ref, () async {
       final result = await ref
-      .read(databaseManagerProvider.notifier)
-      .exportCurrentDatabase();
+          .read(databaseManagerProvider.notifier)
+          .exportCurrentDatabase();
 
       _showMessage(
-        context,
+        ref,
         'Database exported successfully.\n\n'
-        'Location:\n${result.relativePath}',);
+        'Location:\n${result.relativePath}',
+      );
     });
   }
 
   Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
-    await _perform(context, () async {
+    await _perform(context, ref, () async {
       final result = await ref
-        .read(databaseManagerProvider.notifier)
-        .exportTransactionsCsv();
+          .read(databaseManagerProvider.notifier)
+          .exportTransactionsCsv();
 
-      _showMessage(context, 'CSV exported successfully.\n\n Location:\n${result.relativePath}');
+      _showMessage(
+        ref,
+        'CSV exported successfully.\n\nLocation:\n${result.relativePath}',
+      );
     });
   }
 
@@ -227,10 +218,10 @@ class DataManagementScreen extends ConsumerWidget {
     if (!confirmed || !context.mounted) {
       return;
     }
-    await _perform(context, () async {
+    await _perform(context, ref, () async {
       await ref.read(databaseManagerProvider.notifier).clearTransactions();
       if (context.mounted) {
-        _showMessage(context, 'All transactions deleted.');
+        _showMessage(ref, 'All transactions deleted.');
       }
     });
   }
@@ -240,30 +231,36 @@ class DataManagementScreen extends ConsumerWidget {
     required String title,
     String initialValue = '',
   }) async {
-    final controller = TextEditingController(text: initialValue);
-    final result = await showDialog<String>(
+    return showDialog<String>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(labelText: 'Database name'),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+      builder: (dialogContext) {
+        // The controller belongs to this dialog only.
+        final controller = TextEditingController(text: initialValue);
+
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(labelText: 'Database name'),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(controller.text),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(controller.text.trim());
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
-    controller.dispose();
-    return result;
   }
 
   Future<bool> _confirm(
@@ -293,20 +290,19 @@ class DataManagementScreen extends ConsumerWidget {
 
   Future<void> _perform(
     BuildContext context,
+    WidgetRef ref,
     Future<void> Function() operation,
   ) async {
     try {
       await operation();
     } on Object catch (error) {
       if (context.mounted) {
-        _showMessage(context, 'Operation failed: $error');
+        ref.read(appSnackbarProvider).showError('Operation failed: $error');
       }
     }
   }
 
-  void _showMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+  void _showMessage(WidgetRef ref, String message) {
+    ref.read(appSnackbarProvider).showInfo(message);
   }
 }

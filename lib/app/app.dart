@@ -1,15 +1,20 @@
-import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/core/theme/app_theme.dart';
 import 'package:akm_finance_manager/routes/app_router.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AkmFinanceManagerApp extends StatelessWidget {
+class AkmFinanceManagerApp extends ConsumerWidget {
   const AkmFinanceManagerApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final snackbarService = ref.watch(appSnackbarProvider);
+
     return MaterialApp.router(
       title: 'AKM Finance Manager',
       debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: snackbarService.messengerKey,
       theme: AppTheme.lightTheme,
       routerConfig: appRouter,
     );

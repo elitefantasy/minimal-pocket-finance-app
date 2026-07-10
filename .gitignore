@@ -82,4 +82,6 @@ Desktop.ini
 __pycache__/
 
 # myconfig
-whatchangedfolder
+/whatchangedfolder/
+/windows/
+/linux/
