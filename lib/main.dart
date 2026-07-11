@@ -12,7 +12,7 @@ void main() {
   runApp(
     UncontrolledProviderScope(
       container: container,
-      child: const AkmFinanceManagerApp(),
+      child: const MinimalPocketFinanceApp(),
     ),
   );
 }

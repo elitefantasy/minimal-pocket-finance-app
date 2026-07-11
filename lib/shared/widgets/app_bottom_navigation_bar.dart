@@ -144,6 +144,13 @@ class AppBottomNavigationBar extends StatelessWidget {
               onTap: () =>
                   _openSecondary(context, sheetContext, currentPath, '/data'),
             ),
+            _MoreDestination(
+              icon: Icons.info_outline,
+              title: 'About',
+              subtitle: 'App information and release details',
+              onTap: () =>
+                  _openSecondary(context, sheetContext, currentPath, '/about'),
+            ),
           ],
         ),
       ),

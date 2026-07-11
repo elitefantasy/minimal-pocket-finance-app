@@ -5,7 +5,13 @@ import 'package:akm_finance_manager/repositories/recurring_repository.dart';
 import 'package:akm_finance_manager/repositories/transaction_repository.dart';
 import 'package:akm_finance_manager/services/transaction_service.dart';
 import 'package:akm_finance_manager/services/export/export_service.dart';
+import 'package:akm_finance_manager/services/url_launcher_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final urlLauncherServiceProvider =
+    Provider<UrlLauncherService>((ref) {
+  return const UrlLauncherService();
+});
 
 final databaseProvider = Provider<DatabaseHelper>((ref) {
   return DatabaseHelper.instance;

@@ -36,7 +36,7 @@ class RecurringProcessingService {
   ) async {
     final lastProcessedDate = recurring.lastProcessedDate;
     var month = lastProcessedDate == null
-        ? DateTime(recurring.createdAt.year, recurring.createdAt.month)
+        ? DateTime(recurring.startDate.year, recurring.startDate.month)
         : _nextMonth(lastProcessedDate);
     var generatedCount = 0;
 

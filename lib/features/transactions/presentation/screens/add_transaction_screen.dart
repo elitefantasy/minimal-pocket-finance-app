@@ -1,5 +1,6 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
+import 'package:akm_finance_manager/features/recurring/application/recurring_processing_provider.dart';
 import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
@@ -51,6 +52,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
     try {
       if (_repeatMonthly) {
+		  final now = DateTime.now();
 		  final recurring = RecurringTransaction(
 			type: type,
 			amount: double.parse(_amountController.text.trim()),
@@ -59,8 +61,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 			dayOfMonth: int.parse(_dayOfMonthController.text.trim()),
 			isEnabled: true,
 			lastProcessedDate: null,
-			createdAt: _selectedDate,
-			updatedAt: DateTime.now(),
+			createdAt: now,
+			startDate: _selectedDate,
+			updatedAt: now,
 		  );
 
 		  await ref

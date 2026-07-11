@@ -58,7 +58,7 @@ class AndroidSafExportService {
 
     // Create:
     //
-    // AKM Finance Manager/
+    // Minimal Pocket Finance/
     //     Database/
     //
     final destinationFolder = await _safUtil.mkdirp(

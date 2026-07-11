@@ -16,7 +16,7 @@ class ExportResult {
   /// User-friendly location.
   ///
   /// Example:
-  /// AKM Finance Manager/Database/finance.db
+  /// Minimal Pocket Finance/Database/finance.db
   final String relativePath;
 
   /// Physical path if available.

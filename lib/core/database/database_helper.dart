@@ -11,7 +11,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int _databaseVersion = 3;
+  static const int databaseVersion = 4;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -94,7 +94,7 @@ class DatabaseHelper {
   Future<Database> _openDatabase(String databasePath) {
     return openDatabase(
       databasePath,
-      version: _databaseVersion,
+      version: databaseVersion,
       onConfigure: _onConfigure,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
@@ -134,6 +134,7 @@ class DatabaseHelper {
           is_enabled INTEGER NOT NULL CHECK(is_enabled IN (0, 1)),
           last_processed_date TEXT,
           created_at TEXT NOT NULL,
+          start_date TEXT NOT NULL,
           updated_at TEXT NOT NULL
         )
       ''')
@@ -243,6 +244,19 @@ class DatabaseHelper {
           'index_transactions_recurring_transaction_id '
           'ON transactions(recurring_transaction_id)',
         );
+      });
+    }
+
+    if (oldVersion < 4) {
+      await database.transaction((transaction) async {
+        await transaction.execute(
+          'ALTER TABLE recurring_transactions ADD COLUMN start_date TEXT',
+        );
+        await transaction.execute('''
+          UPDATE recurring_transactions
+          SET start_date = created_at
+          WHERE start_date IS NULL
+        ''');
       });
     }
   }
