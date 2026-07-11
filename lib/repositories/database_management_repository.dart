@@ -6,7 +6,6 @@ import 'package:akm_finance_manager/repositories/transaction_repository.dart';
 import 'package:akm_finance_manager/services/export/export_service.dart';
 import 'package:akm_finance_manager/services/import/android_saf_import_service.dart';
 import 'package:akm_finance_manager/models/export_result.dart';
-import 'package:akm_finance_manager/models/import_selection.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
@@ -17,9 +16,7 @@ class DatabaseManagementRepository {
     this._transactionRepository,
     this._exportService, {
     AndroidSafImportService? importService,
-  }) : _importService =
-          importService ?? AndroidSafImportService();
-  
+  }) : _importService = importService ?? AndroidSafImportService();
 
   final DatabaseHelper _databaseHelper;
   final TransactionRepository _transactionRepository;
@@ -79,10 +76,7 @@ class DatabaseManagementRepository {
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
 
     // Local database path.
-    final sourcePath = path.join(
-      directoryPath,
-      databaseName,
-    );
+    final sourcePath = path.join(directoryPath, databaseName);
 
     // Close SQLite before copying.
     await _databaseHelper.closeDatabase();
@@ -100,15 +94,12 @@ class DatabaseManagementRepository {
     }
   }
   //
-  
 
   /// Imports a database selected by the user through Android SAF.
   /// If a database with the same name already exists:
   /// - replace = false → throws an exception.
   /// - replace = true  → overwrites the existing database.
-  Future<String?> importDatabase({
-    required bool replace,
-  }) async {
+  Future<String?> importDatabase({required bool replace}) async {
     // Let the user choose a database.
     // ------------------------------------
     final selection = await _importService.pickDatabase();
@@ -126,23 +117,15 @@ class DatabaseManagementRepository {
 
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
 
-    final destination = File(
-      path.join(
-        directoryPath,
-        databaseName,
-      ),
-    );
+    final destination = File(path.join(directoryPath, databaseName));
 
     final exists = await destination.exists();
 
     if (exists && !replace) {
-      throw StateError(
-        'A database with this name already exists.',
-      );
+      throw StateError('A database with this name already exists.');
     }
 
-    final isCurrent =
-        await _databaseHelper.currentDatabaseName == databaseName;
+    final isCurrent = await _databaseHelper.currentDatabaseName == databaseName;
 
     if (isCurrent) {
       await _databaseHelper.closeDatabase();
@@ -214,10 +197,7 @@ class DatabaseManagementRepository {
       );
     }
     // 6. Write the accumulated buffer string into the temporary file.
-    await csvFile.writeAsString(
-      buffer.toString(),
-      flush: true,
-    );
+    await csvFile.writeAsString(buffer.toString(), flush: true);
     // 7. Hand off the temporary file to the export service.
     final exportedPath = await _exportService.exportFile(
       sourcePath: csvFile.path,

@@ -12,6 +12,7 @@ class RecurringTransaction {
     required this.isEnabled,
     required this.lastProcessedDate,
     required this.createdAt,
+    required this.startDate,
     required this.updatedAt,
   });
 
@@ -29,6 +30,7 @@ class RecurringTransaction {
           ? null
           : DateTime.tryParse(lastProcessedDate),
       createdAt: DateTime.parse(map['created_at'] as String),
+      startDate: DateTime.parse(map['start_date'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
     );
   }
@@ -48,6 +50,7 @@ class RecurringTransaction {
   final bool isEnabled;
   final DateTime? lastProcessedDate;
   final DateTime createdAt;
+  final DateTime startDate;
   final DateTime updatedAt;
 
   RecurringTransaction copyWith({
@@ -60,6 +63,7 @@ class RecurringTransaction {
     bool? isEnabled,
     DateTime? lastProcessedDate,
     DateTime? createdAt,
+    DateTime? startDate,
     DateTime? updatedAt,
   }) {
     return RecurringTransaction(
@@ -72,6 +76,7 @@ class RecurringTransaction {
       isEnabled: isEnabled ?? this.isEnabled,
       lastProcessedDate: lastProcessedDate ?? this.lastProcessedDate,
       createdAt: createdAt ?? this.createdAt,
+      startDate: startDate ?? this.startDate,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
@@ -87,6 +92,7 @@ class RecurringTransaction {
       'is_enabled': isEnabled ? 1 : 0,
       'last_processed_date': lastProcessedDate?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
+      'start_date': startDate.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
   }
@@ -106,6 +112,7 @@ class RecurringTransaction {
             other.isEnabled == isEnabled &&
             other.lastProcessedDate == lastProcessedDate &&
             other.createdAt == createdAt &&
+            other.startDate == startDate &&
             other.updatedAt == updatedAt;
   }
 
@@ -120,6 +127,7 @@ class RecurringTransaction {
     isEnabled,
     lastProcessedDate,
     createdAt,
+    startDate,
     updatedAt,
   );
 
@@ -128,6 +136,7 @@ class RecurringTransaction {
     return 'RecurringTransaction(id: $id, type: $type, amount: $amount, '
         'category: $category, note: $note, dayOfMonth: $dayOfMonth, '
         'isEnabled: $isEnabled, lastProcessedDate: $lastProcessedDate, '
-        'createdAt: $createdAt, updatedAt: $updatedAt)';
+        'createdAt: $createdAt, startDate: $startDate, '
+        'updatedAt: $updatedAt)';
   }
 }

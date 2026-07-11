@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/delete_confirmation_dialog.dart';
@@ -42,6 +43,17 @@ class TransactionTile extends ConsumerWidget {
                     formattedDate,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
+                  if (transaction.isRecurring) ...<Widget>[
+                    const SizedBox(height: 6),
+                    Chip(
+                      avatar: const Icon(Icons.repeat, size: 14),
+                      label: const Text('Monthly'),
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      padding: EdgeInsets.zero,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -88,26 +100,17 @@ class TransactionTile extends ConsumerWidget {
       return;
     }
 
-    final messenger = ScaffoldMessenger.of(context);
-    await ref
-        .read(transactionNotifierProvider.notifier)
-        .deleteTransaction(transaction.id!);
-    if (!messenger.mounted) {
-      return;
-    }
+    // Read dependencies before this widget gets disposed.
+    final transactionNotifier = ref.read(transactionNotifierProvider.notifier);
+    final snackbarService = ref.read(appSnackbarProvider);
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: const Text('Transaction deleted'),
-        action: SnackBarAction(
-          label: 'UNDO',
-          onPressed: () async {
-            await ref
-                .read(transactionNotifierProvider.notifier)
-                .add(transaction);
-          },
-        ),
-      ),
+    await transactionNotifier.deleteTransaction(transaction.id!);
+
+    snackbarService.showUndo(
+      message: 'Transaction deleted',
+      onUndo: () async {
+        await transactionNotifier.restoreDeletedTransaction(transaction);
+      },
     );
   }
 }

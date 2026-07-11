@@ -1,6 +1,6 @@
 {
-    "name": "akm_finance_manager",
-    "short_name": "akm_finance_manager",
+    "name": "Minimal Pocket Finance",
+    "short_name": "Pocket Finance",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

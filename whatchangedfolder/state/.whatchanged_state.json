@@ -1,18 +1,18 @@
 {
     ".flutter-plugins-dependencies": {
-        "hash": "0bd3c73b179dcddc44dc529d3e8c0c21b9ef7bf7ac7c91ee9c2d8596cbcbe4d5",
-        "size": 5828,
-        "mtime": 1783134959.5679903
+        "hash": "dd90fc30b776a6a1451097472b48c0fe68891ee1e22238564143a81d71f7356d",
+        "size": 5128,
+        "mtime": 1783152145.7791224
     },
     ".gitignore": {
-        "hash": "1fd97ec21bb5639a20efd3ef3a9b1ec9976ccdfd90911d5e5f06d7d05006da41",
-        "size": 1186,
-        "mtime": 1783091329.9298558
+        "hash": "5c36cd98c4aba94f0cdbfa3987dc9b5b707a16cea7d93e82d2cebb3d796f5949",
+        "size": 1241,
+        "mtime": 1783227103.4961355
     },
     ".metadata": {
-        "hash": "7dbcfce9ae7b50e0826e129607847ac2e9492befcba51439a89341a3ad9af2f7",
-        "size": 1706,
-        "mtime": 1782788624.378743
+        "hash": "19f596e8445ddf372fd979792d3afc3f517a05dc1d320f2ac8dc3c458b2c673c",
+        "size": 998,
+        "mtime": 1783223717.2804933
     },
     "akm_finance_manager.iml": {
         "hash": "d2052ef022de364483e3823043cb6a5be1c3f33217cae65c1a40b48b17669199",
@@ -22,42 +22,52 @@
     "analysis_options.yaml": {
         "hash": "b63207cf529949ec4727b68c23dbb38ce255b6f6f4ae1effcb5c1dcf2852d238",
         "size": 1448,
-        "mtime": 1782788621.73165
+        "mtime": 1783223717.2824943
+    },
+    "devtools_options.yaml": {
+        "hash": "99119330d774616e9e8f151014c3b3cf90a5e858fe4b8e459544eeda2acbc0e8",
+        "size": 187,
+        "mtime": 1783223717.297495
     },
     "git_push.py": {
         "hash": "6f68faaff5536f0e0f1ad97a8f93ef437db2ba01096ff61f95c7a13a6602cc44",
         "size": 548,
-        "mtime": 1782755054.0
+        "mtime": 1783223717.297495
     },
     "project_tree.txt": {
         "hash": "f68f7d78966d23b666787472092966dbaa1f7df421c27e198f2447d510a3adb7",
         "size": 247898,
-        "mtime": 1783091181.1825986
+        "mtime": 1783223717.4395776
     },
     "pubspec.lock": {
-        "hash": "61a3afcd0b4015f7a0a2c1ea2b2aa5eb99b6997680e88e3a482d5f6188137250",
-        "size": 16719,
-        "mtime": 1783137762.435
+        "hash": "a4fcc27b0564cdbec5e05582095813a93dcc8ec4c13b81752f527a7c570b4dcb",
+        "size": 17520,
+        "mtime": 1783225716.66
     },
     "pubspec.yaml": {
-        "hash": "f7171dd9a4ad51e1dc9c3861878baaa9f2290196c9cbf9f2bc8069995f0c042e",
-        "size": 4250,
-        "mtime": 1783137748.7447507
+        "hash": "ed66657214abd9adbc531b40048fe96569eb2bef053b11f58194bd2bfcbda627",
+        "size": 4269,
+        "mtime": 1783225702.5393634
     },
     "README.md": {
         "hash": "104f7b4f81b496887f4613ecc4c2e333bda8de301c9e9213aa533df07b90a61e",
         "size": 658,
-        "mtime": 1782788621.714649
+        "mtime": 1783223786.990767
+    },
+    "todo.md": {
+        "hash": "3e67a1112ff781e43b52313af9376c266d026ed401edc9f80088bf3ef6e7b656",
+        "size": 652,
+        "mtime": 1783230215.1722105
     },
     "tree.py": {
         "hash": "123e38143dd9ca49f8f5e13bbc8127e529823479582ae7a18db3f42447aa703d",
         "size": 1518,
-        "mtime": 1783062987.1314397
+        "mtime": 1783223717.442577
     },
     "android/.gitignore": {
         "hash": "c9af75dbc2c8aa867476a09426c80b178c4aeed8b9393ae48503eedfa3273d71",
         "size": 267,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2834983
     },
     "android/akm_finance_manager_android.iml": {
         "hash": "c8e0091edeca4e766e9dcf948e59c86a0427381fb5e31768ae396eedde5f1dfc",
@@ -67,22 +77,22 @@
     "android/build.gradle.kts": {
         "hash": "218f400e3fff31c9c986a2535dfb974560e1b4d33cc27b7c1fee96a2b7e44454",
         "size": 561,
-        "mtime": 1782788621.8376582
+        "mtime": 1783223717.2944946
     },
     "android/gradle.properties": {
-        "hash": "7714698de712a7872e371f0dbae626c255fc83ac1c15e52e7cd9fcaa241b5092",
-        "size": 306,
-        "mtime": 1782788622.2151804
+        "hash": "9e30d3804bd31311b5e3f001569b96d486beea2ba53b26a1c2bccb0ed5807e0f",
+        "size": 332,
+        "mtime": 1783223717.2954948
     },
     "android/gradlew": {
         "hash": "ec56c02543666d92d9ac5ae7fcc48f88ce4de0deb8b7f9b39928ca46f68c1b2b",
         "size": 4971,
-        "mtime": 1782788624.329265
+        "mtime": 1783147918.9262857
     },
     "android/gradlew.bat": {
         "hash": "c13c6e91b9a517783976de213d46398c661ea9e17651376d7301e839eaedcc62",
         "size": 2404,
-        "mtime": 1782788624.3647423
+        "mtime": 1783147918.9632857
     },
     "android/local.properties": {
         "hash": "a1d842eb662f43643b4f47b2f098727c4a91f7779b39b62474776940c0d206ee",
@@ -92,152 +102,152 @@
     "android/settings.gradle.kts": {
         "hash": "d6b16579d5f6a6066cc22323c4e34adb82020f7b75378bffed7f0358bc949ce3",
         "size": 797,
-        "mtime": 1782788622.2622156
+        "mtime": 1783223717.296495
     },
     "android/app/build.gradle.kts": {
         "hash": "89174527b19c3ff71eebad6a7db9355ef01448ebcdb4605ea1fad61220bdda67",
         "size": 1458,
-        "mtime": 1782788621.7766535
+        "mtime": 1783223717.2834983
     },
     "android/app/src/debug/AndroidManifest.xml": {
         "hash": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c",
         "size": 385,
-        "mtime": 1782788621.9282417
+        "mtime": 1783223717.2844973
     },
     "android/app/src/main/AndroidManifest.xml": {
         "hash": "88dff4527dd360a3ff6a33736d50cd62817acd67be3eaaa0dba4baf770222cfe",
         "size": 2252,
-        "mtime": 1782788621.9542592
+        "mtime": 1783223717.2855067
     },
     "android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java": {
         "hash": "b5f38b132cbf8b5e080783d2c5e972c5a6dedba287c49ee9bb01763740b952ca",
         "size": 1967,
-        "mtime": 1783134960.0301125
+        "mtime": 1783149834.5477784
     },
     "android/app/src/main/kotlin/com/example/akm_finance_manager/MainActivity.kt": {
         "hash": "7b55e0464ef7d59d0219984c0c6251d8f8203dabca9cd32a2029cc23a5ff52eb",
         "size": 138,
-        "mtime": 1782788621.8216581
+        "mtime": 1783223717.286507
     },
     "android/app/src/main/res/drawable/launch_background.xml": {
         "hash": "2df60e2cfbee873ce2858088cf003e6b93498f2f568476da437610467ea1a9d7",
         "size": 446,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.288495
     },
     "android/app/src/main/res/drawable-v21/launch_background.xml": {
         "hash": "dca312ec77de83e43ef70a825c299b51451247286c29167d62f19165750b8793",
         "size": 450,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2875068
     },
     "android/app/src/main/res/mipmap-hdpi/ic_launcher.png": {
         "hash": "6a7c8f0d703e3682108f9662f813302236240d3f8f638bb391e32bfb96055fef",
         "size": 544,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2894957
     },
     "android/app/src/main/res/mipmap-mdpi/ic_launcher.png": {
         "hash": "c7c0c0189145e4e32a401c61c9bdc615754b0264e7afae24e834bb81049eaf81",
         "size": 442,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2904947
     },
     "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": {
         "hash": "e14aa40904929bf313fded22cf7e7ffcbf1d1aac4263b5ef1be8bfce650397aa",
         "size": 721,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2914946
     },
     "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": {
         "hash": "4d470bf22d5c17d84edc5f82516d1ba8a1c09559cd761cefb792f86d9f52b540",
         "size": 1031,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2914946
     },
     "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": {
         "hash": "3c34e1f298d0c9ea3455d46db6b7759c8211a49e9ec6e44b635fc5c87dfb4180",
         "size": 1443,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2924943
     },
     "android/app/src/main/res/values/styles.xml": {
         "hash": "cca15a99b59380a548bf6a890f7ca5380ee509b1f9bbb2f5f9ec3589fa25c2f7",
         "size": 1014,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2934947
     },
     "android/app/src/main/res/values-night/styles.xml": {
         "hash": "ea763597dc1a84c8034251caee98d7753e0fbf57340ffc94677427de4b537516",
         "size": 1013,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2934947
     },
     "android/app/src/profile/AndroidManifest.xml": {
         "hash": "b01a4541a8144c15bc617bab7eb267c99fa1476368fbbda5a12cdbf4e316a34c",
         "size": 385,
-        "mtime": 1782788622.1939974
+        "mtime": 1783223717.2944946
     },
     "android/gradle/wrapper/gradle-wrapper.jar": {
         "hash": "16caeaf66d57a0d1d2087fef6a97efa62de8da69afa5b908f40db35afc4342da",
         "size": 53636,
-        "mtime": 1782788624.290189
+        "mtime": 1783147918.9002786
     },
     "android/gradle/wrapper/gradle-wrapper.properties": {
         "hash": "670071e5c2e25f86f82bc9db52f5d8d7c8f7b1788686a9d4c967753c69d9a2b4",
         "size": 207,
-        "mtime": 1782788622.2373648
+        "mtime": 1783223717.2954948
     },
     "ios/.gitignore": {
         "hash": "e85b4db8ba6ed14708e5f7d3c60336e5a3067ce11329b84aa8ba5d98603ee253",
         "size": 603,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.297495
     },
     "ios/Flutter/AppFrameworkInfo.plist": {
         "hash": "e51cfa76fca1ae586244b43bf97423577315d2906394c1e7768ef43b8d23e161",
         "size": 744,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2984955
     },
     "ios/Flutter/Debug.xcconfig": {
         "hash": "c0d1da54718e75f2028962b689258ecc741abf7cdaed50483aa5225264d0a7d7",
         "size": 31,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2984955
     },
     "ios/Flutter/flutter_export_environment.sh": {
         "hash": "5b16d546c025d398d3f64eefa0bc44bc5527a799c41d1382734d893b72f0842a",
         "size": 700,
-        "mtime": 1782788637.3580625
+        "mtime": 1783150987.5421398
     },
     "ios/Flutter/Generated.xcconfig": {
         "hash": "7d9465117113e3312d4e28a0d57b1b893955f65a26b643a07d88046fd50e0427",
         "size": 661,
-        "mtime": 1782788637.3560593
+        "mtime": 1783150987.5401402
     },
     "ios/Flutter/Release.xcconfig": {
         "hash": "c0d1da54718e75f2028962b689258ecc741abf7cdaed50483aa5225264d0a7d7",
         "size": 31,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.2994952
     },
     "ios/Flutter/ephemeral/flutter_lldbinit": {
         "hash": "eaec5f5268e3a5024d9703046f4097701107d574d0de7a2d8d81f0bf4644a333",
         "size": 108,
-        "mtime": 1782788637.3410573
+        "mtime": 1783150987.52414
     },
     "ios/Flutter/ephemeral/flutter_lldb_helper.py": {
         "hash": "05cfe3977fdee593efad2049a4f62d374e55c69cedc8aabeee5566b37acb8384",
         "size": 1276,
-        "mtime": 1782788637.3430588
+        "mtime": 1783150987.5281415
     },
     "ios/Flutter/ephemeral/flutter_native_integration.env": {
         "hash": "1d9f9777cb754e280b553945224197fda5962f637340b29677d01df67695dfff",
         "size": 511,
-        "mtime": 1782788637.3600602
+        "mtime": 1783150987.5441403
     },
     "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
         "hash": "321befebd4d1220f0bd926aa54fa8f16216f6fb4e8c723017d6cda2f67f8373c",
         "size": 596,
-        "mtime": 1783137761.9619186
+        "mtime": 1783230934.063641
     },
     "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources/FlutterGeneratedPluginSwiftPackage/FlutterGeneratedPluginSwiftPackage.swift": {
         "hash": "8518fb048c29925943b03de7f45c9d5232c0b46d2cc97d36f83ff501e1ffb9ba",
         "size": 38,
-        "mtime": 1782788637.5607057
+        "mtime": 1783150988.0251749
     },
     "ios/Runner/AppDelegate.swift": {
         "hash": "54a5e98d6c3e8a79413ad50607b83aac8ded8828bc913eda1fe86bb33a66cd5d",
         "size": 555,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.306498
     },
     "ios/Runner/GeneratedPluginRegistrant.h": {
         "hash": "a5f88cc6415d2e639d2cb549348b84e02a7fdd0261603b0063abef6fa11f075a",
@@ -252,826 +262,856 @@
     "ios/Runner/Info.plist": {
         "hash": "74a65e54ecf1fa4b7344530e5e20f60d5fd316f797e66cca82f826f8b0aef02e",
         "size": 2306,
-        "mtime": 1782788623.0623586
+        "mtime": 1783223717.3204978
     },
     "ios/Runner/Runner-Bridging-Header.h": {
         "hash": "efe657d8b27f7f8595a0d416bffb33fe7d93bd2869d81f7353b556c439d7a1a7",
         "size": 39,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3204978
     },
     "ios/Runner/SceneDelegate.swift": {
         "hash": "edce811c671ca0a6ccb14753e14e16deb0d89a0adf4f1b685e362d87d8f4c366",
         "size": 82,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.321497
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
         "hash": "5f8b941b774bde4496d73347c1f79cbdd786bb76fbdab9ed1f3f0cb78a0fb0d3",
         "size": 2641,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3074963
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png": {
         "hash": "7770183009e914112de7d8ef1d235a6a30c5834424858e0d2f8253f6b8d31926",
         "size": 10932,
-        "mtime": 1782759161.6258783
+        "mtime": 1783223717.3084977
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png": {
         "hash": "cab10a0d391ec5bc09ef50ce49e8ad401cee7ef03707ec0923a222c5c2b3d212",
         "size": 295,
-        "mtime": 1782759161.722886
+        "mtime": 1783223717.3094978
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png": {
         "hash": "b9ad02cf6576a04d1b6806ac02a2431481b448dd0c2e505ce25842d1f7c4730b",
         "size": 406,
-        "mtime": 1782759161.3928602
+        "mtime": 1783223717.3094978
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png": {
         "hash": "c6e6d3b215ae744a9c391f4c4d44157eff5e739d6ad6c39f9bfa5df66dddd267",
         "size": 450,
-        "mtime": 1782759161.981905
+        "mtime": 1783223717.3104968
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png": {
         "hash": "5dee24dc104ac76dc162e42ae0beb163d426bf365562ee28ba7b3ad368559a60",
         "size": 282,
-        "mtime": 1782759162.2149239
+        "mtime": 1783223717.3104968
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png": {
         "hash": "a9b21eb6f4271385655a8771f76e29eef8c1107d7879cbcfc567e6619d1f716a",
         "size": 462,
-        "mtime": 1782759160.8098166
+        "mtime": 1783223717.3114967
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png": {
         "hash": "e677d701ffe4af7bc2935098d6b3984cc9ab7ace573e6900955a5535b12410cf",
         "size": 704,
-        "mtime": 1782759161.839893
+        "mtime": 1783223717.3114967
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png": {
         "hash": "b9ad02cf6576a04d1b6806ac02a2431481b448dd0c2e505ce25842d1f7c4730b",
         "size": 406,
-        "mtime": 1782759160.84482
+        "mtime": 1783223717.3124976
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png": {
         "hash": "7c61c42fc7b657d9cf314d32a4ec458f0647c3aaf360be1b9377857266ec2499",
         "size": 586,
-        "mtime": 1782759162.1469185
+        "mtime": 1783223717.3124976
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png": {
         "hash": "19be171481dc71a0b2803ebcd01dd8b0c5fd5778dee34c0a3cabc948c225f24e",
         "size": 862,
-        "mtime": 1782759161.0828364
+        "mtime": 1783223717.313498
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png": {
         "hash": "19be171481dc71a0b2803ebcd01dd8b0c5fd5778dee34c0a3cabc948c225f24e",
         "size": 862,
-        "mtime": 1782759161.4308636
+        "mtime": 1783223717.313498
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png": {
         "hash": "4209a49e44a92ec40a327d3455eb1b1c153ee83d75de1c2be0a12ab18b2ff9de",
         "size": 1674,
-        "mtime": 1782759160.6928072
+        "mtime": 1783223717.3144975
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png": {
         "hash": "836c918cb613249eba0483a6b02fa3df3c1c0a89a315ee4d3b88509b83c7ab73",
         "size": 762,
-        "mtime": 1782759161.1278422
+        "mtime": 1783223717.3144975
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png": {
         "hash": "41c7d42f6e61f8fe7f30b1ffa2256aecbc9682be06d18c4a3062043e1a2e547c",
         "size": 1226,
-        "mtime": 1782759162.3479345
+        "mtime": 1783223717.315498
     },
     "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png": {
         "hash": "5d7e5bdf01b93802bc973345b3a78c038907147625035952a08a115a563b7f81",
         "size": 1418,
-        "mtime": 1782759162.04591
+        "mtime": 1783223717.315498
     },
     "ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json": {
         "hash": "fbd112a9f3b541a1d811f71ac8e4fe68b6176687d973a5f4d99b7aa4a722e94e",
         "size": 414,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.316498
     },
     "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png": {
         "hash": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20",
         "size": 68,
-        "mtime": 1782759160.5967994
+        "mtime": 1783223717.316498
     },
     "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png": {
         "hash": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20",
         "size": 68,
-        "mtime": 1782759160.3737817
+        "mtime": 1783223717.3174977
     },
     "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png": {
         "hash": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20",
         "size": 68,
-        "mtime": 1782759160.3587823
+        "mtime": 1783223717.3184981
     },
     "ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md": {
         "hash": "853ac958e2416fe2540f6f61165283a3618b71a7ba5f85f65ac41c2158dfcd21",
         "size": 340,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3184981
     },
     "ios/Runner/Base.lproj/LaunchScreen.storyboard": {
         "hash": "bc3644fbb251ff1e18de25a4932c927850ae1a025be3dd1447940429633fe4b2",
         "size": 2414,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3194983
     },
     "ios/Runner/Base.lproj/Main.storyboard": {
         "hash": "dcea4686c02065e56217fd19fcfb73d7509b41872e7486126149d47a18559363",
         "size": 1631,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3194983
     },
     "ios/Runner.xcodeproj/project.pbxproj": {
         "hash": "27c76e4f3b03ae48d3358665a4e3b7b7f10a6fd2f8f5016986b856cf9a7e842a",
         "size": 26306,
-        "mtime": 1782788622.4000354
+        "mtime": 1783223717.3004954
     },
     "ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata": {
         "hash": "ac28b35c2b940210bec0fff8e424b07fd0efe9112ab178a10533583f251a386c",
         "size": 142,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3014963
     },
     "ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
         "hash": "d557c2c32fc6258ec28981fa45dc847b76c9968beb90a2e26d13ef9c4ea45c30",
         "size": 246,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3014963
     },
     "ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings": {
         "hash": "dd64c0308ab2971c456871b990b24a008bdc3ece09833e8dbe9675e33a496e74",
         "size": 234,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3024957
     },
     "ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme": {
         "hash": "a46c0d064503db8bf9f452b492c61fdf76f9febb8894005fe30b2facec21e550",
         "size": 4836,
-        "mtime": 1782788622.5264187
+        "mtime": 1783223717.3034954
     },
     "ios/Runner.xcworkspace/contents.xcworkspacedata": {
         "hash": "706a4c812f2a1e220e6785c27580020d58048e2ae4d30d1280f3c43344ce6b38",
         "size": 159,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3044953
     },
     "ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
         "hash": "d557c2c32fc6258ec28981fa45dc847b76c9968beb90a2e26d13ef9c4ea45c30",
         "size": 246,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3054972
     },
     "ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings": {
         "hash": "dd64c0308ab2971c456871b990b24a008bdc3ece09833e8dbe9675e33a496e74",
         "size": 234,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.306498
     },
     "ios/RunnerTests/RunnerTests.swift": {
         "hash": "c0e04141287eb7f9c9f3d31cf5be8cb626a9ea71351206c9121578e8b8f480c3",
         "size": 297,
-        "mtime": 1782788623.1196077
+        "mtime": 1783223717.322498
     },
     "lib/main.dart": {
-        "hash": "9d01b6978845a56d12e62978622f3275fd787ab0a4513b5bbf4839a49ae6bf2c",
-        "size": 527,
-        "mtime": 1783064333.4001794
+        "hash": "1d0eb95f0b9114a6ec143e9dffbae5a5a7643a616d2f3c4579872e92625b2180",
+        "size": 545,
+        "mtime": 1783223717.3797877
     },
     "lib/app/app.dart": {
-        "hash": "8e5b2b0f3e4200b55b4b92e8a24b100c105b8a15a808c2f921e0ff946651d910",
-        "size": 500,
-        "mtime": 1783008147.2119882
+        "hash": "8fbe9954ee84bb65a2f2e3f877eb363c4748ba1ac65b45789010689fe928fc53",
+        "size": 517,
+        "mtime": 1783223717.3234978
     },
     "lib/app/providers.dart": {
-        "hash": "9ed1363ad2a725c7acd0ec5a4b010b3b72193ef0d4fc328ac370697927d73aae",
-        "size": 1636,
-        "mtime": 1783065378.7861557
+        "hash": "7c5cef4872fa3117b8ac3653e0b5a0df1d93017f47c60d5b14445cfa1919a655",
+        "size": 1677,
+        "mtime": 1783223717.324497
+    },
+    "lib/core/constants/app_constants.dart": {
+        "hash": "70abb53aaff77c792fa632fe834b3cf5d37c5281fe5a965ac97673d14aedd859",
+        "size": 271,
+        "mtime": 1783223717.324497
     },
     "lib/core/database/database_helper.dart": {
-        "hash": "6f3775543d522d7ded6c1408f1613722d524dae5b7f67555827626f3efc9c310",
-        "size": 7488,
-        "mtime": 1783061112.9816105
+        "hash": "9ddb72a5e924d52b4e640b35378f72491f0e0d48a0ba333bfcf4f69946a2394b",
+        "size": 7735,
+        "mtime": 1783223717.3254972
     },
     "lib/core/theme/app_theme.dart": {
         "hash": "6a5b4d3dc664add6d6a28f88a6efaf604edcc378589f298aae269d222c99a8a4",
         "size": 334,
-        "mtime": 1782796726.5059626
+        "mtime": 1783223717.3264973
     },
     "lib/features/categories/application/category_notifier.dart": {
-        "hash": "dddb55e27446ea57b3c6520009e27d3a533cdf759d31320ec54fee08180c99ab",
-        "size": 3094,
-        "mtime": 1783013221.1254423
+        "hash": "bc27a2c521a0c2ce8d79b139f66f155d28e8853291f06b27223f3c70c4628c9f",
+        "size": 3205,
+        "mtime": 1783223717.3274975
     },
     "lib/features/categories/presentation/screens/category_screen.dart": {
-        "hash": "0196c019d03b083e86e00704a777b296ca4ec6e2a46c8f23285fa8d4c4c14043",
-        "size": 6048,
-        "mtime": 1783013234.5145166
+        "hash": "37721eeb2d2210c09c5f7d078f39dc0d9f82f0e53497626deba40133655e616f",
+        "size": 6253,
+        "mtime": 1783223717.329497
     },
     "lib/features/categories/widgets/category_tile.dart": {
-        "hash": "fb76314dfa34be402cd750e7837aa8732eb48fc058fe59ba0703dc91926075c7",
-        "size": 885,
-        "mtime": 1783013129.3952456
+        "hash": "5d5660d68825c5b58cc5cdab68d4ad114f0f25d3927213edce96f3b577beaa6e",
+        "size": 922,
+        "mtime": 1783223717.329497
     },
     "lib/features/dashboard/application/dashboard_summary_provider.dart": {
-        "hash": "c031ac784c52937253b2793330fdba7699c48cf1090033a0aa126f0c4f841ce1",
-        "size": 2799,
-        "mtime": 1783052236.167564
+        "hash": "68f8aedc271dc7015fad3e6d3ff69263a1377e91f77ad6616790060946dc0f03",
+        "size": 2872,
+        "mtime": 1783223717.331498
     },
     "lib/features/dashboard/presentation/screens/dashboard_screen.dart": {
-        "hash": "23325da8b5da665f4379e4311c235ac6952885c16d7738be7f66d97add4e8465",
-        "size": 3134,
-        "mtime": 1783052236.1835663
+        "hash": "bf29c100773051ba5817a86671e51f21182ff5bb25545e34296f0e8e701fb2bb",
+        "size": 3217,
+        "mtime": 1783223717.3324974
     },
     "lib/features/dashboard/presentation/widgets/monthly_expense_card.dart": {
-        "hash": "403bc147c025410cf2ae46f16fbda5662983f618b15829bc0948db07f54ffd62",
-        "size": 796,
-        "mtime": 1783052284.1431096
+        "hash": "fd2f777a5144986354da1ce111ebbab283221cc7bea5697d6b9a8d1607c49dff",
+        "size": 804,
+        "mtime": 1783223717.3324974
     },
     "lib/features/dashboard/presentation/widgets/recent_transactions_card.dart": {
-        "hash": "4f6530f31809dc259522b09bea8bc79afa49e6a6fd33cbe6b33b759f17b46754",
-        "size": 1662,
-        "mtime": 1783052236.1965668
+        "hash": "fee43f5da42c188fd4c70a3ed69836b430ecb01df30228b4ce9f1b4e72b059b6",
+        "size": 1711,
+        "mtime": 1783223717.3334975
     },
     "lib/features/dashboard/presentation/widgets/summary_card.dart": {
-        "hash": "aaaeeeaca431f458e619ea82eab20fe6b9598cb59fe44409612fb9f60ad3783b",
-        "size": 834,
-        "mtime": 1783052286.199274
+        "hash": "fe91f9155074dd8121687ef79950cdaa242a61739457746fd34b5d6e0824d143",
+        "size": 849,
+        "mtime": 1783223717.3345125
     },
     "lib/features/dashboard/presentation/widgets/top_categories_card.dart": {
-        "hash": "6b2f6b646a0d0f08fa2b9730faa202b2a43a90f73858ba8ba4d505f09d46e1d3",
-        "size": 1354,
-        "mtime": 1783052236.218568
+        "hash": "517a65ab175b84ba98e16c658b927150dc41e8a06b68f843f7349e1a2d6b6a0b",
+        "size": 1400,
+        "mtime": 1783223717.3345125
     },
     "lib/features/data_management/application/database_manager_notifier.dart": {
-        "hash": "13276d4b95fffee4b428fcdb2e965325dbe3a908b9d7fbfef7c28b70838d62a6",
-        "size": 4996,
-        "mtime": 1783061057.384959
+        "hash": "8a89b9c92ef54a7894712d35e3e84bce2985a1040359f3adf17e4a78ec62a9ca",
+        "size": 5181,
+        "mtime": 1783223717.3364978
     },
     "lib/features/data_management/presentation/screens/data_management_screen.dart": {
-        "hash": "1bb0b8169be699551fba0dc527a91a63d7399a8b09d808a7932a1640be3e495e",
-        "size": 9500,
-        "mtime": 1783061096.4002614
+        "hash": "40270708298186bc1b7329487c704742433344e05c35b5b6ba7fc41ced7b46dc",
+        "size": 9915,
+        "mtime": 1783231378.534057
     },
     "lib/features/data_management/presentation/widgets/backup_card.dart": {
-        "hash": "085839cd118cc0a2d1f627b57d5b69d7aab177507c59cda4ea54a2b361ec871d",
-        "size": 2356,
-        "mtime": 1783061057.5019696
+        "hash": "c278c55c00eb908f664201352188efb69879fef8a67d5bfcfd7294bdea241479",
+        "size": 2264,
+        "mtime": 1783223717.3384984
     },
     "lib/features/data_management/presentation/widgets/danger_zone_card.dart": {
-        "hash": "8cdd73c6365613ee49a86877d49f179d891baa4b20a1daae1791f64e54bc09c3",
-        "size": 1095,
-        "mtime": 1783060981.2347345
+        "hash": "62e707a92152cec81411502bcb912b1b625efefb08f29205425d59020399e4e9",
+        "size": 1129,
+        "mtime": 1783223717.3384984
     },
     "lib/features/data_management/presentation/widgets/database_card.dart": {
-        "hash": "a14ae8018ac223f814992c0b9d31ad30434efa13ca8f82fbc62c1e1aac0549ac",
-        "size": 422,
-        "mtime": 1783060975.6632879
+        "hash": "01ebb2e1bd897b0e15bf1caedad3195fed4058393924ec1bc1cfc473ed5b08f8",
+        "size": 440,
+        "mtime": 1783223717.3395002
     },
     "lib/features/data_management/presentation/widgets/database_tile.dart": {
-        "hash": "d5d41d4196427adb5430642e181c4a03fdc0a58d0dee1ee0ac63e8612dbd4d5b",
-        "size": 1124,
-        "mtime": 1783060977.465432
+        "hash": "68a175e0403a3ced20bad2146fc083b3b290c83ecd271f713915d4826df27009",
+        "size": 1167,
+        "mtime": 1783223717.3404996
     },
     "lib/features/recurring/application/recurring_notifier.dart": {
-        "hash": "e38a1eaa28e57efd5fa841d7feb8040f25736240de6978f413d3f629174c9bfc",
-        "size": 1109,
-        "mtime": 1783050143.7915127
+        "hash": "cd6ffcf59e775d87f5dce5038e803f518f86f7843812315b76092c7bb3db728f",
+        "size": 1143,
+        "mtime": 1783223717.3424988
     },
     "lib/features/recurring/application/recurring_processing_provider.dart": {
-        "hash": "75019db71879621a08d449904e0e96419d2a366760dd8e9e7e89e5475a1223fa",
-        "size": 2335,
-        "mtime": 1783064545.5343683
+        "hash": "766a039b6e94143cf73446b5c592739550ff2237c2a3bbfb23bf85a73a00647a",
+        "size": 2416,
+        "mtime": 1783223717.3424988
     },
     "lib/features/recurring/presentation/screens/recurring_screen.dart": {
-        "hash": "e67c2dbde947a980c75c7d6a92a6b94898118e06babe1b7685d239b8b3dcca5c",
-        "size": 4557,
-        "mtime": 1783050286.537184
+        "hash": "463f39ed98ba607449c506f99ccb8b90c3c5ae93fddf902a5c222d875bd7b07b",
+        "size": 4692,
+        "mtime": 1783223717.3435
     },
     "lib/features/recurring/presentation/widgets/day_of_month_field.dart": {
-        "hash": "e9d0032e334c7f23a8ad82b6a0f477e78e7fa1300897c34d32f4062279a64f72",
-        "size": 929,
-        "mtime": 1783050286.5501854
+        "hash": "4b02396ad51dbe0a05f5f2de9789219855954727e98a82840ca6acc02cdd0acf",
+        "size": 961,
+        "mtime": 1783223717.3445
     },
     "lib/features/recurring/presentation/widgets/recurring_transaction_card.dart": {
-        "hash": "9065d3767468e5fef32f94582f49d67e6f31f1fb0174143c44f48c7ab2093bc3",
-        "size": 2328,
-        "mtime": 1783050193.2445667
+        "hash": "edcd9385a0178409a05f31cca9ab84cba34f3323223972d295600374428fcdc1",
+        "size": 2398,
+        "mtime": 1783223717.3445
     },
     "lib/features/recurring/presentation/widgets/recurring_transaction_dialog.dart": {
-        "hash": "2e2006463b4fdb0cd5ec85e935bf2a4db46f7a0051f205b725a775c8c17dd95e",
-        "size": 5371,
-        "mtime": 1783050397.9956093
+        "hash": "73d7d2ed17975472f1be6cc4f2239fa566cb834a4162aa4075ea00bdb21a4539",
+        "size": 5532,
+        "mtime": 1783223717.346112
     },
     "lib/features/statistics/application/statistics_provider.dart": {
-        "hash": "72b4ac355195837a79353d7e71452fd7e5f6c0393d52276d912c394cb379540c",
-        "size": 2325,
-        "mtime": 1783052839.5881493
+        "hash": "2333d86f742a072f63245263ecbc3a4956e5fd146984419a5c6cae02d009e6c7",
+        "size": 2396,
+        "mtime": 1783223717.347112
     },
     "lib/features/statistics/presentation/screens/statistics_screen.dart": {
-        "hash": "eba4b68bcbc61b0d929eb9840f6b8bb884fdf02ee2b2ee4a1d24bb3ecf012d3f",
-        "size": 1677,
-        "mtime": 1783052839.59915
+        "hash": "212e9fdcaf23c57332938c75884f52db5c80643cc731c76e05c3af2006aa3cba",
+        "size": 1721,
+        "mtime": 1783223717.3481116
     },
     "lib/features/statistics/presentation/widgets/category_statistics_tile.dart": {
-        "hash": "2e2f3a0421585b113358567948c85ab730c9270238afb799247174aa885fb75c",
-        "size": 780,
-        "mtime": 1783052839.6091518
+        "hash": "d15c5b4cc53d8fad5b6c1bd8d87933205a660fbd99e9205f22decf7e61198489",
+        "size": 806,
+        "mtime": 1783223717.3481116
     },
     "lib/features/statistics/presentation/widgets/statistics_summary_card.dart": {
-        "hash": "7d065eac0a3d7049c633c53232dd75d7ed596d44c69a9999d94161924fc2c7ee",
-        "size": 1672,
-        "mtime": 1783052839.614152
+        "hash": "cf5388cf198205c2260e83e38abd5303dc19195e7cd5c315bd477829fc1abbbd",
+        "size": 1724,
+        "mtime": 1783223717.3491118
     },
     "lib/features/transactions/application/search_query_provider.dart": {
-        "hash": "bafcdc4ab2c5203011d8a2c81dc7407cda38c45122da35f4b866eb401547b071",
-        "size": 2666,
-        "mtime": 1783010962.325699
+        "hash": "21b0cc065b58d474149d2687d93e5fa5f439cf6e31af7d77e9842e6a263cbf9e",
+        "size": 2729,
+        "mtime": 1783223717.3501122
     },
     "lib/features/transactions/application/transaction_filter_provider.dart": {
-        "hash": "b0ab01b9a2be678e2edcb35b65a5b35c515f20a8655da2e5c492213eb250f7d2",
-        "size": 212,
-        "mtime": 1783010762.9486723
+        "hash": "c7d8d5c373e9fa195b6996cd9e1431eb804a414ac2fb38eed74e74854998ac23",
+        "size": 219,
+        "mtime": 1783223717.3501122
     },
     "lib/features/transactions/application/transaction_notifier.dart": {
-        "hash": "7a1da5835a80d5a6444879185a23941dd192aa761cd74c1df4fa3fbe98e04075",
-        "size": 1189,
-        "mtime": 1783012839.6773264
+        "hash": "7f6598812cbd76e833d6386e7ff05e3e0951989f9ef842e8529ff77c70249e09",
+        "size": 1226,
+        "mtime": 1783223717.3721726
     },
     "lib/features/transactions/application/transaction_sort_provider.dart": {
-        "hash": "80a5ddd50123938ce5c87ff44b8c9246c75503b8dc768b70a5c7725ea241b859",
-        "size": 268,
-        "mtime": 1783010960.0774632
+        "hash": "2ede59216e4036c88329405d9a343c30d58b4fc5e28af45f5b18e94bdba43ae6",
+        "size": 281,
+        "mtime": 1783223717.373174
     },
     "lib/features/transactions/presentation/screens/add_transaction_screen.dart": {
-        "hash": "e32e9bd08e44990117011490aefb519357ccb79cdc4ca120c813a82e725c18c9",
-        "size": 5309,
-        "mtime": 1783050286.586189
+        "hash": "9136671b95b6ee6495d4ca94404562db2615530c9f74a7788e47726722d50ebb",
+        "size": 6006,
+        "mtime": 1783227418.5690536
     },
     "lib/features/transactions/presentation/screens/edit_transaction_screen.dart": {
-        "hash": "34673554258905607d62ee830a4f71a3be1c048ebb622925b615639a90cb27fd",
-        "size": 4712,
-        "mtime": 1783013234.5525193
+        "hash": "b3e09aa44b4d7bdc8491829c7ecaec78a4fba6aa2d7156c8847016256f72b20e",
+        "size": 4618,
+        "mtime": 1783226635.170576
     },
     "lib/features/transactions/presentation/screens/history_screen.dart": {
-        "hash": "7a7accfde85f31a198eaf34b9bb0874775b16ead383c6a24687c7cf17d3b5135",
-        "size": 6187,
-        "mtime": 1783010973.9941514
+        "hash": "d833b6b3f52f3ed8fe7f06b2358d76944a1bebb07a74c9054a9f016723ee5010",
+        "size": 6328,
+        "mtime": 1783223717.3767867
     },
     "lib/features/transactions/presentation/widgets/amount_field.dart": {
-        "hash": "7600f903ddb23ea453f999ec3717834dd73000c604f9aee1b29d6c5542698a5f",
-        "size": 1039,
-        "mtime": 1783008495.7833724
+        "hash": "69a70c47aea1fb52ecc281b7c1764122ed96509a1d00d1d5c4641257c12a89b9",
+        "size": 1074,
+        "mtime": 1783223717.3767867
     },
     "lib/features/transactions/presentation/widgets/category_dropdown.dart": {
-        "hash": "845d3dd1f53f5e8948b154b9413f817eae123f6b0ac28ad71eae7e5112a7c877",
-        "size": 1084,
-        "mtime": 1783008497.6976697
+        "hash": "6bef9de0a804b3aa72b414526ee604ed3b47aaf70f1ee636340026db97d85dd9",
+        "size": 1125,
+        "mtime": 1783223717.377786
+    },
+    "lib/features/transactions/presentation/widgets/date_picker_field.dart": {
+        "hash": "fdc1286175de9b9d6d5a8d9bcf8acb2c824cd5d69c5c4a6f8a17227c574dc817",
+        "size": 1034,
+        "mtime": 1783228993.5324605
     },
     "lib/features/transactions/presentation/widgets/note_field.dart": {
-        "hash": "91265232bf1ac8633573a6f1e2b31d1e0810144d7d0d08db658a9e45e1174b22",
-        "size": 495,
-        "mtime": 1783008499.643968
+        "hash": "0f373787a3f8150c9fa0ba30097246c6d3d0069f84caf08a5d1cb09f73309e33",
+        "size": 515,
+        "mtime": 1783223717.3787858
     },
     "lib/features/transactions/presentation/widgets/transaction_tile.dart": {
-        "hash": "31bb16c36c9b839735352c2afba9d9913ac2240561e0777032051803829c779a",
-        "size": 3777,
-        "mtime": 1783012851.1137128
+        "hash": "0f391244ffacf484ef31efbc2da67a9651fc0fe8d4092be6b831c7933fab7681",
+        "size": 3890,
+        "mtime": 1783223717.3787858
     },
     "lib/features/transactions/presentation/widgets/transaction_type_buttons.dart": {
-        "hash": "35494767d8fcc066c856f257b6a255456bff5cb4572ba133aebd8877de3b1959",
-        "size": 804,
-        "mtime": 1783008501.9203193
+        "hash": "872ffa9eef12c3ad2345a5dade06a4c9ff378ed0283f4783083e7a151eb082d1",
+        "size": 839,
+        "mtime": 1783223717.3797877
     },
     "lib/models/category.dart": {
-        "hash": "3dcb04c1996a626948f42c101e5e4c6e5cf276b9ad87b5fdfc2443df23ff8cb9",
-        "size": 962,
-        "mtime": 1782839552.4831073
+        "hash": "bd1dc1ae51bfd5982020596ca8ef970db69b1a6a89b1b2c63ad563a7decfdb78",
+        "size": 1001,
+        "mtime": 1783223717.3807874
     },
     "lib/models/dashboard_summary.dart": {
-        "hash": "dcf8791bb4709681c61c049c347d4d1ea4abcff588c524d548895fce432f7f7e",
-        "size": 1034,
-        "mtime": 1783052236.1325612
+        "hash": "da87675fc65716e7c846c5ece8c3a94675faed91c162c86bb0b369cc30353531",
+        "size": 1068,
+        "mtime": 1783223717.3807874
+    },
+    "lib/models/export_result.dart": {
+        "hash": "892d6f99e48ce09e5424a4f1d162325f908a29880be79240a5585635a8ec09c5",
+        "size": 694,
+        "mtime": 1783223717.3817878
+    },
+    "lib/models/import_selection.dart": {
+        "hash": "83af6a8d102b7d66e39eed857cfad320cf85c81d01118ee48a79d93400a15308",
+        "size": 552,
+        "mtime": 1783223717.3827877
     },
     "lib/models/recurring_transaction.dart": {
-        "hash": "19a0f4e23bcd0c99b7aa15854a404a955980f1a6a303423a31abdd4716f3357a",
-        "size": 3777,
-        "mtime": 1783050394.5453336
+        "hash": "a74f0b3f90b3de49d91bd2407f947e360100b4979d2f4febca0837ee68073140",
+        "size": 3910,
+        "mtime": 1783223717.3827877
     },
     "lib/models/statistics_summary.dart": {
-        "hash": "f8a11b168ce3623621a719cc2cf4f93c93aa3794dce2103325534ec4be5919a7",
-        "size": 1038,
-        "mtime": 1783052778.9883678
+        "hash": "d4f4b75f2a5acf5f31ffb22f8e4a47e9cd53bed0a72524407dd0492a352347a9",
+        "size": 1075,
+        "mtime": 1783223717.3837883
     },
     "lib/models/transaction.dart": {
-        "hash": "9ccdaf2f734dd7baa9b882175da3da81b5c49ca819522173aa861badc5552edc",
-        "size": 2071,
-        "mtime": 1782838890.071321
+        "hash": "7135f2af37340e5cefe853185f22bd6e1a40db4745c5e736bc9c5f32ade1c4e1",
+        "size": 2158,
+        "mtime": 1783223717.3837883
     },
     "lib/repositories/category_repository.dart": {
-        "hash": "028d9e9ed42f6da30a67d3576113a2a1369d1cc263455f4a86044c2d7ce9018f",
-        "size": 1909,
-        "mtime": 1783004600.5172243
+        "hash": "9697901426ebf21eb924708dd635e43af9f2a402386f05d07a740ed4cae4370e",
+        "size": 1973,
+        "mtime": 1783223717.3847873
     },
     "lib/repositories/database_management_repository.dart": {
-        "hash": "4881c7df2ae73c5492b3094e64f441ed6398b8a2b591b05bd2ea615073acf558",
-        "size": 6527,
-        "mtime": 1783065377.0230165
+        "hash": "c0647078a305d269fb3dd284e8398370abc3255e053b185dd29c273b686f5f0b",
+        "size": 8936,
+        "mtime": 1783223717.385787
     },
     "lib/repositories/recurring_repository.dart": {
-        "hash": "d0136f69eb797d53f8eb39830dd73eb99de982741622c09d43a1e11ba8ba1278",
-        "size": 3523,
-        "mtime": 1783064347.2011797
+        "hash": "08196f63b3e8489ea78d7444b6505899cc70d75325d208c1002da348ae14b3a7",
+        "size": 3638,
+        "mtime": 1783223717.3867867
     },
     "lib/repositories/transaction_repository.dart": {
-        "hash": "167b82ae5bc1af316d7eb47931b3abfd711734d4866e652d9f837a3a857a51f8",
-        "size": 1683,
-        "mtime": 1783004403.7225971
+        "hash": "d284545ec6d6307a2edb9a10e6091303346c2f06538e914a205b6c3ecdca6580",
+        "size": 1740,
+        "mtime": 1783223717.3867867
     },
     "lib/routes/app_router.dart": {
-        "hash": "3c0bde655d94277825813660d39040b8df1cc68f3d120314556f71dc472e7a58",
-        "size": 1885,
-        "mtime": 1783061098.4094226
+        "hash": "1734f1ffe9193fe2703548678d5419b396bf3b126073647829338bbcd8b8c8c0",
+        "size": 1931,
+        "mtime": 1783223717.3877883
     },
     "lib/services/recurring_processing_service.dart": {
-        "hash": "97377702280cddd885cc0b3a7fb984b8ce50611c9889e45d2a6287b209ed63f4",
-        "size": 2490,
-        "mtime": 1783064401.5215712
+        "hash": "045ecda3692f1140d8138968b582946b81224f04215b20e8b654666b6f137411",
+        "size": 2575,
+        "mtime": 1783223717.393408
     },
     "lib/services/transaction_service.dart": {
-        "hash": "82b284658369f4564c94ee081b1f776d51196a848bb59ac1b86f9c99a6bf6d61",
-        "size": 777,
-        "mtime": 1783007791.4733055
+        "hash": "44bb8b715261fb67524975a64bbd730ad8f6f699da792d16dfbe61658da3a538",
+        "size": 802,
+        "mtime": 1783223717.394408
     },
     "lib/services/export/android_export_location_service.dart": {
-        "hash": "0cbb1f2c301fa1109d0d812732a885914f3256a1f3331793e556d19e4a1e8b24",
-        "size": 1701,
-        "mtime": 1783140177.3234923
+        "hash": "a1e79972a07b2b3c329f1d008b23845ba624273df2465d51a3d0649b4eb01856",
+        "size": 2013,
+        "mtime": 1783223717.3887887
     },
     "lib/services/export/android_saf_export_service.dart": {
-        "hash": "17b939cf92b0b0ad3bc9c7d9e76571732eb645916c89f4814313f765e7a398b3",
-        "size": 862,
-        "mtime": 1783140812.1593392
+        "hash": "ef28af01b48ee3ca388a1ccaec1e8b41be4ab9193917b978f511ddf4cfb6b50c",
+        "size": 2583,
+        "mtime": 1783223717.3897893
     },
     "lib/services/export/export_preferences.dart": {
         "hash": "acaa159b127db62bf08e3df1e36c8e55346bb433f6e56012d2a94e04acbd9ba0",
         "size": 674,
-        "mtime": 1783134005.5437837
+        "mtime": 1783223717.3914084
     },
     "lib/services/export/export_service.dart": {
-        "hash": "53dfd15d8a3b76ef6f54932ac7bf2f7bf61254dfbd8ef68fc82392215f240207",
-        "size": 3114,
-        "mtime": 1783140671.1659238
+        "hash": "51b55ff249e985a5ab8732834eab390d7531c886b2fff3786e3b708958ae3f80",
+        "size": 4179,
+        "mtime": 1783223717.3914084
+    },
+    "lib/services/import/android_saf_import_service.dart": {
+        "hash": "aae2d0f16c1f56fa2c800a2d7116f346980dade45b547fd6477437dc50cce1af",
+        "size": 1918,
+        "mtime": 1783223717.392408
+    },
+    "lib/services/preferences/preferences_service.dart": {
+        "hash": "b7016ab118761f4b5c87e1edf5701525f3747f8e2a703a722cf536e38108c00a",
+        "size": 973,
+        "mtime": 1783223717.393408
     },
     "lib/shared/widgets/app_bottom_navigation_bar.dart": {
-        "hash": "33ed6ac7feada9ab958e09e4fa365ad8106c2add5f2493ade63b1ff90c33f668",
-        "size": 5996,
-        "mtime": 1783063805.1761687
+        "hash": "3ff7f76e9e9a62136449733a657924cb2e18490475f0bcd59d33eb79be071ed4",
+        "size": 6184,
+        "mtime": 1783223717.395408
     },
     "lib/shared/widgets/app_scaffold.dart": {
-        "hash": "2c7d0e114a5a3995d4ba22cba56840a1d19a5173c448cea51148d66d5ab8f95b",
-        "size": 1281,
-        "mtime": 1783063770.9466147
+        "hash": "9c9234fdbf24335c25a07ff6c27535e95c7fe40bf8c93302d41dc3e1cc8abc60",
+        "size": 1394,
+        "mtime": 1783231029.235845
     },
     "lib/shared/widgets/delete_confirmation_dialog.dart": {
-        "hash": "099fb331dde4313f09ae8ae7a0fdf248a63f221317babb1eeea8a0bc093e5a5d",
-        "size": 659,
-        "mtime": 1783012851.080709
+        "hash": "0546f0cb124f9443b5f7d7b6dee0d4cdbc40357deac30db1a3f5b2d2aa66971a",
+        "size": 682,
+        "mtime": 1783223717.3974078
     },
     "lib/shared/widgets/title_text.dart": {
         "hash": "e1d125e57809b3fefd65e1956e707cc4acc28288236cf6eff36740c5ccb8d07d",
         "size": 522,
-        "mtime": 1782796496.5626142
+        "mtime": 1783223717.3974078
     },
     "linux/.gitignore": {
         "hash": "d7bbeac6ba86e2d94d8ccc63a1a2fbbac5ee7467f52f75c168165412d6ac3b60",
         "size": 19,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3974078
     },
     "linux/CMakeLists.txt": {
         "hash": "0ea29bf4fffc92feda42cde9548f6b732d21681dccdd3be362404a02a619aa17",
         "size": 4905,
-        "mtime": 1782788623.2014341
+        "mtime": 1783223717.3984084
     },
     "linux/flutter/CMakeLists.txt": {
         "hash": "4eb17836308c1cd53f6b2bb8edb3b7b30610bff3b1d9df7fecc9317f9109700c",
         "size": 2903,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.3984084
     },
     "linux/flutter/generated_plugins.cmake": {
         "hash": "e03f251c12778bd5a5d1ae831ce0c8d057bcd94d239a1e4e0f7222075fa0bec7",
         "size": 745,
-        "mtime": 1783005481.8015878
+        "mtime": 1783225715.9184074
     },
     "linux/flutter/generated_plugin_registrant.cc": {
         "hash": "7861b227b10a10cc1d7643f82a246b7db35b503f2d9ff1d3c906136e6c260dce",
         "size": 161,
-        "mtime": 1782788637.4924655
+        "mtime": 1783225715.8934064
     },
     "linux/flutter/generated_plugin_registrant.h": {
         "hash": "00f93bb5b1faefdede8f6065df327522900fb0b8efee86bacf424fd947ed14bb",
         "size": 303,
-        "mtime": 1782788637.4894636
+        "mtime": 1783225715.8734088
     },
     "linux/runner/CMakeLists.txt": {
         "hash": "81ecf2604c50f480c23d460b2ddf653ecd39df29cc5b2fe4913f1a59f008a5a7",
         "size": 1000,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4004087
     },
     "linux/runner/main.cc": {
         "hash": "905b4dfa4eab584c1eb6244899b7d5ef56d0bceaf3bffb5ea335ed7e0ba3c549",
         "size": 186,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4004087
     },
     "linux/runner/my_application.cc": {
         "hash": "c55641786a39ead163e09a127cf06e58e18f539b759e50cf06a75e64eb221f77",
         "size": 5625,
-        "mtime": 1782788623.2745807
+        "mtime": 1783223717.4014084
     },
     "linux/runner/my_application.h": {
         "hash": "880393cb82d7feaaa95d9acd6c2317749afae0e17ea5f5ee44b456bc081b5987",
         "size": 472,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4024081
     },
     "macos/.gitignore": {
         "hash": "236a523a43625a2d63af3cd0f2ce8600a3668846f8cb278c1c7c5cbfd4aa4088",
         "size": 96,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4024081
     },
     "macos/Flutter/Flutter-Debug.xcconfig": {
         "hash": "7e9b3ee3961b7d7718b418ceaed812a5f06a4e4cec894aae712a78e159c32ab0",
         "size": 49,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4024081
     },
     "macos/Flutter/Flutter-Release.xcconfig": {
         "hash": "7e9b3ee3961b7d7718b418ceaed812a5f06a4e4cec894aae712a78e159c32ab0",
         "size": 49,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4034088
     },
     "macos/Flutter/GeneratedPluginRegistrant.swift": {
         "hash": "c639759a87ba31ab2dc1c77c9bcd34dc0aa1628b968c0d622673afd90e224dd0",
         "size": 384,
-        "mtime": 1783134067.5396087
+        "mtime": 1783225716.0924213
     },
     "macos/Flutter/ephemeral/Flutter-Generated.xcconfig": {
         "hash": "e91b0eba8a64ae53d53dc82c2c16a6de2c1ec90ef9c1076783de545ecd7251f7",
         "size": 556,
-        "mtime": 1782788637.370061
+        "mtime": 1783150987.5701425
     },
     "macos/Flutter/ephemeral/flutter_export_environment.sh": {
         "hash": "65d26ec8deafdc40744f8e9f61623b313d26d8978c0449cf77daf0caa81934a8",
         "size": 664,
-        "mtime": 1782788637.3710613
+        "mtime": 1783150987.571144
     },
     "macos/Flutter/ephemeral/flutter_native_integration.env": {
         "hash": "cf677eb267f516d7edb6b7e4752e545988b525591a7c0688b966d72fc567e594",
         "size": 484,
-        "mtime": 1782788637.374061
+        "mtime": 1783150987.5731418
     },
     "macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
         "hash": "4202a72ecc364bbc76f1d4b359c8b432cda76bf29e390f31e2de4065dc8780f8",
         "size": 599,
-        "mtime": 1783137761.9799218
+        "mtime": 1783230934.104645
     },
     "macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources/FlutterGeneratedPluginSwiftPackage/FlutterGeneratedPluginSwiftPackage.swift": {
         "hash": "8518fb048c29925943b03de7f45c9d5232c0b46d2cc97d36f83ff501e1ffb9ba",
         "size": 38,
-        "mtime": 1782788637.5897088
+        "mtime": 1783150988.0581772
     },
     "macos/Runner/AppDelegate.swift": {
         "hash": "5b9cbdcb563ad8578a99b7c283958490e4af537322e9092fe1efbb3c29ab3e1b",
         "size": 324,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4084096
     },
     "macos/Runner/DebugProfile.entitlements": {
         "hash": "b2aa41d03e18907d360b721b7bb3edb302897c8a3de98ec47b6665033fea0b0e",
         "size": 360,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.434577
     },
     "macos/Runner/Info.plist": {
         "hash": "047f9cb0f1122c04589483beaedbbe23492fdc8946b94e09bb13080736af4f93",
         "size": 1092,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4355774
     },
     "macos/Runner/MainFlutterWindow.swift": {
         "hash": "8178ad756f958f986f794a8bb06e321a6630ceaaf8f235b3b4ae3936e415dc7c",
         "size": 403,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4355774
     },
     "macos/Runner/Release.entitlements": {
         "hash": "c3b881c72aa4cca9cf50da6654c4d675dec929056692af46a6fbecd00aef5990",
         "size": 248,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4365873
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png": {
         "hash": "6232e5815af17e25e0268b2fec7aea9e068cc92ec709e9605c2b31df4ff2a313",
         "size": 102994,
-        "mtime": 1782759159.9217477
+        "mtime": 1783223717.410409
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png": {
         "hash": "15591f03f31313af6fd644ed0512106cc04365130b8b73244f1cfa6dddfb4400",
         "size": 5680,
-        "mtime": 1782759159.3579047
+        "mtime": 1783223717.4114082
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png": {
         "hash": "cc6928b5adfc00dbf526192e2705dd9af641cdf20ab4c6c7ca7cd4936dca59f0",
         "size": 520,
-        "mtime": 1782759159.6347263
+        "mtime": 1783223717.4124095
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png": {
         "hash": "416efd77cde932d42ef34168da24dd428a495b1f4f34bbbd125a18d2add186a2",
         "size": 14142,
-        "mtime": 1782759160.2147696
+        "mtime": 1783223717.4124095
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png": {
         "hash": "ae8c4458e41f1e28b1e851ed87d3268d4a0351ceea427fa2a84cc94ddfb6d4c5",
         "size": 1066,
-        "mtime": 1782759159.747735
+        "mtime": 1783223717.4134097
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png": {
         "hash": "0a91c6c1bf242e54ee179e34629e9ef3e8a6d286c0fce01e302280a8be9277e6",
         "size": 36406,
-        "mtime": 1782759159.574721
+        "mtime": 1783223717.4295754
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png": {
         "hash": "6ad229623498e5f1277800db3ab7cb11faf85eb2569e1213f7d8e55003c07b42",
         "size": 2218,
-        "mtime": 1782759159.306901
+        "mtime": 1783223717.4305797
     },
     "macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
         "hash": "992ba63d183dfb8f8e3af38ac203d834d23c004da1417c438b4c5a3d7d1d7103",
         "size": 1359,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4094088
     },
     "macos/Runner/Base.lproj/MainMenu.xib": {
         "hash": "776c35481f6581f14148b90071558b25f6ce6262e771988985e9fe8d3e70a472",
         "size": 24072,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4315772
     },
     "macos/Runner/Configs/AppInfo.xcconfig": {
         "hash": "9673c27df0e35e42e219b0a5414743c521e6ad4b6b98def0856599da33e52115",
         "size": 637,
-        "mtime": 1782788623.624592
+        "mtime": 1783223717.4325755
     },
     "macos/Runner/Configs/Debug.xcconfig": {
         "hash": "86be603022e2a385dd7884fce4cc29255676c3dda579d3d4a56c958bf1e57de0",
         "size": 79,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4335763
     },
     "macos/Runner/Configs/Release.xcconfig": {
         "hash": "d1bf3f0349aadd5c58ee9d46c0ce4ce45467127c438936e9bb481d861d296565",
         "size": 81,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4335763
     },
     "macos/Runner/Configs/Warnings.xcconfig": {
         "hash": "aa8ded4c14068cb05f51f5446509fe56805cf1e29961ad6d5a97233bb0632bc1",
         "size": 593,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.434577
     },
     "macos/Runner.xcodeproj/project.pbxproj": {
         "hash": "0db0489b564d0e5e8fe23616cb880f5037a02514e507b3ae78475bedd04a9602",
         "size": 28723,
-        "mtime": 1782788623.3642163
+        "mtime": 1783223717.4044087
     },
     "macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
         "hash": "d557c2c32fc6258ec28981fa45dc847b76c9968beb90a2e26d13ef9c4ea45c30",
         "size": 246,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.40541
     },
     "macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme": {
         "hash": "2270aa136ac69094c362a4789a259124b4306edb051e1ffc7e26791f6a089017",
         "size": 4742,
-        "mtime": 1782788623.3952186
+        "mtime": 1783223717.40741
     },
     "macos/Runner.xcworkspace/contents.xcworkspacedata": {
         "hash": "706a4c812f2a1e220e6785c27580020d58048e2ae4d30d1280f3c43344ce6b38",
         "size": 159,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.40741
     },
     "macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
         "hash": "d557c2c32fc6258ec28981fa45dc847b76c9968beb90a2e26d13ef9c4ea45c30",
         "size": 246,
-        "mtime": 1782758830.0
+        "mtime": 1783223717.4084096
     },
     "macos/RunnerTests/RunnerTests.swift": {
         "hash": "8a0ff977c64ceac0750fffa48087988b7b4125d1b1c49019221e7fffb574423e",
         "size": 302,
-        "mtime": 1782788623.77292
+        "mtime": 1783223717.4375794
     },
     "web/favicon.png": {
         "hash": "7ab2525f4b86b65d3e4c70358a17e5a1aaf6f437f99cbcc046dad73d59bb9015",
         "size": 917,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.442577
     },
     "web/index.html": {
         "hash": "756133f866c7046d969b7056a5a81fbd2b0c2fc7ef18cc0cc59c7e33835bb008",
         "size": 1589,
-        "mtime": 1782788623.8990858
+        "mtime": 1783223717.4467885
     },
     "web/manifest.json": {
         "hash": "ef0511376b17fa283220e71420c17c86b14f2593e204698f69014f6a7bc61d1a",
         "size": 969,
-        "mtime": 1782788623.9140878
+        "mtime": 1783223717.4467885
     },
     "web/icons/Icon-192.png": {
         "hash": "3dce99077602f70421c1c6b2a240bc9b83d64d86681d45f2154143310c980be3",
         "size": 5292,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.443589
     },
     "web/icons/Icon-512.png": {
         "hash": "baccb205ae45f0b421be1657259b4943ac40c95094ab877f3bcbe12cd544dcbe",
         "size": 8252,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.444579
     },
     "web/icons/Icon-maskable-192.png": {
         "hash": "d2c842e22a9f4ec9d996b23373a905c88d9a203b220c5c151885ad621f974b5c",
         "size": 5594,
-        "mtime": 1782759166.979288
+        "mtime": 1783223717.444579
     },
     "web/icons/Icon-maskable-512.png": {
         "hash": "6aee06cdcab6b2aef74b1734c4778f4421d2da100b0ff9e52b21b55240202929",
         "size": 20998,
-        "mtime": 1782759166.9702866
+        "mtime": 1783223717.4467885
     },
     "windows/.gitignore": {
         "hash": "955e3110cb16494ee76e1cd5df47e2c212309eb94a49a123fe87f718de413cb8",
         "size": 308,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4599948
     },
     "windows/CMakeLists.txt": {
         "hash": "4feacc9e9ff5d17e78df723923d8d2cc8964273fb351220fb30d1621135c165f",
         "size": 4282,
-        "mtime": 1782788623.9616811
+        "mtime": 1783223717.4599948
     },
     "windows/flutter/CMakeLists.txt": {
         "hash": "bd05e3268b2f246bcbafdb778165fe67a7bafdba04eb73599502563a67b8ae7e",
         "size": 3851,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4610057
     },
     "windows/flutter/generated_plugins.cmake": {
         "hash": "3f02c11f2d7c72d742dd5b3871def3dc815f3ab70615d4a3293e15e7b45eb0e7",
         "size": 749,
-        "mtime": 1783094763.6319046
+        "mtime": 1783225716.0134144
     },
     "windows/flutter/generated_plugin_registrant.cc": {
         "hash": "82e02567f2faf5e732dc92a2fb0d01104f7ba8c48973f8cfd41a860b4fac3f3b",
         "size": 164,
-        "mtime": 1783094763.6289034
+        "mtime": 1783225715.9684124
     },
     "windows/flutter/generated_plugin_registrant.h": {
         "hash": "dbc11635d7b1ba1887adf40df5b83d634e9c3ab0bee34510c71528bb4d73602a",
         "size": 302,
-        "mtime": 1782788637.5004647
+        "mtime": 1783225715.9394102
     },
     "windows/runner/CMakeLists.txt": {
         "hash": "d765fdd05f63ad099e585a2cced0cbff13ec3229b7de68c8681b2107db850089",
         "size": 1836,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4629946
     },
     "windows/runner/flutter_window.cpp": {
         "hash": "d615eedc06ae37321e59c2c00c7687d1887dcd97904eb7225fafd8dcb5b83da6",
         "size": 2193,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4640083
     },
     "windows/runner/flutter_window.h": {
         "hash": "0252b804f5da380c7709cbe1daff2b8d18daf6c49d7e6dd43e5af3c99c19f56c",
         "size": 961,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4650059
     },
     "windows/runner/main.cpp": {
         "hash": "1921085aa3257737a1526c3c6ca5cfe06a034defdec452b6b7f7fda04a38749b",
         "size": 1315,
-        "mtime": 1782788624.0620575
+        "mtime": 1783223717.465995
     },
     "windows/runner/resource.h": {
         "hash": "d0e8bf7835468b4b6b1f8f0747f2e8f25c19841f2df2ac60aaa584ddae3aa7c6",
         "size": 448,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.465995
     },
     "windows/runner/runner.exe.manifest": {
         "hash": "639a56233fcd8cbcb8bbefcd93e4680ec2664f32d9acfb3d2ec1d8726a96e090",
         "size": 616,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4806027
     },
     "windows/runner/Runner.rc": {
         "hash": "5974abfdc461dee2aaadc2debe3f912b2d0e0104abe1d64c2ba569e15bfbeb8a",
         "size": 3194,
-        "mtime": 1782788624.0164368
+        "mtime": 1783223717.4640083
     },
     "windows/runner/utils.cpp": {
         "hash": "a128b67b9f3c2579e2ecef5b0dde2c33f222a097cdfe5da2a3067c73d1485b39",
         "size": 2237,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.481603
     },
     "windows/runner/utils.h": {
         "hash": "832e246b6758253f89016fb0374b30791242e97ad950d27fc678b3d9feacfdc4",
         "size": 691,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4826033
     },
     "windows/runner/win32_window.cpp": {
         "hash": "4e4f4dcf8e86ea6e097562cb3476039e693449bd8045367538afee579c017511",
         "size": 8822,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.483603
     },
     "windows/runner/win32_window.h": {
         "hash": "d154cf89ba85f820631a9b5bedacbe64fc5815e428fe6bc5da579ce649f69841",
         "size": 3624,
-        "mtime": 1782758832.0
+        "mtime": 1783223717.4846041
     },
     "windows/runner/resources/app_icon.ico": {
         "hash": "c098d3fc85cacff98b8e69811b48e9f0d852fcee278132d794411d978869cbf8",
         "size": 33772,
-        "mtime": 1782759167.2003043
+        "mtime": 1783223717.4669957
     }
 }

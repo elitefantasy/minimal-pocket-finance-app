@@ -15,6 +15,10 @@ class TransactionService {
     await _transactionRepository.insert(transaction);
   }
 
+  Future<void> restoreDeletedTransaction(Transaction transaction) {
+    return _transactionRepository.restore(transaction);
+  }
+
   Future<void> updateTransaction(Transaction transaction) {
     return _transactionRepository.update(transaction);
   }

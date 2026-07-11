@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/features/about/presentation/screens/about_screen.dart';
 import 'package:akm_finance_manager/features/categories/presentation/screens/category_screen.dart';
 import 'package:akm_finance_manager/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/screens/data_management_screen.dart';
@@ -42,5 +43,6 @@ final appRouter = GoRouter(
       path: '/data',
       builder: (context, state) => const DataManagementScreen(),
     ),
+    GoRoute(path: '/about', builder: (context, state) => const AboutScreen()),
   ],
 );

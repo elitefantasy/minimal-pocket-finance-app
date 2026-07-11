@@ -32,11 +32,11 @@ class RecurringProcessingService {
   Future<int> _processRecurring(
     RecurringTransaction recurring,
     DateTime today,
-    DateTime updatedAt,
+    DateTime generatedAt,
   ) async {
     final lastProcessedDate = recurring.lastProcessedDate;
     var month = lastProcessedDate == null
-        ? DateTime(recurring.createdAt.year, recurring.createdAt.month)
+        ? DateTime(recurring.startDate.year, recurring.startDate.month)
         : _nextMonth(lastProcessedDate);
     var generatedCount = 0;
 
@@ -56,12 +56,14 @@ class RecurringProcessingService {
         category: recurring.category,
         note: recurring.note,
         date: scheduledDate,
+        recurringTransactionId: recurring.id,
+        generatedAt: generatedAt,
       );
       final inserted = await _recurringRepository.insertOccurrence(
         recurringId: recurring.id!,
         transaction: generated,
         processedDate: scheduledDate,
-        updatedAt: updatedAt,
+        updatedAt: generatedAt,
       );
       if (inserted) {
         generatedCount++;

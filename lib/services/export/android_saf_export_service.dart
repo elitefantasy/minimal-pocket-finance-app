@@ -58,7 +58,7 @@ class AndroidSafExportService {
 
     // Create:
     //
-    // AKM Finance Manager/
+    // Minimal Pocket Finance/
     //     Database/
     //
     final destinationFolder = await _safUtil.mkdirp(
@@ -80,7 +80,8 @@ class AndroidSafExportService {
     // Return exported filename.
     return ExportResult(
       fileName: path.basename(sourcePath),
-      relativePath: '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}'
+      relativePath: 
+	      '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}'
       );
   }
 }

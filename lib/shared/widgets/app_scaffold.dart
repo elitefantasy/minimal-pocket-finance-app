@@ -18,7 +18,8 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentPath = GoRouterState.of(context).uri.path;
+    // final currentPath = GoRouterState.of(context).uri.path;
+    final currentPath = GoRouter.of(context).state.uri.path;
     final isSecondary =
         currentPath != '/' &&
         currentPath != '/add' &&

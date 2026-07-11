@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/categories/widgets/category_tile.dart';
 import 'package:akm_finance_manager/models/category.dart';
@@ -146,9 +147,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ref.read(appSnackbarProvider).showInfo(message);
   }
 
   @override

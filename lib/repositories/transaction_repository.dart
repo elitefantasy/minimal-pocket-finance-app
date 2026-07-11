@@ -1,6 +1,6 @@
 import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
-import 'package:sqflite/sqflite.dart' show Database;
+import 'package:sqflite/sqflite.dart' show ConflictAlgorithm, Database;
 
 /// Provides persistence operations for financial transactions.
 class TransactionRepository {
@@ -13,6 +13,23 @@ class TransactionRepository {
   Future<int> insert(Transaction transaction) async {
     final Database database = await _databaseHelper.database;
     return database.insert(_tableName, transaction.toMap());
+  }
+
+  Future<void> restore(Transaction transaction) async {
+    if (transaction.id == null) {
+      throw ArgumentError.value(
+        transaction,
+        'transaction',
+        'The transaction must have an ID before it can be restored.',
+      );
+    }
+
+    final Database database = await _databaseHelper.database;
+    await database.insert(
+      _tableName,
+      transaction.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.abort,
+    );
   }
 
   Future<List<Transaction>> getAll() async {

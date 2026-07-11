@@ -72,6 +72,7 @@ class _RecurringTransactionDialogState
             isEnabled: _isEnabled,
             lastProcessedDate: null,
             createdAt: now,
+            startDate: now,
             updatedAt: now,
           )
         : existing.copyWith(
