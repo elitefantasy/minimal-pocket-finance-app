@@ -42,8 +42,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     _dayOfMonthController.dispose();
     super.dispose();
   }
-
+  
+  
   Future<void> _saveTransaction(String type) async {
+    final wasRecurring = _repeatMonthly;
     if (_isSaving || !(_formKey.currentState?.validate() ?? false)) {
       return;
     }
@@ -51,7 +53,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     setState(() => _isSaving = true);
 
     try {
-      if (_repeatMonthly) {
+      if (wasRecurring) {
 		  final now = DateTime.now();
 		  final recurring = RecurringTransaction(
 			type: type,
@@ -106,7 +108,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         _selectedDate = DateTime.now();
         _repeatMonthly = false;
       });
-      if (_repeatMonthly) {
+      if (wasRecurring) {
 		  ref.read(appSnackbarProvider).showSuccess(
 			'Recurring transaction created.',
 		  );
@@ -133,6 +135,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoryNotifierProvider);
+	
 
     return AppScaffold(
       title: 'Add Transaction',
@@ -173,7 +176,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                 title: const Text('Repeat monthly'),
                 value: _repeatMonthly,
                 onChanged: (value) {
-                  setState(() => _repeatMonthly = value);
+                  setState(() => _repeatMonthly = value );
                 },
               ),
 

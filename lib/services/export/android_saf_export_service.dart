@@ -80,7 +80,8 @@ class AndroidSafExportService {
     // Return exported filename.
     return ExportResult(
       fileName: path.basename(sourcePath),
-      relativePath: '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}'
+      relativePath: 
+	      '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}'
       );
   }
 }

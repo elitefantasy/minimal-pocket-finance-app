@@ -1,9 +1,10 @@
 import 'package:akm_finance_manager/core/constants/app_constants.dart';
 import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
-import 'package:flutter/material.dart';\
+import 'package:flutter/material.dart';
 import 'package:akm_finance_manager/app/providers.dart';
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
@@ -112,7 +113,6 @@ class AboutScreen extends ConsumerWidget {
 							.showError('Unable to open GitHub.');
 					  }
 					},
-				  },
 				)
               ],
             ),
