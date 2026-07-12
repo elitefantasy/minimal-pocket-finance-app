@@ -12,6 +12,7 @@ import 'package:akm_finance_manager/models/recurring_transaction.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/date_picker_field.dart';
+import 'package:akm_finance_manager/features/transactions/application/selected_transaction_date_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
   String? _selectedCategory;
   bool _repeatMonthly = false;
-  DateTime _selectedDate = DateTime.now();
   bool _isSaving = false;
 
   @override
@@ -64,7 +64,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 			isEnabled: true,
 			lastProcessedDate: null,
 			createdAt: now,
-			startDate: _selectedDate,
+			startDate: selectedDate,
 			updatedAt: now,
 		  );
 
@@ -91,7 +91,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 			amount: double.parse(_amountController.text.trim()),
 			category: _selectedCategory!,
 			note: _noteController.text.trim(),
-			date: _selectedDate,
+			date: selectedDate,
 		  );
 
 		  await ref.read(transactionNotifierProvider.notifier).add(transaction);
@@ -105,7 +105,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       _dayOfMonthController.clear();
 
       setState(() {
-        _selectedDate = DateTime.now();
         _repeatMonthly = false;
       });
       if (wasRecurring) {
@@ -136,6 +135,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoryNotifierProvider);
 	
+	final selectedDate = ref.watch(selectedTransactionDateProvider);
+	
 
     return AppScaffold(
       title: 'Add Transaction',
@@ -162,13 +163,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               const SizedBox(height: 16),
 
               DatePickerField(
-                selectedDate: _selectedDate,
-                onDateChanged: (date) {
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                },
-              ),
+				  selectedDate: selectedDate,
+				  onDateChanged: (date) {
+					ref
+						.read(selectedTransactionDateProvider.notifier)
+						.setDate(date);
+				  },
+				),
 
               const SizedBox(height: 8),
               SwitchListTile(
