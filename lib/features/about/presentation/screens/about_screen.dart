@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:akm_finance_manager/app/providers.dart';
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:akm_finance_manager/core/utils/package_info_provider.dart';
 
 class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
@@ -12,6 +13,7 @@ class AboutScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+	final packageInfoAsync = ref.watch(packageInfoProvider); 
 
     return AppScaffold(
       title: 'About',
@@ -36,14 +38,31 @@ class AboutScreen extends ConsumerWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    'Version ${AppConstants.appVersion} '
-                    '\u2022 Database v${DatabaseHelper.databaseVersion}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  packageInfoAsync.when(
+					  loading: () => Text(
+						'Loading version...',
+						style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+						  color: colorScheme.onSurfaceVariant,
+						),
+						textAlign: TextAlign.center,
+					  ),
+					  error: (_, __) => Text(
+						'Version Unknown '
+						'\u2022 Database v${DatabaseHelper.databaseVersion}',
+						style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+						  color: colorScheme.onSurfaceVariant,
+						),
+						textAlign: TextAlign.center,
+					  ),
+					  data: (packageInfo) => Text(
+						'Version ${packageInfo.version} '
+						'\u2022 Database v${DatabaseHelper.databaseVersion}',
+						style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+						  color: colorScheme.onSurfaceVariant,
+						),
+						textAlign: TextAlign.center,
+					  ),
+					),
                 ],
               ),
             ),

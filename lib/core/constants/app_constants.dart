@@ -3,8 +3,6 @@ class AppConstants {
 
   static const String appName = 'Minimal Pocket Finance';
 
-  static const String appVersion = '1.0.0';
-
   static const String creatorCredit = 'Created by Anil Maurya (elitefantasy)';
 
   static const String githubUrl =
