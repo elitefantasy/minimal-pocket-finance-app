@@ -7,7 +7,6 @@ import 'package:akm_finance_manager/services/export/android_saf_export_service.d
 import 'package:akm_finance_manager/core/constants/app_constants.dart';
 import 'package:akm_finance_manager/models/export_result.dart';
 
-
 /// Resolves the platform's public Downloads directory.
 ///
 /// This boundary can later be replaced by an Android SAF implementation
@@ -29,17 +28,13 @@ class PathProviderExportDestinationResolver
         return downloads;
       }
 
-      throw const ExportException(
-        'Public Downloads folder not found.',
-      );
+      throw const ExportException('Public Downloads folder not found.');
     }
 
     final directory = await path_provider.getDownloadsDirectory();
 
     if (directory == null) {
-      throw const ExportException(
-        'Downloads directory not found.',
-      );
+      throw const ExportException('Downloads directory not found.');
     }
 
     return directory;
@@ -51,15 +46,12 @@ class ExportService {
   ExportService({
     ExportDestinationResolver? destinationResolver,
     AndroidSafExportService? androidSafExportService,
-  })  : _destinationResolver =
-            destinationResolver ??
-            const PathProviderExportDestinationResolver(),
-        _androidSafExportService =
-            androidSafExportService ??
-            AndroidSafExportService();
+  }) : _destinationResolver =
+           destinationResolver ?? const PathProviderExportDestinationResolver(),
+       _androidSafExportService =
+           androidSafExportService ?? AndroidSafExportService();
 
-  static const String _applicationFolder =
-      AppConstants.appName;
+  static const String _applicationFolder = AppConstants.appName;
 
   final ExportDestinationResolver _destinationResolver;
 
@@ -73,9 +65,7 @@ class ExportService {
     final source = File(sourcePath);
 
     if (!await source.exists()) {
-      throw ExportException(
-        'The source file does not exist: $sourcePath',
-      );
+      throw ExportException('The source file does not exist: $sourcePath');
     }
 
     try {
@@ -88,37 +78,29 @@ class ExportService {
       }
 
       // Desktop platforms.
-      final downloadsDirectory =
-          await _destinationResolver.getDownloadsDirectory();
+      final downloadsDirectory = await _destinationResolver
+          .getDownloadsDirectory();
 
       final destinationDirectory = Directory(
-        path.join(
-          downloadsDirectory.path,
-          _applicationFolder,
-          artifactFolder,
-        ),
+        path.join(downloadsDirectory.path, _applicationFolder, artifactFolder),
       );
 
-      await destinationDirectory.create(
-        recursive: true,
-      );
+      await destinationDirectory.create(recursive: true);
 
       final destinationPath = path.join(
         destinationDirectory.path,
         path.basename(sourcePath),
       );
 
-      final exportedFile = await source.copy(
-        destinationPath,
-      );
+      final exportedFile = await source.copy(destinationPath);
 
       // Desktop return
       return ExportResult(
         fileName: path.basename(sourcePath),
-        relativePath: '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}',
+        relativePath:
+            '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}',
         absolutePath: exportedFile.absolute.path,
-        );
-        
+      );
     } on ExportException {
       rethrow;
     } on FileSystemException catch (error) {

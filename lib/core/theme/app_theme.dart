@@ -9,9 +9,7 @@ class AppTheme {
       colorSchemeSeed: Colors.blue,
       brightness: Brightness.light,
 
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
-      ),
+      appBarTheme: const AppBarTheme(centerTitle: true),
     );
   }
 }

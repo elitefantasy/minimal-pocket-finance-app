@@ -7,9 +7,8 @@ import 'package:akm_finance_manager/services/export/export_preferences.dart';
 class AndroidExportLocationService {
   // SAF helper
   final SafUtil _saf = SafUtil();
-  AndroidExportLocationService({
-    ExportPreferences? preferences,
-  }) : _preferences = preferences ?? ExportPreferences();
+  AndroidExportLocationService({ExportPreferences? preferences})
+    : _preferences = preferences ?? ExportPreferences();
 
   final ExportPreferences _preferences;
 

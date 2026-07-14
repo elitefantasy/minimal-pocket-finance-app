@@ -8,8 +8,7 @@ import 'package:akm_finance_manager/services/export/export_service.dart';
 import 'package:akm_finance_manager/services/url_launcher_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final urlLauncherServiceProvider =
-    Provider<UrlLauncherService>((ref) {
+final urlLauncherServiceProvider = Provider<UrlLauncherService>((ref) {
   return const UrlLauncherService();
 });
 

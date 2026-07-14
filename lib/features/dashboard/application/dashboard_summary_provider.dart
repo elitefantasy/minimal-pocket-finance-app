@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final dashboardSummaryProvider = Provider<AsyncValue<DashboardSummary>>((ref) {
   final transactionsAsync = ref.watch(transactionNotifierProvider);
-  ref.watch(categoryNotifierProvider);
 
   return transactionsAsync.whenData((transactions) {
     final income = transactions
@@ -27,6 +26,27 @@ final dashboardSummaryProvider = Provider<AsyncValue<DashboardSummary>>((ref) {
               transaction.date.month == now.month,
         )
         .fold<double>(0, (total, transaction) => total + transaction.amount);
+
+    // Group expenses by calendar month.
+    final monthlyExpenses = <(int, int), double>{};
+
+    for (final transaction in expenseTransactions) {
+      final key = (transaction.date.year, transaction.date.month);
+
+      monthlyExpenses.update(
+        key,
+        (value) => value + transaction.amount,
+        ifAbsent: () => transaction.amount,
+      );
+    }
+
+    final averageMonthlyExpense = monthlyExpenses.isEmpty
+        ? 0.0
+        : monthlyExpenses.values.fold<double>(
+                0,
+                (total, amount) => total + amount,
+              ) /
+              monthlyExpenses.length;
 
     final categoryTotals = <String, _CategoryExpense>{};
     for (final transaction in expenseTransactions) {
@@ -61,6 +81,7 @@ final dashboardSummaryProvider = Provider<AsyncValue<DashboardSummary>>((ref) {
       income: income,
       expense: expense,
       currentMonthExpense: currentMonthExpense,
+      averageMonthlyExpense: averageMonthlyExpense,
       recentTransactions: recentTransactions.take(5).toList(growable: false),
       topCategories: topCategories.take(5).toList(growable: false),
     );

@@ -7,6 +7,7 @@ class DashboardSummary {
     required this.income,
     required this.expense,
     required this.currentMonthExpense,
+    required this.averageMonthlyExpense,
     required List<Transaction> recentTransactions,
     required List<TopCategorySummary> topCategories,
   }) : recentTransactions = List<Transaction>.unmodifiable(recentTransactions),
@@ -16,6 +17,9 @@ class DashboardSummary {
   final double income;
   final double expense;
   final double currentMonthExpense;
+
+  /// Average expense across all months that contain expense transactions.
+  final double averageMonthlyExpense;
   final List<Transaction> recentTransactions;
   final List<TopCategorySummary> topCategories;
 }

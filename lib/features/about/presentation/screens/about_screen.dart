@@ -13,7 +13,7 @@ class AboutScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-	final packageInfoAsync = ref.watch(packageInfoProvider); 
+    final packageInfoAsync = ref.watch(packageInfoProvider);
 
     return AppScaffold(
       title: 'About',
@@ -39,30 +39,30 @@ class AboutScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   packageInfoAsync.when(
-					  loading: () => Text(
-						'Loading version...',
-						style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-						  color: colorScheme.onSurfaceVariant,
-						),
-						textAlign: TextAlign.center,
-					  ),
-					  error: (_, __) => Text(
-						'Version Unknown '
-						'\u2022 Database v${DatabaseHelper.databaseVersion}',
-						style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-						  color: colorScheme.onSurfaceVariant,
-						),
-						textAlign: TextAlign.center,
-					  ),
-					  data: (packageInfo) => Text(
-						'Version ${packageInfo.version} '
-						'\u2022 Database v${DatabaseHelper.databaseVersion}',
-						style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-						  color: colorScheme.onSurfaceVariant,
-						),
-						textAlign: TextAlign.center,
-					  ),
-					),
+                    loading: () => Text(
+                      'Loading version...',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    error: (_, __) => Text(
+                      'Version Unknown '
+                      '\u2022 Database v${DatabaseHelper.databaseVersion}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    data: (packageInfo) => Text(
+                      'Version ${packageInfo.version} '
+                      '\u2022 Database v${DatabaseHelper.databaseVersion}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -113,26 +113,25 @@ class AboutScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(AppConstants.creatorCredit),
-                const SizedBox(height: 8),                
-				ListTile(
-				  contentPadding: EdgeInsets.zero,
-				  leading: const Icon(Icons.code),
-				  title: const Text('GitHub'),
-				  subtitle: const Text(AppConstants.githubUrl,
-				  ),
-				  trailing: const Icon(Icons.open_in_new),
-				  onTap: () async {
-					  final opened = await ref
-						  .read(urlLauncherServiceProvider)
-						  .openUrl(AppConstants.githubUrl);
+                const SizedBox(height: 8),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.code),
+                  title: const Text('GitHub'),
+                  subtitle: const Text(AppConstants.githubUrl),
+                  trailing: const Icon(Icons.open_in_new),
+                  onTap: () async {
+                    final opened = await ref
+                        .read(urlLauncherServiceProvider)
+                        .openUrl(AppConstants.githubUrl);
 
-					  if (!opened && context.mounted) {
-						ref
-							.read(appSnackbarProvider)
-							.showError('Unable to open GitHub.');
-					  }
-					},
-				)
+                    if (!opened && context.mounted) {
+                      ref
+                          .read(appSnackbarProvider)
+                          .showError('Unable to open GitHub.');
+                    }
+                  },
+                ),
               ],
             ),
           ),

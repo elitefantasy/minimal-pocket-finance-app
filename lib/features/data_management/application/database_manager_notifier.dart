@@ -4,7 +4,6 @@ import 'package:akm_finance_manager/features/recurring/application/recurring_not
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/export_result.dart';
 
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DatabaseManagerState {
@@ -89,14 +88,10 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
     return location;
   }
 
-  Future<String?> importDatabase({
-    required bool replace,
-  }) async {
+  Future<String?> importDatabase({required bool replace}) async {
     final databaseName = await ref
         .read(databaseManagementRepositoryProvider)
-        .importDatabase(
-          replace: replace,
-        );
+        .importDatabase(replace: replace);
 
     if (databaseName == null) {
       // User cancelled the picker.

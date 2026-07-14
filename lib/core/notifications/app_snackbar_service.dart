@@ -34,18 +34,37 @@ class AppSnackbarService {
     required SnackbarUndoCallback onUndo,
     Duration duration = const Duration(seconds: 5),
   }) {
-    _show(
-      message: message,
-      duration: duration,
-      action: SnackBarAction(
-        label: 'UNDO',
-        onPressed: () async {
-          try {
-            await onUndo();
-          } on Object catch (error) {
-            showError('Unable to undo: $error');
-          }
-        },
+    final messenger = messengerKey.currentState;
+    if (messenger == null) {
+      return;
+    }
+
+    messenger.clearSnackBars();
+
+    messenger.showSnackBar(
+      SnackBar(
+        duration: duration,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Theme.of(
+          messenger.context,
+        ).snackBarTheme.backgroundColor,
+        content: Row(
+          children: <Widget>[
+            Expanded(child: Text(message)),
+            TextButton(
+              onPressed: () async {
+                messenger.hideCurrentSnackBar();
+
+                try {
+                  await onUndo();
+                } on Object catch (error) {
+                  showError('Unable to undo: $error');
+                }
+              },
+              child: const Text('UNDO'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -54,7 +73,6 @@ class AppSnackbarService {
     required String message,
     Duration? duration,
     Color? backgroundColor,
-    SnackBarAction? action,
   }) {
     final messenger = messengerKey.currentState;
     if (messenger == null) {
@@ -69,7 +87,6 @@ class AppSnackbarService {
         duration: duration ?? const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         backgroundColor: backgroundColor,
-        action: action,
       ),
     );
   }

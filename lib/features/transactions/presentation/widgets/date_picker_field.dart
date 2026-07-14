@@ -34,9 +34,7 @@ class DatePickerField extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: () => _pickDate(context),
       icon: const Icon(Icons.calendar_today_outlined),
-      label: Text(
-        DateFormat('dd MMM yyyy').format(selectedDate),
-      ),
+      label: Text(DateFormat('dd MMM yyyy').format(selectedDate)),
     );
   }
 }

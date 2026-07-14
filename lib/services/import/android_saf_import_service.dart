@@ -18,11 +18,9 @@ import 'package:akm_finance_manager/models/import_selection.dart';
 /// Validation and database replacement are handled
 /// by DatabaseManagementRepository.
 class AndroidSafImportService {
-  AndroidSafImportService({
-    SafUtil? safUtil,
-    SafStream? safStream,
-  }) : _safUtil = safUtil ?? SafUtil(),
-       _safStream = safStream ?? SafStream();
+  AndroidSafImportService({SafUtil? safUtil, SafStream? safStream})
+    : _safUtil = safUtil ?? SafUtil(),
+      _safStream = safStream ?? SafStream();
 
   final SafUtil _safUtil;
   final SafStream _safStream;
@@ -47,10 +45,7 @@ class AndroidSafImportService {
     // Preserve the original filename when possible.
     final fileName = file.name.isEmpty ? 'import.db' : file.name;
 
-    final localPath = path.join(
-      tempDirectory.path,
-      fileName,
-    );
+    final localPath = path.join(tempDirectory.path, fileName);
 
     // Remove any previous temporary copy.
     final localFile = File(localPath);
@@ -60,10 +55,7 @@ class AndroidSafImportService {
     }
 
     // Copy the selected SAF file into app storage.
-    await _safStream.copyToLocalFile(
-      file.uri,
-      localPath,
-    );
+    await _safStream.copyToLocalFile(file.uri, localPath);
 
     return ImportSelection(localPath: localPath, databaseName: fileName);
   }

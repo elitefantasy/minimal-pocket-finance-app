@@ -1,6 +1,3 @@
-Here is your code properly formatted according to official Dart style guidelines. The imports have been organized, formatting indentations cleaned up, and detailed comments added to explain the components, state initialization, and asynchronous safety guards.
-
-```dart
 // Flutter imports
 import 'package:flutter/material.dart';
 
@@ -170,23 +167,16 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                     return SizeTransition(
                       sizeFactor: animation,
                       axisAlignment: -1,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
+                      child: FadeTransition(opacity: animation, child: child),
                     );
                   },
                   child: _showNoteField
                       ? Padding(
                           key: const ValueKey('note_field'),
                           padding: const EdgeInsets.only(top: 8),
-                          child: NoteField(
-                            controller: _noteController,
-                          ),
+                          child: NoteField(controller: _noteController),
                         )
-                      : const SizedBox(
-                          key: ValueKey('empty_note'),
-                        ),
+                      : const SizedBox(key: ValueKey('empty_note')),
                 ),
                 const SizedBox(height: 16),
 
@@ -214,5 +204,3 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     );
   }
 }
-
-```

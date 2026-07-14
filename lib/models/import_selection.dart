@@ -5,10 +5,7 @@
 /// and copying the file into temporary storage.
 /// It should not decide how the repository uses it.
 class ImportSelection {
-  const ImportSelection({
-    required this.localPath,
-    required this.databaseName,
-  });
+  const ImportSelection({required this.localPath, required this.databaseName});
 
   /// Temporary local file path.
   final String localPath;

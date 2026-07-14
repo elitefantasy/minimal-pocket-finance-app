@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class MonthlyExpenseCard extends StatelessWidget {
   const MonthlyExpenseCard({
     super.key,
+    required this.title,
     required this.amount,
   });
 
   final String amount;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +18,11 @@ class MonthlyExpenseCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Current Month Expense',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
 
             const SizedBox(height: 12),
 
-            Text(
-              amount,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(amount, style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
       ),

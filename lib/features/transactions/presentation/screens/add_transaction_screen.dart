@@ -27,7 +27,7 @@ import 'package:akm_finance_manager/features/transactions/presentation/widgets/d
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/transaction_type_buttons.dart';
 
-/// Screen allowing users to input and create either standard or recurring 
+/// Screen allowing users to input and create either standard or recurring
 /// income and expense transactions.
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({super.key});
@@ -59,7 +59,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     super.dispose();
   }
 
-  /// Validates input values and saves either a standard or recurring 
+  /// Validates input values and saves either a standard or recurring
   /// transaction to the local storage/state.
   Future<void> _saveTransaction(String type) async {
     final wasRecurring = _repeatMonthly;
@@ -135,7 +135,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       });
 
       // Show success notification banner
-      ref.read(appSnackbarProvider).showSuccess(
+      ref
+          .read(appSnackbarProvider)
+          .showSuccess(
             wasRecurring
                 ? 'Recurring transaction created.'
                 : 'Transaction added.',
@@ -208,23 +210,16 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   return SizeTransition(
                     sizeFactor: animation,
                     axisAlignment: -1,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
+                    child: FadeTransition(opacity: animation, child: child),
                   );
                 },
                 child: _showNoteField
                     ? Padding(
                         key: const ValueKey('note_field'),
                         padding: const EdgeInsets.only(top: 8),
-                        child: NoteField(
-                          controller: _noteController,
-                        ),
+                        child: NoteField(controller: _noteController),
                       )
-                    : const SizedBox(
-                        key: ValueKey('empty_note'),
-                      ),
+                    : const SizedBox(key: ValueKey('empty_note')),
               ),
               const SizedBox(height: 16),
 

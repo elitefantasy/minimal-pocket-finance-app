@@ -66,7 +66,14 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 MonthlyExpenseCard(
+                  title: 'Current Month Expense',
                   amount: '₹${summary.currentMonthExpense.toStringAsFixed(0)}',
+                ),
+                const SizedBox(height: 16),
+                MonthlyExpenseCard(
+                  title: 'Monthly Average',
+                  amount:
+                      '₹${summary.averageMonthlyExpense.toStringAsFixed(0)}',
                 ),
                 const SizedBox(height: 16),
 

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SummaryCard extends StatelessWidget {
-  const SummaryCard({
-    super.key,
-    required this.title,
-    required this.value,
-  });
+  const SummaryCard({super.key, required this.title, required this.value});
 
   final String title;
   final String value;
@@ -17,19 +13,11 @@ class SummaryCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
+            Text(title, style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
           ],
         ),
