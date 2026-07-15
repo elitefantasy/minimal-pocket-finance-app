@@ -1,4 +1,6 @@
 import 'package:akm_finance_manager/models/statistics_summary.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class StatisticsSummaryCard extends StatelessWidget {
@@ -19,24 +21,25 @@ class StatisticsSummaryCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'Overall Summary',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
+            Text('Overall Summary', style: context.text.titleLarge),
+            const SizedBox(height: AppSpacing.md),
             ...values.map(
               (value) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppSpacing.compact,
+                ),
                 child: Row(
                   children: <Widget>[
                     Expanded(child: Text(value.$1)),
                     Text(
                       value.$2,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: context.text.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),

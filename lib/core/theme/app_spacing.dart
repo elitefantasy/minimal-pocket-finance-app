@@ -3,6 +3,7 @@ abstract final class AppSpacing {
   static const double none = 0;
   static const double xxs = 2;
   static const double xs = 4;
+  static const double compact = 6;
   static const double sm = 8;
   static const double md = 12;
   static const double lg = 16;
@@ -11,4 +12,5 @@ abstract final class AppSpacing {
   static const double xxxl = 48;
   static const double page = xl;
   static const double section = xxl;
+  static const double card = 20;
 }

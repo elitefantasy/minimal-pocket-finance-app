@@ -10,11 +10,7 @@ class AmountField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      decoration: const InputDecoration(
-        labelText: 'Amount',
-        prefixText: '₹',
-        border: OutlineInputBorder(),
-      ),
+      decoration: const InputDecoration(labelText: 'Amount', prefixText: '₹'),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),

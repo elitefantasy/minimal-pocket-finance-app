@@ -13,7 +13,6 @@ class DayOfMonthField extends StatelessWidget {
       decoration: const InputDecoration(
         labelText: 'Repeat every month on day',
         hintText: '1-31',
-        border: OutlineInputBorder(),
       ),
       keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[

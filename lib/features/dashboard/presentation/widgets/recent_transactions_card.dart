@@ -1,4 +1,6 @@
 import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class RecentTransactionsCard extends StatelessWidget {
@@ -10,15 +12,12 @@ class RecentTransactionsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Recent Transactions',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
+            Text('Recent Transactions', style: context.text.titleMedium),
+            const SizedBox(height: AppSpacing.md),
             if (transactions.isEmpty)
               const Text('No transactions yet')
             else

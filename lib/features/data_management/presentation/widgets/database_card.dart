@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
 
 class DatabaseCard extends StatelessWidget {
   const DatabaseCard({required this.databaseName, super.key});
@@ -9,7 +10,7 @@ class DatabaseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.storage),
+        leading: const Icon(AppIcons.database),
         title: const Text('Current Database'),
         subtitle: Text(databaseName),
       ),

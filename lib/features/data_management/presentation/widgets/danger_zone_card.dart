@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 
 class DangerZoneCard extends StatelessWidget {
   const DangerZoneCard({required this.onClearTransactions, super.key});
@@ -8,22 +11,22 @@ class DangerZoneCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.errorContainer,
+      color: context.colors.errorContainer,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text('Danger Zone', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
+            Text('Danger Zone', style: context.text.titleMedium),
+            const SizedBox(height: AppSpacing.sm),
             const Text(
               'Delete all transactions while keeping categories, recurring '
               'transactions, and the database file.',
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             FilledButton.icon(
               onPressed: onClearTransactions,
-              icon: const Icon(Icons.delete_sweep_outlined),
+              icon: const Icon(AppIcons.clear),
               label: const Text('Clear All Transactions'),
             ),
           ],

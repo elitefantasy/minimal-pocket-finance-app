@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 
 /// ---------------------------------------------------------------------------
 /// BackupCard
@@ -40,36 +43,33 @@ class BackupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(
-              'Import / Export',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('Import / Export', style: context.text.titleMedium),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
 
             FilledButton.icon(
               onPressed: onExportDatabase,
-              icon: const Icon(Icons.upload_file_outlined),
+              icon: const Icon(AppIcons.export),
               label: const Text('Export Database'),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
 
             FilledButton.icon(
               onPressed: onImport,
-              icon: const Icon(Icons.download_outlined),
+              icon: const Icon(AppIcons.importFile),
               label: const Text('Import Database'),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
 
             FilledButton.icon(
               onPressed: onExportCsv,
-              icon: const Icon(Icons.table_view_outlined),
+              icon: const Icon(AppIcons.csv),
               label: const Text('Export CSV'),
             ),
           ],

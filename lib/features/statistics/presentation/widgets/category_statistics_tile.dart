@@ -1,4 +1,5 @@
 import 'package:akm_finance_manager/models/statistics_summary.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class CategoryStatisticsTile extends StatelessWidget {
@@ -18,7 +19,7 @@ class CategoryStatisticsTile extends StatelessWidget {
         ),
         trailing: Text(
           '₹${statistics.totalExpense.toStringAsFixed(0)}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: context.text.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
     );

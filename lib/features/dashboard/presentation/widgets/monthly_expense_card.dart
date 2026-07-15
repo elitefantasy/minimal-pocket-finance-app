@@ -1,3 +1,5 @@
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class MonthlyExpenseCard extends StatelessWidget {
@@ -14,15 +16,15 @@ class MonthlyExpenseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            Text(title, style: context.text.titleMedium),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
 
-            Text(amount, style: Theme.of(context).textTheme.headlineMedium),
+            Text(amount, style: context.text.headlineMedium),
           ],
         ),
       ),

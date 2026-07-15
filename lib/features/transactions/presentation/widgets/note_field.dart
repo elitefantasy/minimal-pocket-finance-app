@@ -9,10 +9,7 @@ class NoteField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      decoration: const InputDecoration(
-        labelText: 'Note',
-        border: OutlineInputBorder(),
-      ),
+      decoration: const InputDecoration(labelText: 'Note'),
       maxLines: 3,
       textCapitalization: TextCapitalization.sentences,
     );

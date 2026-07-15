@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 
 // make a blueprint for a reusable piece of text.
 class TitleText extends StatelessWidget {
@@ -13,9 +14,6 @@ class TitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-    );
+    return Text(text, style: context.text.headlineLarge);
   }
 }

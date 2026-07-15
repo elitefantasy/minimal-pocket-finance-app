@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
 
 class DatabaseTile extends StatelessWidget {
   const DatabaseTile({
@@ -19,7 +20,7 @@ class DatabaseTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(isActive ? Icons.check_circle : Icons.storage_outlined),
+      leading: Icon(isActive ? AppIcons.check : AppIcons.database),
       title: Text(databaseName),
       subtitle: isActive ? const Text('Active') : null,
       onTap: isActive ? null : onSelect,
@@ -28,12 +29,12 @@ class DatabaseTile extends StatelessWidget {
         children: <Widget>[
           IconButton(
             onPressed: onRename,
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(AppIcons.edit),
             tooltip: 'Rename',
           ),
           IconButton(
             onPressed: onDelete,
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(AppIcons.delete),
             tooltip: 'Delete',
           ),
         ],

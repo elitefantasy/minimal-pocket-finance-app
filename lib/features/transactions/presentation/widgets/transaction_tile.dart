@@ -1,4 +1,7 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/delete_confirmation_dialog.dart';
@@ -20,9 +23,8 @@ class TransactionTile extends ConsumerWidget {
         '$amountPrefix₹${transaction.amount.toStringAsFixed(0)}';
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -32,51 +34,53 @@ class TransactionTile extends ConsumerWidget {
                 children: <Widget>[
                   Text(
                     transaction.category,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: context.text.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   if (transaction.note.isNotEmpty) ...<Widget>[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.compact),
                     Text(transaction.note),
                   ],
-                  const SizedBox(height: 4),
-                  Text(
-                    formattedDate,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(formattedDate, style: context.text.bodySmall),
                   if (transaction.isRecurring) ...<Widget>[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.xs),
                     Chip(
-                      avatar: const Icon(Icons.repeat, size: 14),
+                      avatar: const Icon(
+                        AppIcons.repeat,
+                        size: AppIcons.smallSize,
+                      ),
                       label: const Text('Monthly'),
                       visualDensity: VisualDensity.compact,
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      labelStyle: context.text.labelSmall,
                       padding: EdgeInsets.zero,
                     ),
                   ],
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.lg),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(formattedAmount),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     IconButton(
                       onPressed: () =>
                           context.push('/edit', extra: transaction),
-                      icon: const Icon(Icons.edit_outlined),
+                      icon: const Icon(AppIcons.edit),
                       tooltip: 'Edit',
                     ),
                     IconButton(
                       onPressed: transaction.id == null
                           ? null
                           : () => _deleteTransaction(context, ref),
-                      icon: const Icon(Icons.delete_outline),
+                      icon: const Icon(AppIcons.delete),
                       tooltip: 'Delete',
                     ),
                   ],

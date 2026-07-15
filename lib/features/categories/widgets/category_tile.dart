@@ -1,4 +1,5 @@
 import 'package:akm_finance_manager/models/category.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 
 class CategoryTile extends StatelessWidget {
@@ -22,12 +23,12 @@ class CategoryTile extends StatelessWidget {
         children: <Widget>[
           IconButton(
             onPressed: onEdit,
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(AppIcons.edit),
             tooltip: 'Edit',
           ),
           IconButton(
             onPressed: onDelete,
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(AppIcons.delete),
             tooltip: 'Delete',
           ),
         ],

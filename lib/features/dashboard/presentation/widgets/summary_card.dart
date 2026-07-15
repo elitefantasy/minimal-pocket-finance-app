@@ -1,3 +1,5 @@
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class SummaryCard extends StatelessWidget {
@@ -10,15 +12,12 @@ class SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           children: [
-            Text(title, style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
+            Text(title, style: context.text.titleMedium),
+            const SizedBox(height: AppSpacing.sm),
+            Text(value, style: context.text.displaySmall),
           ],
         ),
       ),

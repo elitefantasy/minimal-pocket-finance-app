@@ -1,4 +1,7 @@
 import 'package:akm_finance_manager/models/dashboard_summary.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:akm_finance_manager/features/dashboard/application/top_category_sort_provider.dart';
@@ -17,7 +20,7 @@ class TopCategoriesCard extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -27,7 +30,7 @@ class TopCategoriesCard extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     'Top Categories',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: context.text.titleMedium,
                   ),
                 ),
                 PopupMenuButton<TopCategorySort>(
@@ -35,8 +38,8 @@ class TopCategoriesCard extends ConsumerWidget {
                   tooltip: 'Sort categories',
                   // Dynamically change the trailing icon based on current sort mode
                   icon: Icon(switch (sortMode) {
-                    TopCategorySort.monthlyAverage => Icons.calendar_month,
-                    TopCategorySort.totalExpense => Icons.currency_rupee,
+                    TopCategorySort.monthlyAverage => AppIcons.calendarMonth,
+                    TopCategorySort.totalExpense => AppIcons.currency,
                   }),
                   // Update the Riverpod provider state when a new sort method is selected
                   onSelected: (value) {
@@ -47,8 +50,8 @@ class TopCategoriesCard extends ConsumerWidget {
                       value: TopCategorySort.monthlyAverage,
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_month),
-                          SizedBox(width: 12),
+                          Icon(AppIcons.calendarMonth),
+                          SizedBox(width: AppSpacing.md),
                           Text('Monthly Average'),
                         ],
                       ),
@@ -57,8 +60,8 @@ class TopCategoriesCard extends ConsumerWidget {
                       value: TopCategorySort.totalExpense,
                       child: Row(
                         children: [
-                          Icon(Icons.currency_rupee),
-                          SizedBox(width: 12),
+                          Icon(AppIcons.currency),
+                          SizedBox(width: AppSpacing.md),
                           Text('Total Expense'),
                         ],
                       ),
@@ -67,7 +70,7 @@ class TopCategoriesCard extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
 
             // Conditional rendering: Show a fallback message if no data exists,
             // otherwise list out the categories.

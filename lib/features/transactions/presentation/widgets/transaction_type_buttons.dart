@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 
 class TransactionTypeButtons extends StatelessWidget {
   const TransactionTypeButtons({
@@ -22,7 +23,7 @@ class TransactionTypeButtons extends StatelessWidget {
             child: const Text('Income'),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.lg),
         Expanded(
           child: FilledButton(
             onPressed: isSaving ? null : onExpense,
