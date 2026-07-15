@@ -8,7 +8,6 @@ abstract final class AppSizes {
   static const double avatarMedium = 40;
   static const double avatarLarge = 56;
 
-  static const double cardElevation = 0;
   static const double dialogMaxWidth = 480;
   static const double bottomNavigationHeight = 80;
   static const double fabSize = 56;
