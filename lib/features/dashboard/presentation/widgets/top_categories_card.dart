@@ -81,6 +81,10 @@ class TopCategoriesCard extends ConsumerWidget {
                 (category) => ListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    AppIcons.category,
+                    color: context.colors.secondary,
+                  ),
                   title: Text(category.name),
                   subtitle: Text(
                     'Monthly Average: ₹${category.monthlyAverage.toStringAsFixed(0)}',

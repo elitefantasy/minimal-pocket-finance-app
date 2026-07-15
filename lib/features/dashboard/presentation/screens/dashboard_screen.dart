@@ -1,3 +1,5 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:akm_finance_manager/features/dashboard/application/dashboard_summary_provider.dart';
@@ -35,62 +37,70 @@ class DashboardScreen extends ConsumerWidget {
       data: (summary) {
         // Safe extraction: resolve values from the specialized sorting provider.
         // Fall back to the default unsorted model array if asynchronous data isn't ready.
-        final sortedCategories = sortedCategoriesAsync.value ?? summary.topCategories;
+        final sortedCategories =
+            sortedCategoriesAsync.value ?? summary.topCategories;
 
         return AppScaffold(
           title: 'Dashboard',
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(
               // Forces inner elements to expand dynamically horizontally
-              crossAxisAlignment: CrossAxisAlignment.stretch, 
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Top Highlighted Metric: Running Net Worth/Balance
                 SummaryCard(
+                  tone: SummaryCardTone.balance,
                   title: 'Current Balance',
                   value: '₹${summary.balance.toStringAsFixed(0)}',
                 ),
-                const SizedBox(height: 16), // Vertical element spacing
-
+                const SizedBox(
+                  height: AppSpacing.lg,
+                ), // Vertical element spacing
                 // Split metrics display container block
                 Row(
                   children: [
                     Expanded(
                       // Left Pillar: Income Aggregates
                       child: SummaryCard(
+                        tone: SummaryCardTone.income,
                         title: 'Income',
                         value: '₹${summary.income.toStringAsFixed(0)}',
                       ),
                     ),
-                    const SizedBox(width: 16), // Horizontal gap spacing split
+                    const SizedBox(
+                      width: AppSpacing.lg,
+                    ), // Horizontal gap spacing split
                     Expanded(
                       // Right Pillar: Outbound Expenses
                       child: SummaryCard(
+                        tone: SummaryCardTone.expense,
                         title: 'Expense',
                         value: '₹${summary.expense.toStringAsFixed(0)}',
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
 
-                // Dynamic Top Expenditure Visual Categories Card 
-                TopCategoriesCard(
-                  categories: sortedCategories,
-                ),
-                const SizedBox(height: 16),
+                // Dynamic Top Expenditure Visual Categories Card
+                TopCategoriesCard(categories: sortedCategories),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Isolated structural comparison blocks (Monthly Contexts)
                 MonthlyExpenseCard(
+                  icon: AppIcons.calendarMonth,
                   title: 'Current Month Expense',
                   amount: '₹${summary.currentMonthExpense.toStringAsFixed(0)}',
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 MonthlyExpenseCard(
+                  icon: AppIcons.statistics,
                   title: 'Monthly Average',
-                  amount: '₹${summary.averageMonthlyExpense.toStringAsFixed(0)}',
+                  amount:
+                      '₹${summary.averageMonthlyExpense.toStringAsFixed(0)}',
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Recent ledger history overview item card
                 RecentTransactionsCard(
