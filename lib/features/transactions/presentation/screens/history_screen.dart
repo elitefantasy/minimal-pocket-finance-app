@@ -1,3 +1,7 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_sizes.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/transactions/application/search_query_provider.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
@@ -26,11 +30,16 @@ class HistoryScreen extends ConsumerWidget {
           return Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.none,
+                ),
                 child: TextField(
                   decoration: const InputDecoration(
                     hintText: 'Search transactions',
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: Icon(AppIcons.search),
                   ),
                   onChanged: (value) {
                     ref.read(searchQueryProvider.notifier).state = value;
@@ -38,13 +47,19 @@ class HistoryScreen extends ConsumerWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  AppSpacing.none,
+                ),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Wrap(
-                    spacing: 8,
+                    spacing: AppSpacing.sm,
                     children: <Widget>[
                       FilterChip(
+                        avatar: const Icon(AppIcons.filter),
                         label: const Text('All'),
                         selected: selectedFilter == TransactionFilter.all,
                         onSelected: (_) {
@@ -53,6 +68,10 @@ class HistoryScreen extends ConsumerWidget {
                         },
                       ),
                       FilterChip(
+                        avatar: Icon(
+                          AppIcons.income,
+                          color: context.semantic.success,
+                        ),
                         label: const Text('Income'),
                         selected: selectedFilter == TransactionFilter.income,
                         onSelected: (_) {
@@ -61,6 +80,10 @@ class HistoryScreen extends ConsumerWidget {
                         },
                       ),
                       FilterChip(
+                        avatar: Icon(
+                          AppIcons.expense,
+                          color: context.colors.error,
+                        ),
                         label: const Text('Expense'),
                         selected: selectedFilter == TransactionFilter.expense,
                         onSelected: (_) {
@@ -73,11 +96,17 @@ class HistoryScreen extends ConsumerWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                  AppSpacing.lg,
+                  AppSpacing.none,
+                ),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: DropdownMenu<TransactionSort>(
                     label: const Text('Sort'),
+                    leadingIcon: const Icon(AppIcons.sort),
                     initialSelection: selectedSort,
                     dropdownMenuEntries:
                         const <DropdownMenuEntry<TransactionSort>>[
@@ -112,18 +141,31 @@ class HistoryScreen extends ConsumerWidget {
               ),
               Expanded(
                 child: filteredTransactions.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Icon(Icons.receipt_long_outlined, size: 48),
-                            SizedBox(height: 12),
-                            Text('No transactions yet'),
+                            Icon(
+                              AppIcons.receipt,
+                              size: AppSizes.avatarLarge,
+                              color: context.colors.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Text(
+                              'No transactions found',
+                              style: context.text.titleMedium,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              'Try a different search or add a transaction.',
+                              style: context.text.bodySmall,
+                              textAlign: TextAlign.center,
+                            ),
                           ],
                         ),
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(AppSpacing.lg),
                         itemCount: filteredTransactions.length,
                         itemBuilder: (context, index) {
                           return TransactionTile(

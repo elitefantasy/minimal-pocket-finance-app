@@ -18,6 +18,7 @@ abstract final class AppIcons {
   static const backup = Icons.backup_outlined;
   static const note = Icons.note_outlined;
   static const search = Icons.search;
+  static const receipt = Icons.receipt_long_outlined;
   static const filter = Icons.filter_list_rounded;
   static const sort = Icons.sort_rounded;
   static const settings = Icons.settings_outlined;

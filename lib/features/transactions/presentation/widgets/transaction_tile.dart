@@ -22,12 +22,23 @@ class TransactionTile extends ConsumerWidget {
     final formattedAmount =
         '$amountPrefix₹${transaction.amount.toStringAsFixed(0)}';
 
+    final isIncome = transaction.type == 'Income';
+    final amountColor = isIncome
+        ? context.semantic.success
+        : context.colors.error;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Icon(
+              isIncome ? AppIcons.income : AppIcons.expense,
+              color: amountColor,
+              size: AppIcons.mediumSize,
+            ),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,10 +51,20 @@ class TransactionTile extends ConsumerWidget {
                   ),
                   if (transaction.note.isNotEmpty) ...<Widget>[
                     const SizedBox(height: AppSpacing.compact),
-                    Text(transaction.note),
+                    Text(
+                      transaction.note,
+                      style: context.text.bodyMedium?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                   const SizedBox(height: AppSpacing.xs),
-                  Text(formattedDate, style: context.text.bodySmall),
+                  Text(
+                    formattedDate,
+                    style: context.text.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
                   if (transaction.isRecurring) ...<Widget>[
                     const SizedBox(height: AppSpacing.xs),
                     Chip(
@@ -65,7 +86,13 @@ class TransactionTile extends ConsumerWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text(formattedAmount),
+                Text(
+                  formattedAmount,
+                  style: context.text.titleLarge?.copyWith(
+                    color: amountColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 Row(
                   mainAxisSize: MainAxisSize.min,
