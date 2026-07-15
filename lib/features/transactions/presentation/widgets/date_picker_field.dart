@@ -1,4 +1,5 @@
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -35,7 +36,10 @@ class DatePickerField extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: () => _pickDate(context),
       icon: const Icon(AppIcons.calendar),
-      label: Text(DateFormat('dd MMM yyyy').format(selectedDate)),
+      label: Text(
+        DateFormat('dd MMM yyyy').format(selectedDate),
+        style: context.text.titleSmall,
+      ),
     );
   }
 }

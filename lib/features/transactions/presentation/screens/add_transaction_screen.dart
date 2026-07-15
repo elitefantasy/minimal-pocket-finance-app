@@ -6,6 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Application Core/Shared imports
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:akm_finance_manager/core/theme/app_durations.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 
 // Model imports
@@ -170,11 +174,11 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         data: (categories) => Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: <Widget>[
               // Amount text input
               AmountField(controller: _amountController),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               // Category mapping dropdown selection
               CategoryDropdown(
@@ -184,12 +188,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   setState(() => _selectedCategory = category);
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               // Note Visibility Toggle Checkbox
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Add note'),
+                secondary: const Icon(AppIcons.note),
+                title: Text('Add note', style: context.text.titleSmall),
                 value: _showNoteField,
                 onChanged: (value) {
                   setState(() {
@@ -203,25 +208,25 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
               // Animated Transition Container for Contextual Note Field
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: AppDurations.normal,
                 switchInCurve: Curves.easeOut,
                 switchOutCurve: Curves.easeIn,
                 transitionBuilder: (child, animation) {
                   return SizeTransition(
                     sizeFactor: animation,
-                    axisAlignment: -1,
+                    alignment: Alignment.topCenter,
                     child: FadeTransition(opacity: animation, child: child),
                   );
                 },
                 child: _showNoteField
                     ? Padding(
                         key: const ValueKey('note_field'),
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.only(top: AppSpacing.sm),
                         child: NoteField(controller: _noteController),
                       )
                     : const SizedBox(key: ValueKey('empty_note')),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               // Transaction Target Date Picker Field
               DatePickerField(
@@ -232,12 +237,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       .setDate(date);
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
 
               // Switch to control if transaction repeats periodically
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Repeat monthly'),
+                secondary: const Icon(AppIcons.repeat),
+                title: Text('Repeat monthly', style: context.text.titleSmall),
                 value: _repeatMonthly,
                 onChanged: (value) {
                   setState(() => _repeatMonthly = value);
@@ -246,10 +252,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
               // Conditional Day of Month display field if repetition is requested
               if (_repeatMonthly) ...<Widget>[
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 DayOfMonthField(controller: _dayOfMonthController),
               ],
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
 
               // Income / Expense trigger submission button row
               TransactionTypeButtons(

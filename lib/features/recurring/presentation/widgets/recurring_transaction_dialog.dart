@@ -1,3 +1,6 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_dropdown.dart';
@@ -93,6 +96,7 @@ class _RecurringTransactionDialogState
     return AlertDialog(
       title: Text(
         widget.recurring == null ? 'Add Recurring' : 'Edit Recurring',
+        style: context.text.titleLarge,
       ),
       content: Form(
         key: _formKey,
@@ -100,22 +104,22 @@ class _RecurringTransactionDialogState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Transaction Type'),
+                child: Text('Transaction Type', style: context.text.titleSmall),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               SegmentedButton<String>(
                 segments: const <ButtonSegment<String>>[
                   ButtonSegment<String>(
                     value: 'Income',
                     label: Text('Income'),
-                    icon: Icon(Icons.arrow_downward),
+                    icon: Icon(AppIcons.income),
                   ),
                   ButtonSegment<String>(
                     value: 'Expense',
                     label: Text('Expense'),
-                    icon: Icon(Icons.arrow_upward),
+                    icon: Icon(AppIcons.expense),
                   ),
                 ],
                 selected: <String>{_type},
@@ -123,9 +127,9 @@ class _RecurringTransactionDialogState
                   setState(() => _type = selection.first);
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               AmountField(controller: _amountController),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               CategoryDropdown(
                 categories: widget.categories,
                 value: _category,
@@ -133,14 +137,15 @@ class _RecurringTransactionDialogState
                   setState(() => _category = category);
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               NoteField(controller: _noteController),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               DayOfMonthField(controller: _dayController),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Enabled'),
+                secondary: const Icon(AppIcons.repeat),
+                title: Text('Enabled', style: context.text.titleSmall),
                 value: _isEnabled,
                 onChanged: (value) {
                   setState(() => _isEnabled = value);

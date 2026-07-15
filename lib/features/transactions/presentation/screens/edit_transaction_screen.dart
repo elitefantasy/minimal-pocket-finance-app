@@ -7,6 +7,10 @@ import 'package:go_router/go_router.dart';
 
 // Core & Notification imports
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:akm_finance_manager/core/theme/app_durations.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 
 // Model imports
 import 'package:akm_finance_manager/models/transaction.dart';
@@ -124,11 +128,11 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
           data: (categories) => Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               children: <Widget>[
                 // Numerical transaction total entry input field
                 AmountField(controller: _amountController),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Category selector dropdown
                 CategoryDropdown(
@@ -140,12 +144,13 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                     }
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Checkbox toggle displaying or hiding the extra note field
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Add note'),
+                  secondary: const Icon(AppIcons.note),
+                  title: Text('Add note', style: context.text.titleSmall),
                   value: _showNoteField,
                   onChanged: (value) {
                     setState(() {
@@ -160,25 +165,25 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
 
                 // Smooth transitional element ensuring clear layout expansion for the note field
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
+                  duration: AppDurations.normal,
                   switchInCurve: Curves.easeOut,
                   switchOutCurve: Curves.easeIn,
                   transitionBuilder: (child, animation) {
                     return SizeTransition(
                       sizeFactor: animation,
-                      axisAlignment: -1,
+                      alignment: Alignment.topCenter,
                       child: FadeTransition(opacity: animation, child: child),
                     );
                   },
                   child: _showNoteField
                       ? Padding(
                           key: const ValueKey('note_field'),
-                          padding: const EdgeInsets.only(top: 8),
+                          padding: const EdgeInsets.only(top: AppSpacing.sm),
                           child: NoteField(controller: _noteController),
                         )
                       : const SizedBox(key: ValueKey('empty_note')),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Date selection field anchor
                 DatePickerField(
@@ -189,7 +194,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Core execution button updating database storage
                 FilledButton(

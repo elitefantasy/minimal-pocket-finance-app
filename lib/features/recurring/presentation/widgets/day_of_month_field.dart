@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,6 +14,7 @@ class DayOfMonthField extends StatelessWidget {
       decoration: const InputDecoration(
         labelText: 'Repeat every month on day',
         hintText: '1-31',
+        prefixIcon: Icon(AppIcons.repeat),
       ),
       keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[

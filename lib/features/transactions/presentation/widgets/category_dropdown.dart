@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
 import 'package:akm_finance_manager/models/category.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,10 @@ class CategoryDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       initialValue: value,
-      decoration: const InputDecoration(labelText: 'Category'),
+      decoration: const InputDecoration(
+        labelText: 'Category',
+        prefixIcon: Icon(AppIcons.category),
+      ),
       items: categories
           .map(
             (category) => DropdownMenuItem<String>(
