@@ -2,6 +2,7 @@ import 'package:akm_finance_manager/core/theme/app_colors.dart';
 import 'package:akm_finance_manager/core/theme/app_gradients.dart';
 import 'package:flutter/material.dart';
 
+/// Semantic colors not represented directly by [ColorScheme].
 @immutable
 class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   const AppSemanticColors({
@@ -60,6 +61,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   }
 }
 
+/// Reusable gradients that participate in animated theme transitions.
 @immutable
 class AppGradientTheme extends ThemeExtension<AppGradientTheme> {
   const AppGradientTheme({
@@ -100,5 +102,14 @@ class AppGradientTheme extends ThemeExtension<AppGradientTheme> {
   );
 
   @override
-  AppGradientTheme lerp(AppGradientTheme? other, double t) => this;
+  AppGradientTheme lerp(AppGradientTheme? other, double t) {
+    if (other is! AppGradientTheme) return this;
+    return AppGradientTheme(
+      primary: Gradient.lerp(primary, other.primary, t)!,
+      surface: Gradient.lerp(surface, other.surface, t)!,
+      income: Gradient.lerp(income, other.income, t)!,
+      expense: Gradient.lerp(expense, other.expense, t)!,
+      success: Gradient.lerp(success, other.success, t)!,
+    );
+  }
 }

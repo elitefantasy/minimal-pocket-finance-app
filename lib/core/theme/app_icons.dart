@@ -1,5 +1,7 @@
+import 'package:akm_finance_manager/core/theme/app_sizes.dart';
 import 'package:flutter/material.dart';
 
+/// Canonical Material icons and icon sizes used by the application.
 abstract final class AppIcons {
   static const dashboard = Icons.dashboard_outlined;
   static const history = Icons.history;
@@ -21,7 +23,7 @@ abstract final class AppIcons {
   static const delete = Icons.delete_outline_rounded;
   static const edit = Icons.edit_outlined;
 
-  static const double smallSize = 16;
-  static const double mediumSize = 24;
-  static const double largeSize = 32;
+  static const double smallSize = AppSizes.iconSmall;
+  static const double mediumSize = AppSizes.iconMedium;
+  static const double largeSize = AppSizes.iconLarge;
 }

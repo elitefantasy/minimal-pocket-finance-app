@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Shared border-radius tokens for Material and custom components.
 abstract final class AppRadius {
   static const small = BorderRadius.all(Radius.circular(8));
   static const medium = BorderRadius.all(Radius.circular(12));

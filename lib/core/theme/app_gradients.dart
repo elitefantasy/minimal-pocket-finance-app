@@ -1,6 +1,7 @@
 import 'package:akm_finance_manager/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
+/// Reusable gradients for decorative and semantic finance UI elements.
 abstract final class AppGradients {
   static const primary = LinearGradient(
     colors: [AppColors.primary, AppColors.secondary],
