@@ -9,6 +9,7 @@ abstract final class AppSizes {
   static const double avatarLarge = 56;
 
   static const double dialogMaxWidth = 480;
+  static const double categoryPickerMaxHeight = 240;
   static const double bottomNavigationHeight = 80;
   static const double fabSize = 56;
 }

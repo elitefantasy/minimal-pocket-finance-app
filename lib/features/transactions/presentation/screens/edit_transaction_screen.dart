@@ -21,7 +21,7 @@ import 'package:akm_finance_manager/features/transactions/application/transactio
 
 // Presentation Widget imports
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_dropdown.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/date_picker_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
 
@@ -135,7 +135,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                 const SizedBox(height: AppSpacing.lg),
 
                 // Category selector dropdown
-                CategoryDropdown(
+                CategorySearchField(
                   categories: categories,
                   value: _selectedCategory,
                   onChanged: (category) {

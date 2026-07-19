@@ -26,7 +26,7 @@ import 'package:akm_finance_manager/features/transactions/application/transactio
 // Feature UI Widgets
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_dropdown.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/date_picker_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/transaction_type_buttons.dart';
@@ -181,7 +181,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               const SizedBox(height: AppSpacing.lg),
 
               // Category mapping dropdown selection
-              CategoryDropdown(
+              CategorySearchField(
                 categories: categories,
                 value: _selectedCategory,
                 onChanged: (category) {

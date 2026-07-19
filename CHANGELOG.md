@@ -78,7 +78,7 @@ Initial public release of **Minimal Pocket Finance**.
 
 ---
 
-## [Unreleased]
+## [Unreleased] v1.1.0
 
 ### Added
 

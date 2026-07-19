@@ -3,7 +3,7 @@ import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_dropdown.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
 import 'package:akm_finance_manager/models/category.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
@@ -140,7 +140,7 @@ class _RecurringTransactionDialogState
               const SizedBox(height: AppSpacing.sm),
               AmountField(controller: _amountController),
               const SizedBox(height: AppSpacing.lg),
-              CategoryDropdown(
+              CategorySearchField(
                 categories: widget.categories,
                 value: _category,
                 onChanged: (category) {
