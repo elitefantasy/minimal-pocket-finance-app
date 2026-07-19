@@ -57,12 +57,15 @@ class ExportService {
 
   final AndroidSafExportService _androidSafExportService;
 
-  /// Exports [sourcePath] while preserving its original file name.
+  /// Exports [sourcePath]. When [fileName] is supplied, uses it for the
+  /// exported artifact instead of the source file's name.
   Future<ExportResult> exportFile({
     required String sourcePath,
     required String artifactFolder,
+    String? fileName,
   }) async {
     final source = File(sourcePath);
+    final exportedFileName = fileName ?? path.basename(sourcePath);
 
     if (!await source.exists()) {
       throw ExportException('The source file does not exist: $sourcePath');
@@ -74,6 +77,7 @@ class ExportService {
         return _androidSafExportService.exportFile(
           sourcePath: sourcePath,
           artifactFolder: artifactFolder,
+          fileName: exportedFileName,
         );
       }
 
@@ -89,16 +93,20 @@ class ExportService {
 
       final destinationPath = path.join(
         destinationDirectory.path,
-        path.basename(sourcePath),
+        exportedFileName,
       );
+
+      if (await File(destinationPath).exists()) {
+        throw ExportException('An export named $exportedFileName already exists.');
+      }
 
       final exportedFile = await source.copy(destinationPath);
 
       // Desktop return
       return ExportResult(
-        fileName: path.basename(sourcePath),
+        fileName: exportedFileName,
         relativePath:
-            '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}',
+            '${AppConstants.appName}/$artifactFolder/$exportedFileName',
         absolutePath: exportedFile.absolute.path,
       );
     } on ExportException {

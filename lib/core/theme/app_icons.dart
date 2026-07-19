@@ -38,6 +38,7 @@ abstract final class AppIcons {
   static const check = Icons.check_circle;
   static const checkOutlined = Icons.check_circle_outline;
   static const openInNew = Icons.open_in_new;
+  static const yearSelector = Icons.arrow_drop_down;
 
   static const double smallSize = AppSizes.iconSmall;
   static const double mediumSize = AppSizes.iconMedium;

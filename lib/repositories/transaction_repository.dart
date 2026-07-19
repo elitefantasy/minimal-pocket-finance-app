@@ -32,11 +32,28 @@ class TransactionRepository {
     );
   }
 
-  Future<List<Transaction>> getAll() async {
+  Future<List<Transaction>> getAll({int? year}) async {
     final Database database = await _databaseHelper.database;
-    final maps = await database.query(_tableName, orderBy: 'date DESC');
+    final maps = await database.query(
+      _tableName,
+      where: year == null ? null : "strftime('%Y', date) = ?",
+      whereArgs: year == null ? null : <Object>[year.toString()],
+      orderBy: 'date DESC',
+    );
 
     return maps.map(Transaction.fromMap).toList(growable: false);
+  }
+
+  Future<List<int>> getAvailableYears() async {
+    final Database database = await _databaseHelper.database;
+    final rows = await database.rawQuery(
+      "SELECT DISTINCT strftime('%Y', date) AS year FROM $_tableName "
+      "WHERE date IS NOT NULL ORDER BY year DESC",
+    );
+    return rows
+        .map((row) => int.tryParse(row['year'] as String? ?? ''))
+        .whereType<int>()
+        .toList(growable: false);
   }
 
   Future<void> update(Transaction transaction) async {

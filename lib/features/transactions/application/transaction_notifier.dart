@@ -1,17 +1,23 @@
 import 'package:akm_finance_manager/app/providers.dart';
+import 'package:akm_finance_manager/features/transactions/application/selected_year_provider.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TransactionNotifier extends AsyncNotifier<List<Transaction>> {
   @override
   Future<List<Transaction>> build() {
-    return ref.read(transactionServiceProvider).getAllTransactions();
+    final selectedYear = ref.watch(selectedYearProvider);
+    return ref.read(transactionServiceProvider).getAllTransactions(
+      year: selectedYear,
+    );
   }
 
   Future<void> refresh() async {
     state = const AsyncLoading<List<Transaction>>();
     state = await AsyncValue.guard(
-      () => ref.read(transactionServiceProvider).getAllTransactions(),
+      () => ref.read(transactionServiceProvider).getAllTransactions(
+        year: ref.read(selectedYearProvider),
+      ),
     );
   }
 

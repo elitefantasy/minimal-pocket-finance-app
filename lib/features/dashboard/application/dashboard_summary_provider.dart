@@ -1,5 +1,6 @@
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
+import 'package:akm_finance_manager/features/transactions/application/selected_year_provider.dart';
 import 'package:akm_finance_manager/models/dashboard_summary.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final dashboardSummaryProvider = Provider<AsyncValue<DashboardSummary>>((ref) {
   // Watch the asynchronous transaction data source
   final transactionsAsync = ref.watch(transactionNotifierProvider);
+  final selectedYear = ref.watch(selectedYearProvider);
 
   // Safely map asynchronous data once it resolves successfully
   return transactionsAsync.whenData((transactions) {
@@ -32,10 +34,11 @@ final dashboardSummaryProvider = Provider<AsyncValue<DashboardSummary>>((ref) {
 
     // 4. Calculate the expenses incurred only in the current calendar month
     final now = DateTime.now();
+    final currentMonthYear = selectedYear ?? now.year;
     final currentMonthExpense = expenseTransactions
         .where(
           (transaction) =>
-              transaction.date.year == now.year &&
+              transaction.date.year == currentMonthYear &&
               transaction.date.month == now.month,
         )
         .fold<double>(0, (total, transaction) => total + transaction.amount);

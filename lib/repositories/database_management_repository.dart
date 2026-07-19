@@ -87,6 +87,7 @@ class DatabaseManagementRepository {
       return await _exportService.exportFile(
         sourcePath: sourcePath,
         artifactFolder: AppConstants.backupFolder,
+        fileName: _backupFileName(databaseName),
       );
     } finally {
       // Reopen database.
@@ -156,6 +157,7 @@ class DatabaseManagementRepository {
       return await _exportService.exportFile(
         sourcePath: sourcePath,
         artifactFolder: AppConstants.databaseExportFolder,
+        fileName: _backupFileName(databaseName),
       );
     } finally {
       await _databaseHelper.database;
@@ -237,4 +239,18 @@ class DatabaseManagementRepository {
   }
 
   String _csv(String value) => '"${value.replaceAll('"', '""')}"';
+
+  String _backupFileName(String databaseName) {
+    final now = DateTime.now();
+    final timestamp = [
+      now.day,
+      now.month,
+      now.year % 100,
+      now.hour,
+      now.minute,
+      now.second,
+    ].map((value) => value.toString().padLeft(2, '0')).join();
+
+    return '${path.basenameWithoutExtension(databaseName)}_$timestamp.db';
+  }
 }

@@ -7,8 +7,8 @@ class TransactionService {
 
   final TransactionRepository _transactionRepository;
 
-  Future<List<Transaction>> getAllTransactions() {
-    return _transactionRepository.getAll();
+  Future<List<Transaction>> getAllTransactions({int? year}) {
+    return _transactionRepository.getAll(year: year);
   }
 
   Future<void> addTransaction(Transaction transaction) async {

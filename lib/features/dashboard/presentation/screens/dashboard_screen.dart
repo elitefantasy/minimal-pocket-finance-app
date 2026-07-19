@@ -9,7 +9,9 @@ import 'package:akm_finance_manager/features/dashboard/presentation/widgets/mont
 import 'package:akm_finance_manager/features/dashboard/presentation/widgets/top_categories_card.dart';
 import 'package:akm_finance_manager/features/dashboard/presentation/widgets/recent_transactions_card.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
+import 'package:akm_finance_manager/features/transactions/application/selected_year_provider.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/history_navigation.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/year_selector.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,6 +24,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the master asynchronous dashboard summary provider
     final summaryAsync = ref.watch(dashboardSummaryProvider);
+    final selectedYear = ref.watch(selectedYearProvider);
 
     // Watch the dedicated provider handling sorted category metrics asynchronously
     final sortedCategoriesAsync = ref.watch(sortedTopCategoriesProvider);
@@ -30,14 +33,29 @@ class DashboardScreen extends ConsumerWidget {
       // Render fallback loading indicator while summary details compile
       loading: () => const AppScaffold(
         title: 'Dashboard',
+        actions: <Widget>[YearSelector()],
         body: Center(child: CircularProgressIndicator()),
       ),
       // Render clean error text message if provider initialization fails
       error: (error, stackTrace) => AppScaffold(
         title: 'Dashboard',
+        actions: const <Widget>[YearSelector()],
         body: Center(child: Text(error.toString())),
       ),
       data: (summary) {
+        if (summary.recentTransactions.isEmpty) {
+          return AppScaffold(
+            title: 'Dashboard',
+            actions: const <Widget>[YearSelector()],
+            body: Center(
+              child: Text(
+                selectedYear == null
+                    ? 'No transactions found.'
+                    : 'No transactions found for $selectedYear.',
+              ),
+            ),
+          );
+        }
         // Safe extraction: resolve values from the specialized sorting provider.
         // Fall back to the default unsorted model array if asynchronous data isn't ready.
         final sortedCategories =
@@ -45,6 +63,7 @@ class DashboardScreen extends ConsumerWidget {
 
         return AppScaffold(
           title: 'Dashboard',
+          actions: const <Widget>[YearSelector()],
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(
@@ -112,7 +131,10 @@ class DashboardScreen extends ConsumerWidget {
                   onTap: () => HistoryNavigation.open(
                     context,
                     transactionType: TransactionFilter.expense,
-                    month: DateTime.now(),
+                    month: DateTime(
+                      selectedYear ?? DateTime.now().year,
+                      DateTime.now().month,
+                    ),
                   ),
                   amount: '₹${summary.currentMonthExpense.toStringAsFixed(0)}',
                 ),

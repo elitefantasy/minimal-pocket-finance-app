@@ -7,6 +7,7 @@ import 'package:akm_finance_manager/features/statistics/presentation/widgets/sta
 import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/history_navigation.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/year_selector.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class StatisticsScreen extends ConsumerWidget {
 
     return AppScaffold(
       title: 'Statistics',
+      actions: const <Widget>[YearSelector()],
       body: statisticsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(child: Text(error.toString())),

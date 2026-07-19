@@ -7,6 +7,7 @@ import 'package:akm_finance_manager/features/transactions/application/transactio
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_sort_provider.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/transaction_tile.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/year_selector.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,6 +121,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     return AppScaffold(
       title: 'History',
+      actions: const <Widget>[YearSelector()],
       body: transactionsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(child: Text(error.toString())),
