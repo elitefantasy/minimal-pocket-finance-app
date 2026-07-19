@@ -1,4 +1,7 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/recurring_transaction_card.dart';
@@ -24,7 +27,7 @@ class RecurringScreen extends ConsumerWidget {
         onPressed: categories == null
             ? null
             : () => _showEditor(context, ref, categories),
-        icon: const Icon(Icons.add),
+        icon: const Icon(AppIcons.add),
         label: const Text('Add Recurring'),
       ),
       body: recurringAsync.when(
@@ -32,12 +35,14 @@ class RecurringScreen extends ConsumerWidget {
         error: (error, stackTrace) => Center(child: Text(error.toString())),
         data: (recurringTransactions) {
           if (recurringTransactions.isEmpty) {
-            return const Center(child: Text('No recurring transactions yet'));
+            return const _RecurringEmptyState();
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
+          return ListView.separated(
+            padding: const EdgeInsets.all(AppSpacing.page),
             itemCount: recurringTransactions.length,
+            separatorBuilder: (context, index) =>
+                const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final recurring = recurringTransactions[index];
               return RecurringTransactionCard(
@@ -101,21 +106,8 @@ class RecurringScreen extends ConsumerWidget {
     final confirmed =
         await showDialog<bool>(
           context: context,
-          builder: (dialogContext) => AlertDialog(
-            title: const Text('Delete Recurring Transaction?'),
-            content: const Text(
-              'Are you sure you want to delete this recurring transaction?',
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Delete'),
-              ),
-            ],
+          builder: (dialogContext) => _DeleteRecurringDialog(
+            category: recurring.category,
           ),
         ) ??
         false;
@@ -137,5 +129,75 @@ class RecurringScreen extends ConsumerWidget {
             .showError('Unable to delete recurring transaction: $error');
       }
     }
+  }
+}
+
+class _RecurringEmptyState extends StatelessWidget {
+  const _RecurringEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.page),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              AppIcons.repeat,
+              size: AppIcons.largeSize,
+              color: context.colors.secondary,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text('No recurring transactions', style: context.text.titleLarge),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Create one to keep regular income and expenses on schedule.',
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DeleteRecurringDialog extends StatelessWidget {
+  const _DeleteRecurringDialog({required this.category});
+
+  final String category;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Row(
+        children: <Widget>[
+          Icon(AppIcons.delete, color: context.colors.error),
+          const SizedBox(width: AppSpacing.sm),
+          Text('Delete recurring transaction?', style: context.text.titleLarge),
+        ],
+      ),
+      content: Text(
+        'Delete the recurring transaction for "$category"? This cannot be undone.',
+        style: context.text.bodyMedium,
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: context.colors.error,
+            foregroundColor: context.colors.onError,
+          ),
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Delete'),
+        ),
+      ],
+    );
   }
 }
