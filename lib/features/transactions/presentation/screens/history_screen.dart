@@ -22,19 +22,21 @@ class HistoryScreen extends ConsumerStatefulWidget {
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   late final TextEditingController _searchController;
+  HistoryFilters? _appliedInitialFilters;
+  HistoryFilters? _pendingInitialFilters;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    _applyInitialFilters(widget.initialFilters);
+    _scheduleInitialFilters(widget.initialFilters);
   }
 
   @override
   void didUpdateWidget(covariant HistoryScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialFilters != widget.initialFilters) {
-      _applyInitialFilters(widget.initialFilters);
+      _scheduleInitialFilters(widget.initialFilters);
     }
   }
 
@@ -44,10 +46,24 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     super.dispose();
   }
 
-  void _applyInitialFilters(HistoryFilters? filters) {
-    if (filters == null) {
+  void _scheduleInitialFilters(HistoryFilters? filters) {
+    if (filters == null || filters == _appliedInitialFilters) {
       return;
     }
+    _pendingInitialFilters = filters;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          _pendingInitialFilters != filters ||
+          _appliedInitialFilters == filters) {
+        return;
+      }
+      _applyInitialFilters(filters);
+      _appliedInitialFilters = filters;
+      _pendingInitialFilters = null;
+    });
+  }
+
+  void _applyInitialFilters(HistoryFilters filters) {
     ref.read(historyFiltersProvider.notifier).state = filters;
     ref.read(searchQueryProvider.notifier).state = '';
     _searchController.text = '';
