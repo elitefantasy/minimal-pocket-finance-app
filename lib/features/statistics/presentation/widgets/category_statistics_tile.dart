@@ -5,14 +5,22 @@ import 'package:akm_finance_manager/models/statistics_summary.dart';
 import 'package:flutter/material.dart';
 
 class CategoryStatisticsTile extends StatelessWidget {
-  const CategoryStatisticsTile({required this.statistics, super.key});
+  const CategoryStatisticsTile({
+    required this.statistics,
+    this.onTap,
+    super.key,
+  });
 
   final CategoryStatistics statistics;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
+      child: InkWell(
+        onTap: onTap,
+        mouseCursor: onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
+        child: Padding(
         padding: const EdgeInsets.all(AppSpacing.card),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,6 +71,7 @@ class CategoryStatisticsTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

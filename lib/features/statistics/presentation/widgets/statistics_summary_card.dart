@@ -5,9 +5,16 @@ import 'package:akm_finance_manager/models/statistics_summary.dart';
 import 'package:flutter/material.dart';
 
 class StatisticsSummaryCard extends StatelessWidget {
-  const StatisticsSummaryCard({required this.summary, super.key});
+  const StatisticsSummaryCard({
+    required this.summary,
+    this.onHighestIncome,
+    this.onHighestExpense,
+    super.key,
+  });
 
   final StatisticsSummary summary;
+  final VoidCallback? onHighestIncome;
+  final VoidCallback? onHighestExpense;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +81,7 @@ class StatisticsSummaryCard extends StatelessWidget {
                     label: 'Highest Income',
                     value: _currency(summary.highestIncome),
                     valueColor: context.semantic.success,
+                    onTap: onHighestIncome,
                   ),
                 ),
               ],
@@ -83,6 +91,7 @@ class StatisticsSummaryCard extends StatelessWidget {
               label: 'Highest Expense',
               value: _currency(summary.highestExpense),
               valueColor: context.colors.error,
+              onTap: onHighestExpense,
             ),
           ],
         ),
@@ -98,15 +107,20 @@ class _SummaryMetric extends StatelessWidget {
     required this.label,
     required this.value,
     this.valueColor,
+    this.onTap,
   });
 
   final String label;
   final String value;
   final Color? valueColor;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return InkWell(
+      onTap: onTap,
+      mouseCursor: onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
@@ -121,6 +135,7 @@ class _SummaryMetric extends StatelessWidget {
           style: context.text.titleMedium?.copyWith(color: valueColor),
         ),
       ],
+      ),
     );
   }
 }

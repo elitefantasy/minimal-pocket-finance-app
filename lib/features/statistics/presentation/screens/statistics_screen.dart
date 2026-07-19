@@ -4,9 +4,14 @@ import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/statistics/application/statistics_provider.dart';
 import 'package:akm_finance_manager/features/statistics/presentation/widgets/category_statistics_tile.dart';
 import 'package:akm_finance_manager/features/statistics/presentation/widgets/statistics_summary_card.dart';
+import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
+import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/history_navigation.dart';
+import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class StatisticsScreen extends ConsumerWidget {
   const StatisticsScreen({super.key});
@@ -14,6 +19,7 @@ class StatisticsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statisticsAsync = ref.watch(statisticsProvider);
+    final transactions = ref.watch(transactionNotifierProvider).asData?.value;
 
     return AppScaffold(
       title: 'Statistics',
@@ -24,11 +30,29 @@ class StatisticsScreen extends ConsumerWidget {
           if (summary.transactionCount == 0) {
             return const _StatisticsEmptyState();
           }
+          final highestIncomeTransaction = _highestTransaction(
+            transactions,
+            'Income',
+            summary.highestIncome,
+          );
+          final highestExpenseTransaction = _highestTransaction(
+            transactions,
+            'Expense',
+            summary.highestExpense,
+          );
 
           return ListView(
             padding: const EdgeInsets.all(AppSpacing.page),
             children: <Widget>[
-              StatisticsSummaryCard(summary: summary),
+              StatisticsSummaryCard(
+                summary: summary,
+                onHighestIncome: highestIncomeTransaction == null
+                    ? null
+                    : () => context.push('/edit', extra: highestIncomeTransaction),
+                onHighestExpense: highestExpenseTransaction == null
+                    ? null
+                    : () => context.push('/edit', extra: highestExpenseTransaction),
+              ),
               const SizedBox(height: AppSpacing.section),
               Text('Expense Categories', style: context.text.titleLarge),
               const SizedBox(height: AppSpacing.xs),
@@ -42,7 +66,14 @@ class StatisticsScreen extends ConsumerWidget {
               ...summary.expenseCategories.map(
                 (statistics) => Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: CategoryStatisticsTile(statistics: statistics),
+                  child: CategoryStatisticsTile(
+                    statistics: statistics,
+                    onTap: () => HistoryNavigation.open(
+                      context,
+                      category: statistics.name,
+                      transactionType: TransactionFilter.expense,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -50,6 +81,22 @@ class StatisticsScreen extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  Transaction? _highestTransaction(
+    List<Transaction>? transactions,
+    String type,
+    double amount,
+  ) {
+    if (transactions == null || amount == 0) {
+      return null;
+    }
+    for (final transaction in transactions) {
+      if (transaction.type == type && transaction.amount == amount) {
+        return transaction;
+      }
+    }
+    return null;
   }
 }
 

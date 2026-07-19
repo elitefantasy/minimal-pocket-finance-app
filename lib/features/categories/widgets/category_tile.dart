@@ -9,12 +9,14 @@ class CategoryTile extends StatelessWidget {
     required this.category,
     required this.onEdit,
     required this.onDelete,
+    this.onTap,
     super.key,
   });
 
   final Category category;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,8 @@ class CategoryTile extends StatelessWidget {
         ),
         leading: Icon(AppIcons.category, color: context.colors.secondary),
         title: Text(category.name, style: context.text.titleMedium),
+        onTap: onTap,
+        mouseCursor: onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

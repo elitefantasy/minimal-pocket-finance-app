@@ -13,11 +13,13 @@ class SummaryCard extends StatelessWidget {
     required this.title,
     required this.value,
     this.tone = SummaryCardTone.balance,
+    this.onTap,
   });
 
   final String title;
   final String value;
   final SummaryCardTone tone;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +88,13 @@ class SummaryCard extends StatelessWidget {
       );
     }
 
-    return Card(child: content);
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        mouseCursor: onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
+        borderRadius: AppRadius.large,
+        child: content,
+      ),
+    );
   }
 }

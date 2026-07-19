@@ -9,10 +9,10 @@ final searchQueryProvider = StateProvider<String>((ref) => '');
 final filteredTransactionsProvider = Provider<List<Transaction>>((ref) {
   final transactionsAsync = ref.watch(transactionNotifierProvider);
   final transactions = transactionsAsync.asData?.value ?? const <Transaction>[];
-  final transactionFilter = ref.watch(transactionFilterProvider);
+  final historyFilters = ref.watch(historyFiltersProvider);
   final transactionSort = ref.watch(transactionSortProvider);
   final searchText = ref.watch(searchQueryProvider).trim().toLowerCase();
-  final transactionsByType = switch (transactionFilter) {
+  final transactionsByType = switch (historyFilters.transactionType) {
     TransactionFilter.all => transactions,
     TransactionFilter.income =>
       transactions
@@ -24,9 +24,22 @@ final filteredTransactionsProvider = Provider<List<Transaction>>((ref) {
           .toList(growable: false),
   };
 
+  final transactionsByDrillDown = transactionsByType.where((transaction) {
+    final matchesCategory =
+        historyFilters.category == null ||
+        transaction.category == historyFilters.category;
+    final matchesMonth =
+        historyFilters.month == null ||
+        (transaction.date.month == historyFilters.month &&
+            transaction.date.year == historyFilters.year);
+    final matchesRecurring =
+        historyFilters.isRecurring == null ||
+        transaction.isRecurring == historyFilters.isRecurring;
+    return matchesCategory && matchesMonth && matchesRecurring;
+  });
   final matchingTransactions = searchText.isEmpty
-      ? transactionsByType
-      : transactionsByType.where((transaction) {
+      ? transactionsByDrillDown
+      : transactionsByDrillDown.where((transaction) {
           return transaction.category.toLowerCase().contains(searchText) ||
               transaction.note.toLowerCase().contains(searchText) ||
               transaction.type.toLowerCase().contains(searchText) ||

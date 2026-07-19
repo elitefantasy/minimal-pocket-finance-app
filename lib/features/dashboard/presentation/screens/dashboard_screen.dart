@@ -8,7 +8,10 @@ import 'package:akm_finance_manager/features/dashboard/presentation/widgets/summ
 import 'package:akm_finance_manager/features/dashboard/presentation/widgets/monthly_expense_card.dart';
 import 'package:akm_finance_manager/features/dashboard/presentation/widgets/top_categories_card.dart';
 import 'package:akm_finance_manager/features/dashboard/presentation/widgets/recent_transactions_card.dart';
+import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/history_navigation.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
+import 'package:go_router/go_router.dart';
 
 /// The main entry dashboard screen representing metrics, graphs, recent transactions,
 /// and category spend breakdown.
@@ -64,6 +67,10 @@ class DashboardScreen extends ConsumerWidget {
                       // Left Pillar: Income Aggregates
                       child: SummaryCard(
                         tone: SummaryCardTone.income,
+                        onTap: () => HistoryNavigation.open(
+                          context,
+                          transactionType: TransactionFilter.income,
+                        ),
                         title: 'Income',
                         value: '₹${summary.income.toStringAsFixed(0)}',
                       ),
@@ -75,6 +82,10 @@ class DashboardScreen extends ConsumerWidget {
                       // Right Pillar: Outbound Expenses
                       child: SummaryCard(
                         tone: SummaryCardTone.expense,
+                        onTap: () => HistoryNavigation.open(
+                          context,
+                          transactionType: TransactionFilter.expense,
+                        ),
                         title: 'Expense',
                         value: '₹${summary.expense.toStringAsFixed(0)}',
                       ),
@@ -84,13 +95,25 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.lg),
 
                 // Dynamic Top Expenditure Visual Categories Card
-                TopCategoriesCard(categories: sortedCategories),
+                TopCategoriesCard(
+                  categories: sortedCategories,
+                  onCategoryTap: (category) => HistoryNavigation.open(
+                    context,
+                    category: category.name,
+                    transactionType: TransactionFilter.expense,
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.lg),
 
                 // Isolated structural comparison blocks (Monthly Contexts)
                 MonthlyExpenseCard(
                   icon: AppIcons.calendarMonth,
                   title: 'Current Month Expense',
+                  onTap: () => HistoryNavigation.open(
+                    context,
+                    transactionType: TransactionFilter.expense,
+                    month: DateTime.now(),
+                  ),
                   amount: '₹${summary.currentMonthExpense.toStringAsFixed(0)}',
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -105,6 +128,8 @@ class DashboardScreen extends ConsumerWidget {
                 // Recent ledger history overview item card
                 RecentTransactionsCard(
                   transactions: summary.recentTransactions,
+                  onTransactionTap: (transaction) =>
+                      context.push('/edit', extra: transaction),
                 ),
               ],
             ),

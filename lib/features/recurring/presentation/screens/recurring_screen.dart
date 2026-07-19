@@ -47,6 +47,9 @@ class RecurringScreen extends ConsumerWidget {
               final recurring = recurringTransactions[index];
               return RecurringTransactionCard(
                 recurring: recurring,
+                onTap: categories == null
+                    ? null
+                    : () => _showEditor(context, ref, categories, recurring),
                 onEdit: categories == null
                     ? () {}
                     : () => _showEditor(context, ref, categories, recurring),

@@ -9,16 +9,21 @@ class MonthlyExpenseCard extends StatelessWidget {
     required this.title,
     required this.amount,
     this.icon = AppIcons.calendarMonth,
+    this.onTap,
   });
 
   final String amount;
   final String title;
   final IconData icon;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
+      child: InkWell(
+        onTap: onTap,
+        mouseCursor: onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
+        child: Padding(
         padding: const EdgeInsets.all(AppSpacing.card),
         child: Row(
           children: [
@@ -41,6 +46,7 @@ class MonthlyExpenseCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

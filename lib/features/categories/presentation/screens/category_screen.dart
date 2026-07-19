@@ -4,6 +4,7 @@ import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/categories/widgets/category_tile.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/history_navigation.dart';
 import 'package:akm_finance_manager/models/category.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -217,6 +218,10 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                     final category = categories[index];
                     return CategoryTile(
                       category: category,
+                      onTap: () => HistoryNavigation.open(
+                        context,
+                        category: category.name,
+                      ),
                       onEdit: () => _editCategory(category),
                       onDelete: () => _deleteCategory(category),
                     );

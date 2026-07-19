@@ -9,9 +9,14 @@ import 'package:akm_finance_manager/features/dashboard/application/top_category_
 /// A card that displays a list of top spending categories.
 /// Includes a dropdown option to sort categories by monthly average or total expense.
 class TopCategoriesCard extends ConsumerWidget {
-  const TopCategoriesCard({super.key, required this.categories});
+  const TopCategoriesCard({
+    super.key,
+    required this.categories,
+    this.onCategoryTap,
+  });
 
   final List<TopCategorySummary> categories;
+  final ValueChanged<TopCategorySummary>? onCategoryTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -86,6 +91,12 @@ class TopCategoriesCard extends ConsumerWidget {
                     color: context.colors.secondary,
                   ),
                   title: Text(category.name),
+                  onTap: onCategoryTap == null
+                      ? null
+                      : () => onCategoryTap!(category),
+                  mouseCursor: onCategoryTap == null
+                      ? MouseCursor.defer
+                      : SystemMouseCursors.click,
                   subtitle: Text(
                     'Monthly Average: ₹${category.monthlyAverage.toStringAsFixed(0)}',
                   ),

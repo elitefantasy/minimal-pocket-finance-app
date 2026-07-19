@@ -10,12 +10,14 @@ class RecurringTransactionCard extends StatelessWidget {
     required this.recurring,
     required this.onEdit,
     required this.onDelete,
+    this.onTap,
     super.key,
   });
 
   final RecurringTransaction recurring;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,10 @@ class RecurringTransactionCard extends StatelessWidget {
         : context.colors.onSurfaceVariant;
 
     return Card(
-      child: Padding(
+      child: InkWell(
+        onTap: onTap,
+        mouseCursor: onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
+        child: Padding(
         padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,6 +131,7 @@ class RecurringTransactionCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
