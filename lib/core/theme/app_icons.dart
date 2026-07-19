@@ -36,6 +36,8 @@ abstract final class AppIcons {
   static const csv = Icons.table_view_outlined;
   static const clear = Icons.delete_sweep_outlined;
   static const check = Icons.check_circle;
+  static const checkOutlined = Icons.check_circle_outline;
+  static const openInNew = Icons.open_in_new;
 
   static const double smallSize = AppSizes.iconSmall;
   static const double mediumSize = AppSizes.iconMedium;

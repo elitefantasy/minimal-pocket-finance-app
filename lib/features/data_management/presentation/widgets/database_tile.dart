@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 
 class DatabaseTile extends StatelessWidget {
   const DatabaseTile({
@@ -20,9 +22,23 @@ class DatabaseTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(isActive ? AppIcons.check : AppIcons.database),
-      title: Text(databaseName),
-      subtitle: isActive ? const Text('Active') : null,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.card,
+        vertical: AppSpacing.xs,
+      ),
+      leading: Icon(
+        isActive ? AppIcons.check : AppIcons.database,
+        color: isActive ? context.semantic.success : context.colors.secondary,
+      ),
+      title: Text(databaseName, style: context.text.titleMedium),
+      subtitle: isActive
+          ? Text(
+              'Active',
+              style: context.text.bodyMedium?.copyWith(
+                color: context.semantic.success,
+              ),
+            )
+          : null,
       onTap: isActive ? null : onSelect,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -30,12 +46,12 @@ class DatabaseTile extends StatelessWidget {
           IconButton(
             onPressed: onRename,
             icon: const Icon(AppIcons.edit),
-            tooltip: 'Rename',
+            tooltip: 'Rename $databaseName',
           ),
           IconButton(
             onPressed: onDelete,
-            icon: const Icon(AppIcons.delete),
-            tooltip: 'Delete',
+            icon: Icon(AppIcons.delete, color: context.colors.error),
+            tooltip: 'Delete $databaseName',
           ),
         ],
       ),

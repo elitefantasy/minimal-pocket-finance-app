@@ -1,76 +1,63 @@
+import 'package:akm_finance_manager/app/providers.dart';
 import 'package:akm_finance_manager/core/constants/app_constants.dart';
 import 'package:akm_finance_manager/core/database/database_helper.dart';
+import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_sizes.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
+import 'package:akm_finance_manager/core/utils/package_info_provider.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:akm_finance_manager/app/providers.dart';
-import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:akm_finance_manager/core/utils/package_info_provider.dart';
 
 class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
     final packageInfoAsync = ref.watch(packageInfoProvider);
 
     return AppScaffold(
       title: 'About',
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.page),
         children: <Widget>[
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.card),
               child: Column(
                 children: <Widget>[
                   CircleAvatar(
-                    radius: 28,
-                    backgroundColor: colorScheme.primaryContainer,
-                    foregroundColor: colorScheme.onPrimaryContainer,
-                    child: const Icon(Icons.account_balance_wallet_outlined),
+                    radius: AppSizes.avatarMedium / 2,
+                    backgroundColor: context.colors.primaryContainer,
+                    foregroundColor: context.colors.onPrimaryContainer,
+                    child: const Icon(AppIcons.wallet),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
                     AppConstants.appName,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: context.text.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   packageInfoAsync.when(
-                    loading: () => Text(
-                      'Loading version...',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
+                    loading: () => _VersionText('Loading version...'),
+                    error: (_, __) => _VersionText(
+                      'Version Unknown • Database v${DatabaseHelper.databaseVersion}',
                     ),
-                    error: (_, __) => Text(
-                      'Version Unknown '
-                      '\u2022 Database v${DatabaseHelper.databaseVersion}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    data: (packageInfo) => Text(
-                      'Version ${packageInfo.version} '
-                      '\u2022 Database v${DatabaseHelper.databaseVersion}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
+                    data: (packageInfo) => _VersionText(
+                      'Version ${packageInfo.version} • Database v${DatabaseHelper.databaseVersion}',
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          _AboutSection(
-            title: 'What\u2019s New',
-            child: const Column(
+          const SizedBox(height: AppSpacing.lg),
+          const _AboutSection(
+            title: 'What’s New',
+            child: Column(
               children: <Widget>[
                 _FeatureItem('Offline-first finance tracking'),
                 _FeatureItem('Multi-database support'),
@@ -82,23 +69,28 @@ class AboutScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           _AboutSection(
             title: 'Export locations',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(AppConstants.exportLocationDescription),
-                const SizedBox(height: 12),
+                Text(
+                  AppConstants.exportLocationDescription,
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
                 _LocationItem(
-                  icon: Icons.storage_outlined,
+                  icon: AppIcons.database,
                   label: 'Database exports',
                   path:
                       '${AppConstants.appName}/${AppConstants.databaseExportFolder}',
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 _LocationItem(
-                  icon: Icons.table_chart_outlined,
+                  icon: AppIcons.csv,
                   label: 'CSV exports',
                   path:
                       '${AppConstants.appName}/${AppConstants.csvExportFolder}',
@@ -106,20 +98,25 @@ class AboutScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           _AboutSection(
             title: 'Created by',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(AppConstants.creatorCredit),
-                const SizedBox(height: 8),
+                Text(
+                  AppConstants.creatorCredit,
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.code),
-                  title: const Text('GitHub'),
-                  subtitle: const Text(AppConstants.githubUrl),
-                  trailing: const Icon(Icons.open_in_new),
+                  leading: const Icon(AppIcons.github),
+                  title: Text('GitHub', style: context.text.titleSmall),
+                  subtitle: Text(AppConstants.githubUrl),
+                  trailing: const Icon(AppIcons.openInNew),
                   onTap: () async {
                     final opened = await ref
                         .read(urlLauncherServiceProvider)
@@ -141,6 +138,23 @@ class AboutScreen extends ConsumerWidget {
   }
 }
 
+class _VersionText extends StatelessWidget {
+  const _VersionText(this.value);
+
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      value,
+      style: context.text.bodyMedium?.copyWith(
+        color: context.colors.onSurfaceVariant,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+}
+
 class _AboutSection extends StatelessWidget {
   const _AboutSection({required this.title, required this.child});
 
@@ -151,12 +165,12 @@ class _AboutSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
+            Text(title, style: context.text.titleMedium),
+            const SizedBox(height: AppSpacing.md),
             child,
           ],
         ),
@@ -173,12 +187,16 @@ class _FeatureItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Row(
         children: <Widget>[
-          const Icon(Icons.check_circle_outline, size: 20),
-          const SizedBox(width: 12),
-          Expanded(child: Text(label)),
+          Icon(
+            AppIcons.checkOutlined,
+            size: AppIcons.smallSize,
+            color: context.semantic.success,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(child: Text(label, style: context.text.bodyMedium)),
         ],
       ),
     );
@@ -201,15 +219,20 @@ class _LocationItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Icon(icon, size: 20),
-        const SizedBox(width: 12),
+        Icon(icon, size: AppIcons.smallSize, color: context.colors.secondary),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(label, style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 2),
-              Text(path, style: Theme.of(context).textTheme.bodySmall),
+              Text(label, style: context.text.titleSmall),
+              const SizedBox(height: AppSpacing.xxs),
+              Text(
+                path,
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),

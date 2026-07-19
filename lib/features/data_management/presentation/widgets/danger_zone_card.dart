@@ -11,23 +11,40 @@ class DangerZoneCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: context.colors.errorContainer,
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text('Danger Zone', style: context.text.titleMedium),
-            const SizedBox(height: AppSpacing.sm),
-            const Text(
-              'Delete all transactions while keeping categories, recurring '
-              'transactions, and the database file.',
+            Row(
+              children: <Widget>[
+                Icon(AppIcons.delete, color: context.colors.error),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  'Danger Zone',
+                  style: context.text.titleMedium?.copyWith(
+                    color: context.colors.error,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.md),
+            Text(
+              'Delete all transactions while keeping categories, recurring '
+              'transactions, and the database file.',
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+            const Divider(height: AppSpacing.xxl),
             FilledButton.icon(
               onPressed: onClearTransactions,
               icon: const Icon(AppIcons.clear),
               label: const Text('Clear All Transactions'),
+              style: FilledButton.styleFrom(
+                backgroundColor: context.colors.error,
+                foregroundColor: context.colors.onError,
+              ),
             ),
           ],
         ),
