@@ -108,7 +108,7 @@ class TransactionTile extends ConsumerWidget {
                           ? null
                           : () => _deleteTransaction(context, ref),
                       icon: const Icon(AppIcons.delete),
-                      tooltip: 'Delete',
+                      tooltip: 'Move to Trash',
                     ),
                   ],
                 ),
@@ -138,9 +138,9 @@ class TransactionTile extends ConsumerWidget {
     await transactionNotifier.deleteTransaction(transaction.id!);
 
     snackbarService.showUndo(
-      message: 'Transaction deleted',
+      message: 'Transaction moved to Trash',
       onUndo: () async {
-        await transactionNotifier.restoreDeletedTransaction(transaction);
+        await transactionNotifier.restoreDeletedTransaction(transaction.id!);
       },
     );
   }

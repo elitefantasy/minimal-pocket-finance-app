@@ -211,10 +211,6 @@ class DatabaseManagementRepository {
     return exportedPath;
   }
 
-  Future<void> clearTransactions() {
-    return _transactionRepository.deleteAll();
-  }
-
   Future<void> _validateDatabase(String databasePath) async {
     final database = await openDatabase(databasePath, readOnly: true);
     try {

@@ -7,6 +7,7 @@ import 'package:akm_finance_manager/features/statistics/presentation/screens/sta
 import 'package:akm_finance_manager/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/screens/edit_transaction_screen.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/screens/history_screen.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/screens/trash_screen.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +26,7 @@ final appRouter = GoRouter(
         initialFilters: _historyFiltersFrom(state.uri.queryParameters),
       ),
     ),
+    GoRoute(path: '/trash', builder: (context, state) => const TrashScreen()),
     GoRoute(
       path: '/edit',
       builder: (context, state) =>

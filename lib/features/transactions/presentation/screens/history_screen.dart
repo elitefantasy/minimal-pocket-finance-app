@@ -11,6 +11,7 @@ import 'package:akm_finance_manager/features/transactions/presentation/widgets/y
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({this.initialFilters, super.key});
@@ -121,7 +122,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     return AppScaffold(
       title: 'History',
-      actions: const <Widget>[YearSelector()],
+      actions: <Widget>[
+        IconButton(
+          onPressed: () => context.push('/trash'),
+          icon: const Icon(AppIcons.trash),
+          tooltip: 'Trash Bin',
+        ),
+        const YearSelector(),
+      ],
       body: transactionsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(child: Text(error.toString())),

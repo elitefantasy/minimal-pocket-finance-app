@@ -119,11 +119,6 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
         .exportTransactionsCsv();
   }
 
-  Future<void> clearTransactions() async {
-    await ref.read(databaseManagementRepositoryProvider).clearTransactions();
-    ref.invalidate(transactionNotifierProvider);
-  }
-
   Future<DatabaseManagerState> _loadState() async {
     final repository = ref.read(databaseManagementRepositoryProvider);
     await ref.read(databaseProvider).database;

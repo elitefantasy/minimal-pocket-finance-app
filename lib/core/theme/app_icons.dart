@@ -35,6 +35,8 @@ abstract final class AppIcons {
   static const importFile = Icons.download_outlined;
   static const csv = Icons.table_view_outlined;
   static const clear = Icons.delete_sweep_outlined;
+  static const trash = Icons.delete_outline_rounded;
+  static const restore = Icons.restore_from_trash_outlined;
   static const check = Icons.check_circle;
   static const checkOutlined = Icons.check_circle_outline;
   static const openInNew = Icons.open_in_new;

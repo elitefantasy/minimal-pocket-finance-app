@@ -136,6 +136,13 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
             ),
             _MoreDestination(
+              icon: AppIcons.trash,
+              title: 'Trash Bin',
+              subtitle: 'Restore or permanently delete transactions',
+              onTap: () =>
+                  _openSecondary(context, sheetContext, currentPath, '/trash'),
+            ),
+            _MoreDestination(
               icon: AppIcons.database,
               title: 'Data Management',
               subtitle: 'Back up, import, and export app data',

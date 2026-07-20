@@ -13,11 +13,11 @@ class DeleteConfirmationDialog extends StatelessWidget {
         children: <Widget>[
           Icon(AppIcons.delete, color: context.colors.error),
           const SizedBox(width: AppSpacing.sm),
-          Text('Delete transaction?', style: context.text.titleLarge),
+          Text('Move to Trash?', style: context.text.titleLarge),
         ],
       ),
       content: Text(
-        'Are you sure you want to delete this transaction?',
+        'This transaction can be restored from Trash for 30 days.',
         style: context.text.bodyMedium?.copyWith(
           color: context.colors.onSurfaceVariant,
         ),
@@ -33,7 +33,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
             foregroundColor: context.colors.onError,
           ),
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Delete'),
+          child: const Text('Move to Trash'),
         ),
       ],
     );
