@@ -125,7 +125,7 @@ SQLite Database (sqflite / sqflite_common_ffi)
 ## 🗄️ Database
 
 * **Engine**: SQLite
-* **Schema Version**: **4**
+* **Schema Version**: **1**
 * **Multi-Database Support**: Enables creation and switching between multiple database files on device.
 * **Foreign Keys & Migrations**: Foreign keys enforced with automatic versioned database migration scripts.
 
