@@ -19,7 +19,7 @@ class TransactionRepository {
 
   Future<int> insert(Transaction transaction) async {
     final Database database = await _databaseHelper.database;
-    final insertedId = await database.insert(_tableName, transaction.toMap());
+    final insertedId = await database.insert(_tableName, transaction.toDatabaseMap());
 
     if (transaction.attachments.isNotEmpty) {
       await _attachmentRepository.insertBatch(transaction.attachments, insertedId);
@@ -70,7 +70,7 @@ class TransactionRepository {
     final Database database = await _databaseHelper.database;
     await database.update(
       _tableName,
-      transaction.toMap(),
+      transaction.toDatabaseMap(),
       where: 'id = ? AND deleted_at IS NULL',
       whereArgs: <Object?>[id],
     );

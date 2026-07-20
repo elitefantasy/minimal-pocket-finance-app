@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:akm_finance_manager/core/theme/app_radius.dart';
+import 'package:akm_finance_manager/core/theme/app_sizes.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/models/attachment.dart';
@@ -96,51 +98,112 @@ class _AttachmentViewerDialogState extends State<AttachmentViewerDialog> {
               ),
             ),
 
-            // Interactive PageView content area
+            // Interactive PageView content area with navigation controls
             Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.attachments.length,
-                onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
-                },
-                itemBuilder: (context, index) {
-                  final item = widget.attachments[index];
-                  final file = File(item.filePath);
+              child: Stack(
+                children: <Widget>[
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: widget.attachments.length,
+                    onPageChanged: (index) {
+                      setState(() => _currentIndex = index);
+                    },
+                    itemBuilder: (context, index) {
+                      final item = widget.attachments[index];
+                      final file = File(item.filePath);
 
-                  if (item.isImage) {
-                    return InteractiveViewer(
-                      minScale: 0.8,
-                      maxScale: 4.0,
-                      child: Center(
-                        child: file.existsSync()
-                            ? Image.file(
-                                file,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    _buildErrorView(context, item),
-                              )
-                            : _buildErrorView(context, item),
+                      if (item.isImage) {
+                        return InteractiveViewer(
+                          minScale: 0.8,
+                          maxScale: 4.0,
+                          child: Center(
+                            child: file.existsSync()
+                                ? Image.file(
+                                    file,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        _buildErrorView(context, item),
+                                  )
+                                : _buildErrorView(context, item),
+                          ),
+                        );
+                      } else if (item.isPdf) {
+                        return _buildDocumentCard(
+                          context,
+                          icon: Icons.picture_as_pdf,
+                          iconColor: Colors.redAccent,
+                          title: item.fileName ?? 'PDF Document',
+                          subtitle: 'PDF File Attachment',
+                        );
+                      } else {
+                        return _buildDocumentCard(
+                          context,
+                          icon: Icons.insert_drive_file_outlined,
+                          iconColor: Colors.blueAccent,
+                          title: item.fileName ?? 'File Attachment',
+                          subtitle: 'Document Attachment',
+                        );
+                      }
+                    },
+                  ),
+
+                  // Left Navigation Arrow Button
+                  if (widget.attachments.length > 1 && _currentIndex > 0)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: AppSpacing.md),
+                        child: Material(
+                          color: Colors.black54,
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          child: IconButton(
+                            iconSize: AppSizes.iconLarge,
+                            icon: const Icon(
+                              Icons.chevron_left,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            tooltip: 'Previous Attachment',
+                          ),
+                        ),
                       ),
-                    );
-                  } else if (item.isPdf) {
-                    return _buildDocumentCard(
-                      context,
-                      icon: Icons.picture_as_pdf,
-                      iconColor: Colors.redAccent,
-                      title: item.fileName ?? 'PDF Document',
-                      subtitle: 'PDF File Attachment',
-                    );
-                  } else {
-                    return _buildDocumentCard(
-                      context,
-                      icon: Icons.insert_drive_file_outlined,
-                      iconColor: Colors.blueAccent,
-                      title: item.fileName ?? 'File Attachment',
-                      subtitle: 'Document Attachment',
-                    );
-                  }
-                },
+                    ),
+
+                  // Right Navigation Arrow Button
+                  if (widget.attachments.length > 1 &&
+                      _currentIndex < widget.attachments.length - 1)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: AppSpacing.md),
+                        child: Material(
+                          color: Colors.black54,
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          child: IconButton(
+                            iconSize: AppSizes.iconLarge,
+                            icon: const Icon(
+                              Icons.chevron_right,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            tooltip: 'Next Attachment',
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ],
@@ -183,7 +246,7 @@ class _AttachmentViewerDialogState extends State<AttachmentViewerDialog> {
         padding: const EdgeInsets.all(AppSpacing.xl),
         decoration: BoxDecoration(
           color: Colors.grey.shade900,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.large,
           border: Border.all(color: Colors.white12),
         ),
         child: Column(

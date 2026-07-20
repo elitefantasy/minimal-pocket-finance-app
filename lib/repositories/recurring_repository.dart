@@ -97,7 +97,7 @@ class RecurringRepository implements RecurringProcessingRepository {
         return false;
       }
 
-      await databaseTransaction.insert('transactions', transaction.toMap());
+      await databaseTransaction.insert('transactions', transaction.toDatabaseMap());
       await databaseTransaction.update(
         _tableName,
         <String, Object?>{

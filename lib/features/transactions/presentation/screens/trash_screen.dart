@@ -1,5 +1,6 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_sizes.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/transactions/application/trash_transactions_provider.dart';
@@ -193,21 +194,33 @@ class _TrashTransactionTile extends StatelessWidget {
         isThreeLine: deletedLabel.isNotEmpty,
         trailing: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Text('$amountPrefix₹${transaction.amount.toStringAsFixed(0)}'),
+            Text(
+              '$amountPrefix₹${transaction.amount.toStringAsFixed(0)}',
+              style: context.text.titleMedium?.copyWith(
+                color: isIncome ? context.semantic.success : context.colors.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 IconButton(
                   onPressed: onRestore,
-                  icon: const Icon(AppIcons.restore),
+                  icon: const Icon(AppIcons.restore, size: AppSizes.iconSmall),
                   tooltip: 'Restore',
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(AppSpacing.xs),
                 ),
+                const SizedBox(width: AppSpacing.xs),
                 IconButton(
                   onPressed: onDeletePermanently,
-                  icon: const Icon(AppIcons.delete),
+                  icon: const Icon(AppIcons.delete, size: AppSizes.iconSmall),
                   tooltip: 'Delete permanently',
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(AppSpacing.xs),
                 ),
               ],
             ),

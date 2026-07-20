@@ -107,6 +107,20 @@ class Transaction {
     };
   }
 
+  Map<String, dynamic> toDatabaseMap() {
+    return <String, dynamic>{
+      'id': id,
+      'type': type,
+      'amount': amount,
+      'category': category,
+      'note': note,
+      'date': date.toIso8601String(),
+      'recurring_transaction_id': recurringTransactionId,
+      'generated_at': generatedAt?.toIso8601String(),
+      'deleted_at': deletedAt?.toIso8601String(),
+    };
+  }
+
   String toJson() => jsonEncode(toMap());
 
   @override
