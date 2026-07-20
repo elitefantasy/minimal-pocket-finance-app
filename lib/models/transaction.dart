@@ -11,12 +11,14 @@ class Transaction {
     required this.date,
     this.recurringTransactionId,
     this.generatedAt,
+    this.deletedAt,
   });
 
   static const Object _unset = Object();
 
   factory Transaction.fromMap(Map<String, dynamic> map) {
     final generatedAtValue = map['generated_at'] as String?;
+    final deletedAtValue = map['deleted_at'] as String?;
 
     return Transaction(
       id: map['id'] as int?,
@@ -29,6 +31,7 @@ class Transaction {
       generatedAt: generatedAtValue == null
           ? null
           : DateTime.parse(generatedAtValue),
+      deletedAt: deletedAtValue == null ? null : DateTime.parse(deletedAtValue),
     );
   }
 
@@ -44,6 +47,7 @@ class Transaction {
   final DateTime date;
   final int? recurringTransactionId;
   final DateTime? generatedAt;
+  final DateTime? deletedAt;
 
   bool get isRecurring => recurringTransactionId != null;
 
@@ -56,6 +60,7 @@ class Transaction {
     DateTime? date,
     Object? recurringTransactionId = _unset,
     Object? generatedAt = _unset,
+    Object? deletedAt = _unset,
   }) {
     return Transaction(
       id: id ?? this.id,
@@ -70,6 +75,7 @@ class Transaction {
       generatedAt: generatedAt == _unset
           ? this.generatedAt
           : generatedAt as DateTime?,
+      deletedAt: deletedAt == _unset ? this.deletedAt : deletedAt as DateTime?,
     );
   }
 
@@ -83,6 +89,7 @@ class Transaction {
       'date': date.toIso8601String(),
       'recurring_transaction_id': recurringTransactionId,
       'generated_at': generatedAt?.toIso8601String(),
+      'deleted_at': deletedAt?.toIso8601String(),
     };
   }
 
@@ -99,7 +106,8 @@ class Transaction {
             other.note == note &&
             other.date == date &&
             other.recurringTransactionId == recurringTransactionId &&
-            other.generatedAt == generatedAt;
+            other.generatedAt == generatedAt &&
+            other.deletedAt == deletedAt;
   }
 
   @override
@@ -112,6 +120,7 @@ class Transaction {
     date,
     recurringTransactionId,
     generatedAt,
+    deletedAt,
   );
 
   @override
@@ -119,6 +128,6 @@ class Transaction {
     return 'Transaction(id: $id, type: $type, amount: $amount, '
         'category: $category, note: $note, date: $date, '
         'recurringTransactionId: $recurringTransactionId, '
-        'generatedAt: $generatedAt)';
+        'generatedAt: $generatedAt, deletedAt: $deletedAt)';
   }
 }

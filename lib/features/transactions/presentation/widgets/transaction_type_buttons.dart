@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 
 class TransactionTypeButtons extends StatelessWidget {
   const TransactionTypeButtons({
@@ -19,14 +22,36 @@ class TransactionTypeButtons extends StatelessWidget {
         Expanded(
           child: FilledButton(
             onPressed: isSaving ? null : onIncome,
-            child: const Text('Income'),
+            style: FilledButton.styleFrom(
+              backgroundColor: context.semantic.success,
+              foregroundColor: context.colors.surface,
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(AppIcons.income),
+                SizedBox(width: AppSpacing.sm),
+                Text('Income'),
+              ],
+            ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.lg),
         Expanded(
           child: FilledButton(
             onPressed: isSaving ? null : onExpense,
-            child: const Text('Expense'),
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colors.error,
+              foregroundColor: context.colors.onError,
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(AppIcons.expense),
+                SizedBox(width: AppSpacing.sm),
+                Text('Expense'),
+              ],
+            ),
           ),
         ),
       ],

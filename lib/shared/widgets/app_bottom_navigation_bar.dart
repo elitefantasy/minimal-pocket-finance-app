@@ -1,3 +1,7 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_sizes.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,7 +21,7 @@ class AppBottomNavigationBar extends StatelessWidget {
     };
 
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainer,
+      color: context.colors.surfaceContainer,
       child: SafeArea(
         top: false,
         child: Row(
@@ -29,17 +33,11 @@ class AppBottomNavigationBar extends StatelessWidget {
                     : NavigationBarThemeData(
                         indicatorColor: Colors.transparent,
                         iconTheme: WidgetStatePropertyAll<IconThemeData>(
-                          IconThemeData(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
+                          IconThemeData(color: context.colors.onSurfaceVariant),
                         ),
                         labelTextStyle: WidgetStatePropertyAll<TextStyle?>(
-                          Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                          context.text.labelMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -53,22 +51,22 @@ class AppBottomNavigationBar extends StatelessWidget {
                   },
                   destinations: <NavigationDestination>[
                     NavigationDestination(
-                      icon: const Icon(Icons.dashboard_outlined),
+                      icon: const Icon(AppIcons.dashboard),
                       selectedIcon: Icon(
                         hasPrimarySelection
-                            ? Icons.dashboard
-                            : Icons.dashboard_outlined,
+                            ? AppIcons.dashboardSelected
+                            : AppIcons.dashboard,
                       ),
                       label: 'Dashboard',
                     ),
                     const NavigationDestination(
-                      icon: Icon(Icons.add_circle_outline),
-                      selectedIcon: Icon(Icons.add_circle),
+                      icon: Icon(AppIcons.add),
+                      selectedIcon: Icon(AppIcons.addSelected),
                       label: 'Add',
                     ),
                     const NavigationDestination(
-                      icon: Icon(Icons.history_outlined),
-                      selectedIcon: Icon(Icons.history),
+                      icon: Icon(AppIcons.historyOutlined),
+                      selectedIcon: Icon(AppIcons.history),
                       label: 'History',
                     ),
                   ],
@@ -76,16 +74,16 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 80,
-              height: 80,
+              width: AppSizes.bottomNavigationHeight,
+              height: AppSizes.bottomNavigationHeight,
               child: InkWell(
                 onTap: () => _showMoreSheet(context, currentPath),
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.more_horiz),
-                    SizedBox(height: 4),
-                    Text('More', style: TextStyle(fontSize: 12)),
+                    const Icon(AppIcons.more),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text('More', style: context.text.labelMedium),
                   ],
                 ),
               ),
@@ -105,7 +103,7 @@ class AppBottomNavigationBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             _MoreDestination(
-              icon: Icons.bar_chart_outlined,
+              icon: AppIcons.statistics,
               title: 'Statistics',
               subtitle: 'View income and expense insights',
               onTap: () => _openSecondary(
@@ -116,7 +114,7 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
             ),
             _MoreDestination(
-              icon: Icons.category_outlined,
+              icon: AppIcons.category,
               title: 'Categories',
               subtitle: 'Manage transaction categories',
               onTap: () => _openSecondary(
@@ -127,7 +125,7 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
             ),
             _MoreDestination(
-              icon: Icons.repeat,
+              icon: AppIcons.repeat,
               title: 'Recurring Transactions',
               subtitle: 'Manage monthly recurring transactions',
               onTap: () => _openSecondary(
@@ -138,14 +136,21 @@ class AppBottomNavigationBar extends StatelessWidget {
               ),
             ),
             _MoreDestination(
-              icon: Icons.storage_outlined,
+              icon: AppIcons.trash,
+              title: 'Trash Bin',
+              subtitle: 'Restore or permanently delete transactions',
+              onTap: () =>
+                  _openSecondary(context, sheetContext, currentPath, '/trash'),
+            ),
+            _MoreDestination(
+              icon: AppIcons.database,
               title: 'Data Management',
               subtitle: 'Back up, import, and export app data',
               onTap: () =>
                   _openSecondary(context, sheetContext, currentPath, '/data'),
             ),
             _MoreDestination(
-              icon: Icons.info_outline,
+              icon: AppIcons.about,
               title: 'About',
               subtitle: 'App information and release details',
               onTap: () =>

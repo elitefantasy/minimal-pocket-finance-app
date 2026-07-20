@@ -4,8 +4,6 @@ import 'package:akm_finance_manager/services/export/android_export_location_serv
 import 'package:akm_finance_manager/core/constants/app_constants.dart';
 import 'package:akm_finance_manager/models/export_result.dart';
 
-
-import 'package:path/path.dart' as path;
 import 'package:saf_stream/saf_stream.dart';
 import 'package:saf_util/saf_util.dart';
 
@@ -23,8 +21,7 @@ class AndroidSafExportService {
     AndroidExportLocationService? locationService,
     SafUtil? safUtil,
     SafStream? safStream,
-  }) : _locationService =
-            locationService ?? AndroidExportLocationService(),
+  }) : _locationService = locationService ?? AndroidExportLocationService(),
        _safUtil = safUtil ?? SafUtil(),
        _safStream = safStream ?? SafStream();
 
@@ -41,6 +38,7 @@ class AndroidSafExportService {
   Future<ExportResult> exportFile({
     required String sourcePath,
     required String artifactFolder,
+    required String fileName,
   }) async {
     // Make sure the source file exists.
     final sourceFile = File(sourcePath);
@@ -61,27 +59,24 @@ class AndroidSafExportService {
     // Minimal Pocket Finance/
     //     Database/
     //
-    final destinationFolder = await _safUtil.mkdirp(
-      rootUri,
-      <String>[
-        AppConstants.appName,
-        artifactFolder,
-      ],
-    );
+    final destinationFolder = await _safUtil.mkdirp(rootUri, <String>[
+      AppConstants.appName,
+      artifactFolder,
+    ]);
 
     await _safStream.pasteLocalFile(
       sourcePath,
       destinationFolder.uri,
-      path.basename(sourcePath),
+      fileName,
       'application/octet-stream',
-      overwrite: true,
+      overwrite: false,
     );
 
     // Return exported filename.
     return ExportResult(
-      fileName: path.basename(sourcePath),
-      relativePath: 
-	      '${AppConstants.appName}/$artifactFolder/${path.basename(sourcePath)}'
-      );
+      fileName: fileName,
+      relativePath:
+          '${AppConstants.appName}/$artifactFolder/$fileName',
+    );
   }
 }

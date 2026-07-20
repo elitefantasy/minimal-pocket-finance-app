@@ -1,7 +1,9 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/data_management/application/database_manager_notifier.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/backup_card.dart';
-import 'package:akm_finance_manager/features/data_management/presentation/widgets/danger_zone_card.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/database_card.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/database_tile.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
@@ -21,26 +23,26 @@ class DataManagementScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(child: Text(error.toString())),
         data: (state) => ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.page),
           children: <Widget>[
             DatabaseCard(databaseName: state.currentDatabase),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.section),
             Row(
               children: <Widget>[
                 Expanded(
                   child: Text(
                     'Available Databases',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: context.text.titleLarge,
                   ),
                 ),
                 FilledButton.icon(
                   onPressed: () => _createDatabase(context, ref),
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(AppIcons.add),
                   label: const Text('Create'),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Card(
               child: Column(
                 children: state.databases
@@ -58,15 +60,11 @@ class DataManagementScreen extends ConsumerWidget {
                     .toList(growable: false),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.section),
             BackupCard(
               onImport: () => _import(context, ref),
               onExportDatabase: () => _exportDatabase(context, ref),
               onExportCsv: () => _exportCsv(context, ref),
-            ),
-            const SizedBox(height: 16),
-            DangerZoneCard(
-              onClearTransactions: () => _clearTransactions(context, ref),
             ),
           ],
         ),
@@ -191,7 +189,7 @@ class DataManagementScreen extends ConsumerWidget {
       _showMessage(
         ref,
         'Database exported successfully.\n\n'
-        'Location:\n${result.relativePath}',
+        'Location:\n${result.absolutePath ?? result.relativePath}',
       );
     });
   }
@@ -209,23 +207,6 @@ class DataManagementScreen extends ConsumerWidget {
     });
   }
 
-  Future<void> _clearTransactions(BuildContext context, WidgetRef ref) async {
-    final confirmed = await _confirm(
-      context,
-      title: 'Clear All Transactions?',
-      message: 'This will permanently delete every transaction.',
-    );
-    if (!confirmed || !context.mounted) {
-      return;
-    }
-    await _perform(context, ref, () async {
-      await ref.read(databaseManagerProvider.notifier).clearTransactions();
-      if (context.mounted) {
-        _showMessage(ref, 'All transactions deleted.');
-      }
-    });
-  }
-
   Future<String?> _requestName(
     BuildContext context, {
     required String title,
@@ -238,7 +219,7 @@ class DataManagementScreen extends ConsumerWidget {
         final controller = TextEditingController(text: initialValue);
 
         return AlertDialog(
-          title: Text(title),
+          title: Text(title, style: context.text.titleLarge),
           content: TextField(
             controller: controller,
             autofocus: true,
@@ -272,7 +253,12 @@ class DataManagementScreen extends ConsumerWidget {
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: Text(title),
-            content: Text(message),
+            content: Text(
+              message,
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(false),

@@ -7,6 +7,8 @@ import 'package:akm_finance_manager/features/statistics/presentation/screens/sta
 import 'package:akm_finance_manager/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/screens/edit_transaction_screen.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/screens/history_screen.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/screens/trash_screen.dart';
+import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,8 +22,11 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/history',
-      builder: (context, state) => const HistoryScreen(),
+      builder: (context, state) => HistoryScreen(
+        initialFilters: _historyFiltersFrom(state.uri.queryParameters),
+      ),
     ),
+    GoRoute(path: '/trash', builder: (context, state) => const TrashScreen()),
     GoRoute(
       path: '/edit',
       builder: (context, state) =>
@@ -46,3 +51,35 @@ final appRouter = GoRouter(
     GoRoute(path: '/about', builder: (context, state) => const AboutScreen()),
   ],
 );
+
+HistoryFilters? _historyFiltersFrom(Map<String, String> queryParameters) {
+  final type = switch (queryParameters['type']) {
+    'income' => TransactionFilter.income,
+    'expense' => TransactionFilter.expense,
+    _ => TransactionFilter.all,
+  };
+  final month = int.tryParse(queryParameters['month'] ?? '');
+  final year = int.tryParse(queryParameters['year'] ?? '');
+  final recurring = switch (queryParameters['recurring']) {
+    'true' => true,
+    'false' => false,
+    _ => null,
+  };
+  final category = queryParameters['category'];
+
+  if (category == null &&
+      type == TransactionFilter.all &&
+      month == null &&
+      year == null &&
+      recurring == null) {
+    return null;
+  }
+
+  return HistoryFilters(
+    transactionType: type,
+    category: category,
+    month: month,
+    year: year,
+    isRecurring: recurring,
+  );
+}

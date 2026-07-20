@@ -11,7 +11,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int databaseVersion = 4;
+  static const int databaseVersion = 5;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -148,6 +148,7 @@ class DatabaseHelper {
           date TEXT NOT NULL,
           recurring_transaction_id INTEGER,
           generated_at TEXT,
+          deleted_at TEXT,
           FOREIGN KEY (recurring_transaction_id)
             REFERENCES recurring_transactions(id)
             ON DELETE SET NULL
@@ -164,6 +165,9 @@ class DatabaseHelper {
         'CREATE INDEX index_transactions_category ON transactions(category)',
       )
       ..execute('CREATE INDEX index_transactions_type ON transactions(type)')
+      ..execute(
+        'CREATE INDEX index_transactions_deleted_at ON transactions(deleted_at)',
+      )
       ..execute(
         'CREATE INDEX index_transactions_recurring_transaction_id '
         'ON transactions(recurring_transaction_id)',
@@ -257,6 +261,18 @@ class DatabaseHelper {
           SET start_date = created_at
           WHERE start_date IS NULL
         ''');
+      });
+    }
+
+    if (oldVersion < 5) {
+      await database.transaction((transaction) async {
+        await transaction.execute(
+          'ALTER TABLE transactions ADD COLUMN deleted_at TEXT',
+        );
+        await transaction.execute(
+          'CREATE INDEX IF NOT EXISTS '
+          'index_transactions_deleted_at ON transactions(deleted_at)',
+        );
       });
     }
   }

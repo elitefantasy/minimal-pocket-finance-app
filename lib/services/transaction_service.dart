@@ -7,16 +7,20 @@ class TransactionService {
 
   final TransactionRepository _transactionRepository;
 
-  Future<List<Transaction>> getAllTransactions() {
-    return _transactionRepository.getAll();
+  Future<List<Transaction>> getAllTransactions({int? year}) {
+    return _transactionRepository.getAll(year: year);
   }
 
   Future<void> addTransaction(Transaction transaction) async {
     await _transactionRepository.insert(transaction);
   }
 
-  Future<void> restoreDeletedTransaction(Transaction transaction) {
-    return _transactionRepository.restore(transaction);
+  Future<List<Transaction>> getTrashedTransactions() {
+    return _transactionRepository.getTrashed();
+  }
+
+  Future<void> restoreDeletedTransaction(int id) {
+    return _transactionRepository.restore(id);
   }
 
   Future<void> updateTransaction(Transaction transaction) {
@@ -24,6 +28,14 @@ class TransactionService {
   }
 
   Future<void> deleteTransaction(int id) {
-    return _transactionRepository.delete(id);
+    return _transactionRepository.moveToTrash(id);
+  }
+
+  Future<void> permanentlyDeleteTransaction(int id) {
+    return _transactionRepository.permanentlyDelete(id);
+  }
+
+  Future<void> emptyTrash() {
+    return _transactionRepository.emptyTrash();
   }
 }

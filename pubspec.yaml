@@ -37,6 +37,7 @@ dependencies:
 
   # Database
   sqflite: ^2.4.2
+  sqflite_common_ffi: ^2.3.5
   path: ^1.9.1
   path_provider: ^2.1.5
 
@@ -56,6 +57,9 @@ dependencies:
   intl: ^0.20.2
   
   url_launcher: ^6.3.2
+  package_info_plus: ^9.0.0
+  
+  flutter_launcher_icons: ^0.14.3
 
   
 dev_dependencies:
@@ -110,3 +114,25 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/app_icon.png"
+
+  windows:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+    icon_size: 256
+
+  web:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+
+  macos:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+
+  linux:
+    generate: true
+    image_path: "assets/images/app_icon.png"

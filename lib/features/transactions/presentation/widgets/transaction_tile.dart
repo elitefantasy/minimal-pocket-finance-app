@@ -1,4 +1,7 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/delete_confirmation_dialog.dart';
@@ -19,65 +22,93 @@ class TransactionTile extends ConsumerWidget {
     final formattedAmount =
         '$amountPrefix₹${transaction.amount.toStringAsFixed(0)}';
 
+    final isIncome = transaction.type == 'Income';
+    final amountColor = isIncome
+        ? context.semantic.success
+        : context.colors.error;
+
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Icon(
+              isIncome ? AppIcons.income : AppIcons.expense,
+              color: amountColor,
+              size: AppIcons.mediumSize,
+            ),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     transaction.category,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: context.text.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   if (transaction.note.isNotEmpty) ...<Widget>[
-                    const SizedBox(height: 4),
-                    Text(transaction.note),
+                    const SizedBox(height: AppSpacing.compact),
+                    Text(
+                      transaction.note,
+                      style: context.text.bodyMedium?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
+                    ),
                   ],
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     formattedDate,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: context.text.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
                   if (transaction.isRecurring) ...<Widget>[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.xs),
                     Chip(
-                      avatar: const Icon(Icons.repeat, size: 14),
+                      avatar: const Icon(
+                        AppIcons.repeat,
+                        size: AppIcons.smallSize,
+                      ),
                       label: const Text('Monthly'),
                       visualDensity: VisualDensity.compact,
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      labelStyle: context.text.labelSmall,
                       padding: EdgeInsets.zero,
                     ),
                   ],
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.lg),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text(formattedAmount),
-                const SizedBox(height: 4),
+                Text(
+                  formattedAmount,
+                  style: context.text.titleLarge?.copyWith(
+                    color: amountColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     IconButton(
                       onPressed: () =>
                           context.push('/edit', extra: transaction),
-                      icon: const Icon(Icons.edit_outlined),
+                      icon: const Icon(AppIcons.edit),
                       tooltip: 'Edit',
                     ),
                     IconButton(
                       onPressed: transaction.id == null
                           ? null
                           : () => _deleteTransaction(context, ref),
-                      icon: const Icon(Icons.delete_outline),
-                      tooltip: 'Delete',
+                      icon: const Icon(AppIcons.delete),
+                      tooltip: 'Move to Trash',
                     ),
                   ],
                 ),
@@ -107,9 +138,9 @@ class TransactionTile extends ConsumerWidget {
     await transactionNotifier.deleteTransaction(transaction.id!);
 
     snackbarService.showUndo(
-      message: 'Transaction deleted',
+      message: 'Transaction moved to Trash',
       onUndo: () async {
-        await transactionNotifier.restoreDeletedTransaction(transaction);
+        await transactionNotifier.restoreDeletedTransaction(transaction.id!);
       },
     );
   }

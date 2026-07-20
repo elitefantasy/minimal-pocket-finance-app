@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,11 +11,8 @@ class AmountField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      decoration: const InputDecoration(
-        labelText: 'Amount',
-        prefixText: '₹',
-        border: OutlineInputBorder(),
-      ),
+      decoration: const InputDecoration(labelText: 'Amount', prefixText: '₹'),
+      style: context.text.headlineSmall,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),

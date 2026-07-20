@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 
 class NoteField extends StatelessWidget {
@@ -11,7 +12,7 @@ class NoteField extends StatelessWidget {
       controller: controller,
       decoration: const InputDecoration(
         labelText: 'Note',
-        border: OutlineInputBorder(),
+        prefixIcon: Icon(AppIcons.note),
       ),
       maxLines: 3,
       textCapitalization: TextCapitalization.sentences,

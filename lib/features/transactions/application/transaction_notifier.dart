@@ -1,17 +1,23 @@
 import 'package:akm_finance_manager/app/providers.dart';
+import 'package:akm_finance_manager/features/transactions/application/selected_year_provider.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TransactionNotifier extends AsyncNotifier<List<Transaction>> {
   @override
   Future<List<Transaction>> build() {
-    return ref.read(transactionServiceProvider).getAllTransactions();
+    final selectedYear = ref.watch(selectedYearProvider);
+    return ref.read(transactionServiceProvider).getAllTransactions(
+      year: selectedYear,
+    );
   }
 
   Future<void> refresh() async {
     state = const AsyncLoading<List<Transaction>>();
     state = await AsyncValue.guard(
-      () => ref.read(transactionServiceProvider).getAllTransactions(),
+      () => ref.read(transactionServiceProvider).getAllTransactions(
+        year: ref.read(selectedYearProvider),
+      ),
     );
   }
 
@@ -20,15 +26,27 @@ class TransactionNotifier extends AsyncNotifier<List<Transaction>> {
     await refresh();
   }
 
-  Future<void> restoreDeletedTransaction(Transaction transaction) async {
+  Future<void> restoreDeletedTransaction(int id) async {
     await ref
         .read(transactionServiceProvider)
-        .restoreDeletedTransaction(transaction);
+        .restoreDeletedTransaction(id);
     await refresh();
   }
 
   Future<void> deleteTransaction(int id) async {
     await ref.read(transactionServiceProvider).deleteTransaction(id);
+    await refresh();
+  }
+
+  Future<void> permanentlyDeleteTransaction(int id) async {
+    await ref
+        .read(transactionServiceProvider)
+        .permanentlyDeleteTransaction(id);
+    await refresh();
+  }
+
+  Future<void> emptyTrash() async {
+    await ref.read(transactionServiceProvider).emptyTrash();
     await refresh();
   }
 

@@ -1,6 +1,9 @@
+import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_dropdown.dart';
+import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
 import 'package:akm_finance_manager/models/category.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
@@ -90,32 +93,41 @@ class _RecurringTransactionDialogState
 
   @override
   Widget build(BuildContext context) {
+    final isNewRecurring = widget.recurring == null;
+
     return AlertDialog(
-      title: Text(
-        widget.recurring == null ? 'Add Recurring' : 'Edit Recurring',
+      title: Row(
+        children: <Widget>[
+          Icon(AppIcons.repeat, color: context.colors.secondary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              isNewRecurring ? 'Add recurring transaction' : 'Edit recurring transaction',
+              style: context.text.titleLarge,
+            ),
+          ),
+        ],
       ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Transaction Type'),
-              ),
-              const SizedBox(height: 8),
+              const _SectionLabel('Transaction type'),
+              const SizedBox(height: AppSpacing.sm),
               SegmentedButton<String>(
                 segments: const <ButtonSegment<String>>[
                   ButtonSegment<String>(
                     value: 'Income',
                     label: Text('Income'),
-                    icon: Icon(Icons.arrow_downward),
+                    icon: Icon(AppIcons.income),
                   ),
                   ButtonSegment<String>(
                     value: 'Expense',
                     label: Text('Expense'),
-                    icon: Icon(Icons.arrow_upward),
+                    icon: Icon(AppIcons.expense),
                   ),
                 ],
                 selected: <String>{_type},
@@ -123,24 +135,37 @@ class _RecurringTransactionDialogState
                   setState(() => _type = selection.first);
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.xl),
+              const _SectionLabel('Details'),
+              const SizedBox(height: AppSpacing.sm),
               AmountField(controller: _amountController),
-              const SizedBox(height: 16),
-              CategoryDropdown(
+              const SizedBox(height: AppSpacing.lg),
+              CategorySearchField(
                 categories: widget.categories,
                 value: _category,
                 onChanged: (category) {
                   setState(() => _category = category);
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               NoteField(controller: _noteController),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.xl),
+              const _SectionLabel('Schedule'),
+              const SizedBox(height: AppSpacing.sm),
               DayOfMonthField(controller: _dayController),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.md),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Enabled'),
+                secondary: const Icon(AppIcons.repeat),
+                title: Text('Enabled', style: context.text.titleSmall),
+                subtitle: Text(
+                  _isEnabled
+                      ? 'This transaction will be processed monthly.'
+                      : 'This transaction is paused.',
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
                 value: _isEnabled,
                 onChanged: (value) {
                   setState(() => _isEnabled = value);
@@ -155,8 +180,23 @@ class _RecurringTransactionDialogState
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
-        FilledButton(onPressed: _save, child: const Text('Save')),
+        FilledButton.icon(
+          onPressed: _save,
+          icon: const Icon(AppIcons.check),
+          label: Text(isNewRecurring ? 'Add recurring' : 'Save changes'),
+        ),
       ],
     );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(label, style: context.text.titleSmall);
   }
 }
