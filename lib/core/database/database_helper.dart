@@ -11,7 +11,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int databaseVersion = 2;
+  static const int databaseVersion = 3;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -218,6 +218,21 @@ class DatabaseHelper {
       await database.execute(
         'CREATE INDEX IF NOT EXISTS index_attachments_transaction_id '
         'ON attachments(transaction_id)',
+      );
+    }
+    
+    if (oldVersion < 3) {
+      try {
+        await database.execute(
+          'ALTER TABLE transactions ADD COLUMN deleted_at TEXT',
+        );
+      } catch (e) {
+        if (!e.toString().contains('duplicate column')) {
+          rethrow;
+        }
+      }
+      await database.execute(
+        'CREATE INDEX IF NOT EXISTS index_transactions_deleted_at ON transactions(deleted_at)',
       );
     }
   }

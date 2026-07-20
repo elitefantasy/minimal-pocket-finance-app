@@ -99,64 +99,66 @@ class AppBottomNavigationBar extends StatelessWidget {
       context: context,
       showDragHandle: true,
       builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            _MoreDestination(
-              icon: AppIcons.statistics,
-              title: 'Statistics',
-              subtitle: 'View income and expense insights',
-              onTap: () => _openSecondary(
-                context,
-                sheetContext,
-                currentPath,
-                '/statistics',
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _MoreDestination(
+                icon: AppIcons.statistics,
+                title: 'Statistics',
+                subtitle: 'View income and expense insights',
+                onTap: () => _openSecondary(
+                  context,
+                  sheetContext,
+                  currentPath,
+                  '/statistics',
+                ),
               ),
-            ),
-            _MoreDestination(
-              icon: AppIcons.category,
-              title: 'Categories',
-              subtitle: 'Manage transaction categories',
-              onTap: () => _openSecondary(
-                context,
-                sheetContext,
-                currentPath,
-                '/categories',
+              _MoreDestination(
+                icon: AppIcons.category,
+                title: 'Categories',
+                subtitle: 'Manage transaction categories',
+                onTap: () => _openSecondary(
+                  context,
+                  sheetContext,
+                  currentPath,
+                  '/categories',
+                ),
               ),
-            ),
-            _MoreDestination(
-              icon: AppIcons.repeat,
-              title: 'Recurring Transactions',
-              subtitle: 'Manage monthly recurring transactions',
-              onTap: () => _openSecondary(
-                context,
-                sheetContext,
-                currentPath,
-                '/recurring',
+              _MoreDestination(
+                icon: AppIcons.repeat,
+                title: 'Recurring Transactions',
+                subtitle: 'Manage monthly recurring transactions',
+                onTap: () => _openSecondary(
+                  context,
+                  sheetContext,
+                  currentPath,
+                  '/recurring',
+                ),
               ),
-            ),
-            _MoreDestination(
-              icon: AppIcons.trash,
-              title: 'Trash Bin',
-              subtitle: 'Restore or permanently delete transactions',
-              onTap: () =>
-                  _openSecondary(context, sheetContext, currentPath, '/trash'),
-            ),
-            _MoreDestination(
-              icon: AppIcons.database,
-              title: 'Data Management',
-              subtitle: 'Back up, import, and export app data',
-              onTap: () =>
-                  _openSecondary(context, sheetContext, currentPath, '/data'),
-            ),
-            _MoreDestination(
-              icon: AppIcons.about,
-              title: 'About',
-              subtitle: 'App information and release details',
-              onTap: () =>
-                  _openSecondary(context, sheetContext, currentPath, '/about'),
-            ),
-          ],
+              _MoreDestination(
+                icon: AppIcons.trash,
+                title: 'Trash Bin',
+                subtitle: 'Restore or permanently delete transactions',
+                onTap: () =>
+                    _openSecondary(context, sheetContext, currentPath, '/trash'),
+              ),
+              _MoreDestination(
+                icon: AppIcons.database,
+                title: 'Data Management',
+                subtitle: 'Back up, import, and export app data',
+                onTap: () =>
+                    _openSecondary(context, sheetContext, currentPath, '/data'),
+              ),
+              _MoreDestination(
+                icon: AppIcons.about,
+                title: 'About',
+                subtitle: 'App information and release details',
+                onTap: () =>
+                    _openSecondary(context, sheetContext, currentPath, '/about'),
+              ),
+            ],
+          ),
         ),
       ),
     );
