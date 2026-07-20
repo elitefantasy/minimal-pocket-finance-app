@@ -2,6 +2,7 @@ import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
+import 'package:akm_finance_manager/features/attachments/presentation/widgets/attachment_viewer_dialog.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/shared/widgets/delete_confirmation_dialog.dart';
@@ -13,6 +14,16 @@ class TransactionTile extends ConsumerWidget {
   const TransactionTile({required this.transaction, super.key});
 
   final Transaction transaction;
+
+  void _openAttachments(BuildContext context) {
+    if (transaction.attachments.isEmpty) return;
+    showDialog<void>(
+      context: context,
+      builder: (context) => AttachmentViewerDialog(
+        attachments: transaction.attachments,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,18 +76,40 @@ class TransactionTile extends ConsumerWidget {
                       color: context.colors.onSurfaceVariant,
                     ),
                   ),
-                  if (transaction.isRecurring) ...<Widget>[
+                  if (transaction.isRecurring || transaction.hasAttachments) ...<Widget>[
                     const SizedBox(height: AppSpacing.xs),
-                    Chip(
-                      avatar: const Icon(
-                        AppIcons.repeat,
-                        size: AppIcons.smallSize,
-                      ),
-                      label: const Text('Monthly'),
-                      visualDensity: VisualDensity.compact,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      labelStyle: context.text.labelSmall,
-                      padding: EdgeInsets.zero,
+                    Wrap(
+                      spacing: AppSpacing.xs,
+                      runSpacing: AppSpacing.xs,
+                      children: <Widget>[
+                        if (transaction.isRecurring)
+                          Chip(
+                            avatar: const Icon(
+                              AppIcons.repeat,
+                              size: AppIcons.smallSize,
+                            ),
+                            label: const Text('Monthly'),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            labelStyle: context.text.labelSmall,
+                            padding: EdgeInsets.zero,
+                          ),
+                        if (transaction.hasAttachments)
+                          ActionChip(
+                            avatar: const Icon(
+                              Icons.attach_file,
+                              size: AppIcons.smallSize,
+                            ),
+                            label: Text(
+                              '${transaction.attachments.length} file${transaction.attachments.length > 1 ? 's' : ''}',
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            labelStyle: context.text.labelSmall,
+                            padding: EdgeInsets.zero,
+                            onPressed: () => _openAttachments(context),
+                          ),
+                      ],
                     ),
                   ],
                 ],

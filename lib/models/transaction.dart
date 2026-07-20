@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:akm_finance_manager/models/attachment.dart';
 
 /// An immutable financial transaction.
 class Transaction {
@@ -12,6 +14,7 @@ class Transaction {
     this.recurringTransactionId,
     this.generatedAt,
     this.deletedAt,
+    this.attachments = const <Attachment>[],
   });
 
   static const Object _unset = Object();
@@ -19,6 +22,7 @@ class Transaction {
   factory Transaction.fromMap(Map<String, dynamic> map) {
     final generatedAtValue = map['generated_at'] as String?;
     final deletedAtValue = map['deleted_at'] as String?;
+    final rawAttachments = map['attachments'] as List<dynamic>?;
 
     return Transaction(
       id: map['id'] as int?,
@@ -32,6 +36,11 @@ class Transaction {
           ? null
           : DateTime.parse(generatedAtValue),
       deletedAt: deletedAtValue == null ? null : DateTime.parse(deletedAtValue),
+      attachments: rawAttachments == null
+          ? const <Attachment>[]
+          : rawAttachments
+              .map((item) => Attachment.fromMap(item as Map<String, dynamic>))
+              .toList(),
     );
   }
 
@@ -48,8 +57,10 @@ class Transaction {
   final int? recurringTransactionId;
   final DateTime? generatedAt;
   final DateTime? deletedAt;
+  final List<Attachment> attachments;
 
   bool get isRecurring => recurringTransactionId != null;
+  bool get hasAttachments => attachments.isNotEmpty;
 
   Transaction copyWith({
     int? id,
@@ -61,6 +72,7 @@ class Transaction {
     Object? recurringTransactionId = _unset,
     Object? generatedAt = _unset,
     Object? deletedAt = _unset,
+    List<Attachment>? attachments,
   }) {
     return Transaction(
       id: id ?? this.id,
@@ -76,6 +88,7 @@ class Transaction {
           ? this.generatedAt
           : generatedAt as DateTime?,
       deletedAt: deletedAt == _unset ? this.deletedAt : deletedAt as DateTime?,
+      attachments: attachments ?? this.attachments,
     );
   }
 
@@ -90,6 +103,7 @@ class Transaction {
       'recurring_transaction_id': recurringTransactionId,
       'generated_at': generatedAt?.toIso8601String(),
       'deleted_at': deletedAt?.toIso8601String(),
+      'attachments': attachments.map((a) => a.toMap()).toList(),
     };
   }
 
@@ -107,27 +121,30 @@ class Transaction {
             other.date == date &&
             other.recurringTransactionId == recurringTransactionId &&
             other.generatedAt == generatedAt &&
-            other.deletedAt == deletedAt;
+            other.deletedAt == deletedAt &&
+            listEquals(other.attachments, attachments);
   }
 
   @override
   int get hashCode => Object.hash(
-    id,
-    type,
-    amount,
-    category,
-    note,
-    date,
-    recurringTransactionId,
-    generatedAt,
-    deletedAt,
-  );
+        id,
+        type,
+        amount,
+        category,
+        note,
+        date,
+        recurringTransactionId,
+        generatedAt,
+        deletedAt,
+        Object.hashAll(attachments),
+      );
 
   @override
   String toString() {
     return 'Transaction(id: $id, type: $type, amount: $amount, '
         'category: $category, note: $note, date: $date, '
         'recurringTransactionId: $recurringTransactionId, '
-        'generatedAt: $generatedAt, deletedAt: $deletedAt)';
+        'generatedAt: $generatedAt, deletedAt: $deletedAt, '
+        'attachments: ${attachments.length})';
   }
 }

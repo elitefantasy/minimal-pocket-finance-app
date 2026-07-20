@@ -11,7 +11,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int databaseVersion = 1;
+  static const int databaseVersion = 2;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -160,6 +160,20 @@ class DatabaseHelper {
           name TEXT NOT NULL UNIQUE
         )
       ''')
+      ..execute('''
+        CREATE TABLE attachments (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          transaction_id INTEGER NOT NULL,
+          file_path TEXT NOT NULL,
+          file_type TEXT NOT NULL,
+          file_name TEXT,
+          file_size INTEGER,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (transaction_id)
+            REFERENCES transactions(id)
+            ON DELETE CASCADE
+        )
+      ''')
       ..execute('CREATE INDEX index_transactions_date ON transactions(date)')
       ..execute(
         'CREATE INDEX index_transactions_category ON transactions(category)',
@@ -171,6 +185,10 @@ class DatabaseHelper {
       ..execute(
         'CREATE INDEX index_transactions_recurring_transaction_id '
         'ON transactions(recurring_transaction_id)',
+      )
+      ..execute(
+        'CREATE INDEX index_attachments_transaction_id '
+        'ON attachments(transaction_id)',
       );
 
     await batch.commit(noResult: true);
@@ -182,8 +200,26 @@ class DatabaseHelper {
     int oldVersion,
     int newVersion,
   ) async {
-    // Database version reset to v1 as baseline schema.
-    // Future schema migrations starting from v1 will be added here.
+    if (oldVersion < 2) {
+      await database.execute('''
+        CREATE TABLE IF NOT EXISTS attachments (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          transaction_id INTEGER NOT NULL,
+          file_path TEXT NOT NULL,
+          file_type TEXT NOT NULL,
+          file_name TEXT,
+          file_size INTEGER,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (transaction_id)
+            REFERENCES transactions(id)
+            ON DELETE CASCADE
+        )
+      ''');
+      await database.execute(
+        'CREATE INDEX IF NOT EXISTS index_attachments_transaction_id '
+        'ON attachments(transaction_id)',
+      );
+    }
   }
 
   Future<void> _insertDefaultCategoriesIfEmpty(Database database) async {
