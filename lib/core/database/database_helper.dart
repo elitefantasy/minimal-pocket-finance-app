@@ -11,7 +11,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int databaseVersion = 5;
+  static const int databaseVersion = 1;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -182,99 +182,8 @@ class DatabaseHelper {
     int oldVersion,
     int newVersion,
   ) async {
-    if (oldVersion < 2) {
-      await database.transaction((transaction) async {
-        await transaction.execute(
-          'ALTER TABLE recurring_transactions '
-          'RENAME TO recurring_transactions_legacy',
-        );
-        await transaction.execute('''
-          CREATE TABLE recurring_transactions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            type TEXT NOT NULL CHECK(type IN ('Income', 'Expense')),
-            amount REAL NOT NULL,
-            category TEXT NOT NULL,
-            note TEXT NOT NULL,
-            day_of_month INTEGER NOT NULL CHECK(day_of_month BETWEEN 1 AND 31),
-            is_enabled INTEGER NOT NULL CHECK(is_enabled IN (0, 1)),
-            last_processed_date TEXT,
-            created_at TEXT NOT NULL,
-            updated_at TEXT NOT NULL
-          )
-        ''');
-        await transaction.execute('''
-          INSERT INTO recurring_transactions (
-            id,
-            type,
-            amount,
-            category,
-            note,
-            day_of_month,
-            is_enabled,
-            last_processed_date,
-            created_at,
-            updated_at
-          )
-          SELECT
-            id,
-            'Expense',
-            amount,
-            category,
-            '',
-            day,
-            1,
-            NULLIF(last_added, ''),
-            COALESCE(
-              NULLIF(last_added, ''),
-              strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
-            ),
-            strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
-          FROM recurring_transactions_legacy
-        ''');
-        await transaction.execute('DROP TABLE recurring_transactions_legacy');
-      });
-    }
-
-    if (oldVersion < 3) {
-      await database.transaction((transaction) async {
-        await transaction.execute(
-          'ALTER TABLE transactions ADD COLUMN recurring_transaction_id INTEGER',
-        );
-        await transaction.execute(
-          'ALTER TABLE transactions ADD COLUMN generated_at TEXT',
-        );
-        await transaction.execute(
-          'CREATE INDEX IF NOT EXISTS '
-          'index_transactions_recurring_transaction_id '
-          'ON transactions(recurring_transaction_id)',
-        );
-      });
-    }
-
-    if (oldVersion < 4) {
-      await database.transaction((transaction) async {
-        await transaction.execute(
-          'ALTER TABLE recurring_transactions ADD COLUMN start_date TEXT',
-        );
-        await transaction.execute('''
-          UPDATE recurring_transactions
-          SET start_date = created_at
-          WHERE start_date IS NULL
-        ''');
-      });
-    }
-
-    if (oldVersion < 5) {
-      await database.transaction((transaction) async {
-        await transaction.execute(
-          'ALTER TABLE transactions ADD COLUMN deleted_at TEXT',
-        );
-        await transaction.execute(
-          'CREATE INDEX IF NOT EXISTS '
-          'index_transactions_deleted_at ON transactions(deleted_at)',
-        );
-      });
-    }
+    // Database version reset to v1 as baseline schema.
+    // Future schema migrations starting from v1 will be added here.
   }
 
   Future<void> _insertDefaultCategoriesIfEmpty(Database database) async {
