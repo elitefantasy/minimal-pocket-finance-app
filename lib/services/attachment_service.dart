@@ -22,6 +22,31 @@ class AttachmentService {
     return attachmentsDir;
   }
 
+  /// Saves raw binary bytes (e.g. from P2P sync) into app storage.
+  Future<Attachment> saveBytesToStorage(
+    List<int> bytes, {
+    required AttachmentType fileType,
+    String? originalName,
+  }) async {
+    final targetDir = await _attachmentsDirectory;
+    final fileName = originalName ?? 'file_${DateTime.now().millisecondsSinceEpoch}';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final safeFileName = '${timestamp}_$fileName';
+    final destinationPath = path.join(targetDir.path, safeFileName);
+
+    final savedFile = File(destinationPath);
+    await savedFile.writeAsBytes(bytes);
+    final fileSize = await savedFile.length();
+
+    return Attachment(
+      filePath: savedFile.path,
+      fileType: fileType,
+      fileName: fileName,
+      fileSize: fileSize,
+      createdAt: DateTime.now(),
+    );
+  }
+
   /// Copies a raw file into app document storage under unique name.
   Future<Attachment> _saveFileToStorage(
     File sourceFile, {

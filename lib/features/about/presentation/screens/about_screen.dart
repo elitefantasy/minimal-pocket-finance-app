@@ -43,7 +43,7 @@ class AboutScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.xs),
                   packageInfoAsync.when(
                     loading: () => _VersionText('Loading version...'),
-                    error: (_, __) => _VersionText(
+                    error: (error, stackTrace) => _VersionText(
                       'Version Unknown • Database v${DatabaseHelper.databaseVersion}',
                     ),
                     data: (packageInfo) => _VersionText(

@@ -63,7 +63,7 @@ class Transaction {
   bool get hasAttachments => attachments.isNotEmpty;
 
   Transaction copyWith({
-    int? id,
+    Object? id = _unset,
     String? type,
     double? amount,
     String? category,
@@ -75,7 +75,7 @@ class Transaction {
     List<Attachment>? attachments,
   }) {
     return Transaction(
-      id: id ?? this.id,
+      id: id == _unset ? this.id : id as int?,
       type: type ?? this.type,
       amount: amount ?? this.amount,
       category: category ?? this.category,

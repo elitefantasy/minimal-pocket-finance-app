@@ -92,6 +92,7 @@ class P2PSyncStatusCard extends ConsumerWidget {
                   label: const Text('Pair Device with QR Code'),
                 ),
               ] else ...<Widget>[
+                // Connection status row
                 Row(
                   children: <Widget>[
                     Container(
@@ -113,6 +114,14 @@ class P2PSyncStatusCard extends ConsumerWidget {
                         ),
                       ),
                     ),
+                    if (!syncState.isSignalingConnected)
+                      IconButton(
+                        icon: const Icon(Icons.refresh, size: 20),
+                        tooltip: 'Retry Connection',
+                        onPressed: () => ref
+                            .read(p2pSyncNotifierProvider.notifier)
+                            .retryConnect(),
+                      ),
                     TextButton(
                       onPressed: () => ref
                           .read(p2pSyncNotifierProvider.notifier)
@@ -122,8 +131,27 @@ class P2PSyncStatusCard extends ConsumerWidget {
                   ],
                 ),
 
+                // Peer device info chip
+                if (syncState.remoteDeviceName != null) ...<Widget>[
+                  const SizedBox(height: AppSpacing.sm),
+                  _PeerDeviceChip(
+                    deviceName: syncState.remoteDeviceName!,
+                    lastSeen: syncState.remoteLastUpdated,
+                    isOnline: syncState.isSignalingConnected &&
+                        syncState.isRemoteChangeDetected,
+                  ),
+                ],
+
+                // Syncing animation
+                if (syncState.isSyncing) ...<Widget>[
+                  const SizedBox(height: AppSpacing.md),
+                  _SyncProgressBanner(
+                    statusMessage: syncState.statusMessage,
+                    remoteDeviceName: syncState.remoteDeviceName,
+                  ),
+                ]
                 // Remote Change Detection Alert Banner
-                if (syncState.isRemoteChangeDetected) ...<Widget>[
+                else if (syncState.isRemoteChangeDetected) ...<Widget>[
                   const SizedBox(height: AppSpacing.md),
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
@@ -159,21 +187,14 @@ class P2PSyncStatusCard extends ConsumerWidget {
                           ),
                         ),
                         FilledButton(
-                          onPressed: syncState.isSyncing
-                              ? null
-                              : () => ref
-                                  .read(p2pSyncNotifierProvider.notifier)
-                                  .syncNow(),
-                          child: Text(
-                            syncState.isSyncing ? 'Syncing...' : 'Sync Now',
-                          ),
+                          onPressed: () => ref
+                              .read(p2pSyncNotifierProvider.notifier)
+                              .syncNow(),
+                          child: const Text('Sync Now'),
                         ),
                       ],
                     ),
                   ),
-                ] else if (syncState.isSyncing) ...<Widget>[
-                  const SizedBox(height: AppSpacing.md),
-                  const LinearProgressIndicator(),
                 ] else ...<Widget>[
                   const SizedBox(height: AppSpacing.sm),
                   OutlinedButton.icon(
@@ -188,6 +209,160 @@ class P2PSyncStatusCard extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Shows a chip with the paired peer device name and online status.
+class _PeerDeviceChip extends StatelessWidget {
+  const _PeerDeviceChip({
+    required this.deviceName,
+    this.lastSeen,
+    this.isOnline = false,
+  });
+
+  final String deviceName;
+  final DateTime? lastSeen;
+  final bool isOnline;
+
+  String _formatLastSeen() {
+    if (lastSeen == null) return '';
+    final diff = DateTime.now().difference(lastSeen!);
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
+  }
+
+  IconData _deviceIcon() {
+    final lower = deviceName.toLowerCase();
+    if (lower.contains('android')) return Icons.phone_android;
+    if (lower.contains('ios') || lower.contains('iphone')) return Icons.phone_iphone;
+    if (lower.contains('windows')) return Icons.laptop_windows;
+    if (lower.contains('mac')) return Icons.laptop_mac;
+    if (lower.contains('linux')) return Icons.computer;
+    return Icons.devices;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainerHighest.withAlpha(120),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(
+            _deviceIcon(),
+            size: 16,
+            color: context.colors.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Text(
+            deviceName,
+            style: context.text.labelMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isOnline
+                  ? context.semantic.success
+                  : context.colors.outline,
+            ),
+          ),
+          if (lastSeen != null) ...<Widget>[
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              _formatLastSeen(),
+              style: context.text.labelSmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Animated sync progress banner shown while a sync is in progress.
+class _SyncProgressBanner extends StatelessWidget {
+  const _SyncProgressBanner({
+    required this.statusMessage,
+    this.remoteDeviceName,
+  });
+
+  final String statusMessage;
+  final String? remoteDeviceName;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.colors.tertiaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: context.colors.onTertiaryContainer,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  remoteDeviceName != null
+                      ? 'Syncing with $remoteDeviceName...'
+                      : 'Syncing with peer device...',
+                  style: context.text.titleSmall?.copyWith(
+                    color: context.colors.onTertiaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Padding(
+            padding: const EdgeInsets.only(left: 34),
+            child: Text(
+              statusMessage,
+              style: context.text.bodySmall?.copyWith(
+                color: context.colors.onTertiaryContainer.withAlpha(180),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              minHeight: 4,
+              backgroundColor:
+                  context.colors.onTertiaryContainer.withAlpha(40),
+              color: context.colors.onTertiaryContainer,
+            ),
+          ),
+        ],
       ),
     );
   }

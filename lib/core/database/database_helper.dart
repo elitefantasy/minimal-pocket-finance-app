@@ -11,7 +11,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int databaseVersion = 3;
+  static const int databaseVersion = 4;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -98,6 +98,7 @@ class DatabaseHelper {
       onConfigure: _onConfigure,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
+      onOpen: _onOpen,
     );
   }
 
@@ -119,6 +120,31 @@ class DatabaseHelper {
 
   Future<void> _onConfigure(Database database) async {
     await database.execute('PRAGMA foreign_keys = ON');
+  }
+
+  Future<void> _onOpen(Database database) async {
+    await _ensureTablesExist(database);
+  }
+
+  Future<void> _ensureTablesExist(Database database) async {
+    await database.execute('''
+      CREATE TABLE IF NOT EXISTS attachments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        transaction_id INTEGER NOT NULL,
+        file_path TEXT NOT NULL,
+        file_type TEXT NOT NULL,
+        file_name TEXT,
+        file_size INTEGER,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (transaction_id)
+          REFERENCES transactions(id)
+          ON DELETE CASCADE
+      )
+    ''');
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS index_attachments_transaction_id '
+      'ON attachments(transaction_id)',
+    );
   }
 
   Future<void> _onCreate(Database database, int version) async {
@@ -201,24 +227,7 @@ class DatabaseHelper {
     int newVersion,
   ) async {
     if (oldVersion < 2) {
-      await database.execute('''
-        CREATE TABLE IF NOT EXISTS attachments (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          transaction_id INTEGER NOT NULL,
-          file_path TEXT NOT NULL,
-          file_type TEXT NOT NULL,
-          file_name TEXT,
-          file_size INTEGER,
-          created_at TEXT NOT NULL,
-          FOREIGN KEY (transaction_id)
-            REFERENCES transactions(id)
-            ON DELETE CASCADE
-        )
-      ''');
-      await database.execute(
-        'CREATE INDEX IF NOT EXISTS index_attachments_transaction_id '
-        'ON attachments(transaction_id)',
-      );
+      await _ensureTablesExist(database);
     }
     
     if (oldVersion < 3) {
@@ -234,6 +243,10 @@ class DatabaseHelper {
       await database.execute(
         'CREATE INDEX IF NOT EXISTS index_transactions_deleted_at ON transactions(deleted_at)',
       );
+    }
+
+    if (oldVersion < 4) {
+      await _ensureTablesExist(database);
     }
   }
 

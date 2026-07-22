@@ -67,7 +67,7 @@ class Attachment {
   bool get isPdf => fileType == AttachmentType.pdf;
 
   Attachment copyWith({
-    int? id,
+    Object? id = _unset,
     Object? transactionId = _unset,
     String? filePath,
     AttachmentType? fileType,
@@ -76,7 +76,7 @@ class Attachment {
     DateTime? createdAt,
   }) {
     return Attachment(
-      id: id ?? this.id,
+      id: id == _unset ? this.id : id as int?,
       transactionId: transactionId == _unset
           ? this.transactionId
           : transactionId as int?,

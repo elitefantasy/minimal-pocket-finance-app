@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
 import 'package:crypto/crypto.dart';
 
-/// Cryptographic service providing end-to-end encryption (E2EE)
-/// and secure pairing key generation for P2P sync.
+/// Cryptographic service providing end-to-end encryption (E2EE),
+/// GZIP payload compression, and secure pairing key generation for P2P sync.
 class P2PCryptoService {
   static const String _pairingPrefix = 'AKM-SYNC-';
 
@@ -35,10 +37,12 @@ class P2PCryptoService {
     return sha256.convert(bytes).toString();
   }
 
-  /// Encrypts a JSON map payload using derived key and HMAC authentication.
+  /// Encrypts and GZIP-compresses a JSON map payload using derived key and HMAC authentication.
   String encryptPayload(Map<String, dynamic> payload, String pairingCode) {
     final jsonString = jsonEncode(payload);
-    final dataBytes = utf8.encode(jsonString);
+    final jsonBytes = utf8.encode(jsonString);
+    // GZIP compress for 70-80% size reduction over WebRTC DataChannel
+    final dataBytes = Uint8List.fromList(gzip.encode(jsonBytes));
     final keyBytes = deriveKey(pairingCode);
 
     // XOR encryption layer combined with HMAC-SHA256 signature
@@ -58,13 +62,16 @@ class P2PCryptoService {
       'n': nonce,
       'c': base64Encode(cipherBytes),
       's': signature.toString(),
+      'z': true, // Marker for GZIP compression
     };
 
     return base64Encode(utf8.encode(jsonEncode(packet)));
   }
 
-  /// Decrypts an encrypted payload using the pairing code. Returns null if invalid or tampered.
-  Map<String, dynamic>? decryptPayload(String encryptedPacket, String pairingCode) {
+  /// Decrypts and decompresses an encrypted payload using the pairing code.
+  /// Returns null if invalid, corrupted, or tampered.
+  Map<String, dynamic>? decryptPayload(
+      String encryptedPacket, String pairingCode) {
     try {
       final decodedJson = utf8.decode(base64Decode(encryptedPacket));
       final packet = jsonDecode(decodedJson) as Map<String, dynamic>;
@@ -72,15 +79,18 @@ class P2PCryptoService {
       final nonce = packet['n'] as int;
       final cipherBytes = base64Decode(packet['c'] as String);
       final signature = packet['s'] as String;
+      final isGzipped = packet['z'] == true;
 
       final keyBytes = deriveKey(pairingCode);
       final nonceBytes = Uint8List(4)..buffer.asByteData().setUint32(0, nonce);
 
       final hmac = Hmac(sha256, keyBytes);
-      final expectedSignature = hmac.convert([...nonceBytes, ...cipherBytes]).toString();
+      final expectedSignature =
+          hmac.convert([...nonceBytes, ...cipherBytes]).toString();
 
       if (signature != expectedSignature) {
-        return null; // Tampered or wrong key
+        _log('Decryption failed: HMAC signature mismatch (wrong pairing key or tampered data).');
+        return null;
       }
 
       final plainBytes = Uint8List(cipherBytes.length);
@@ -89,10 +99,26 @@ class P2PCryptoService {
         plainBytes[i] = cipherBytes[i] ^ keyByte;
       }
 
-      final jsonString = utf8.decode(plainBytes);
+      String jsonString;
+      if (isGzipped) {
+        jsonString = utf8.decode(gzip.decode(plainBytes));
+      } else {
+        // Fallback for legacy uncompressed messages
+        try {
+          jsonString = utf8.decode(gzip.decode(plainBytes));
+        } catch (_) {
+          jsonString = utf8.decode(plainBytes);
+        }
+      }
+
       return jsonDecode(jsonString) as Map<String, dynamic>;
-    } catch (_) {
+    } catch (e, st) {
+      _log('Decryption failed with exception: $e\n$st');
       return null;
     }
+  }
+
+  void _log(String message) {
+    P2PLogger.log('[P2P.Crypto] $message');
   }
 }
