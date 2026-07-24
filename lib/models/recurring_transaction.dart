@@ -14,12 +14,13 @@ class RecurringTransaction {
     required this.createdAt,
     required this.startDate,
     required this.updatedAt,
+    this.deviceId,
   });
 
   factory RecurringTransaction.fromMap(Map<String, dynamic> map) {
     final lastProcessedDate = map['last_processed_date'] as String?;
     return RecurringTransaction(
-      id: map['id'] as int?,
+      id: map['id'] as String?,
       type: map['type'] as String,
       amount: (map['amount'] as num).toDouble(),
       category: map['category'] as String,
@@ -32,6 +33,7 @@ class RecurringTransaction {
       createdAt: DateTime.parse(map['created_at'] as String),
       startDate: DateTime.parse(map['start_date'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
+      deviceId: map['device_id'] as String?,
     );
   }
 
@@ -41,7 +43,7 @@ class RecurringTransaction {
     );
   }
 
-  final int? id;
+  final String? id;
   final String type;
   final double amount;
   final String category;
@@ -52,9 +54,10 @@ class RecurringTransaction {
   final DateTime createdAt;
   final DateTime startDate;
   final DateTime updatedAt;
+  final String? deviceId;
 
   RecurringTransaction copyWith({
-    int? id,
+    String? id,
     String? type,
     double? amount,
     String? category,
@@ -65,6 +68,7 @@ class RecurringTransaction {
     DateTime? createdAt,
     DateTime? startDate,
     DateTime? updatedAt,
+    String? deviceId,
   }) {
     return RecurringTransaction(
       id: id ?? this.id,
@@ -78,6 +82,7 @@ class RecurringTransaction {
       createdAt: createdAt ?? this.createdAt,
       startDate: startDate ?? this.startDate,
       updatedAt: updatedAt ?? this.updatedAt,
+      deviceId: deviceId ?? this.deviceId,
     );
   }
 
@@ -94,6 +99,7 @@ class RecurringTransaction {
       'created_at': createdAt.toIso8601String(),
       'start_date': startDate.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'device_id': deviceId,
     };
   }
 
@@ -113,7 +119,8 @@ class RecurringTransaction {
             other.lastProcessedDate == lastProcessedDate &&
             other.createdAt == createdAt &&
             other.startDate == startDate &&
-            other.updatedAt == updatedAt;
+            other.updatedAt == updatedAt &&
+            other.deviceId == deviceId;
   }
 
   @override
@@ -129,6 +136,7 @@ class RecurringTransaction {
     createdAt,
     startDate,
     updatedAt,
+    deviceId,
   );
 
   @override
@@ -137,6 +145,6 @@ class RecurringTransaction {
         'category: $category, note: $note, dayOfMonth: $dayOfMonth, '
         'isEnabled: $isEnabled, lastProcessedDate: $lastProcessedDate, '
         'createdAt: $createdAt, startDate: $startDate, '
-        'updatedAt: $updatedAt)';
+        'updatedAt: $updatedAt, deviceId: $deviceId)';
   }
 }

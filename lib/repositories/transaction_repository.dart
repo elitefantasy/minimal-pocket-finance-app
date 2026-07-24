@@ -3,6 +3,7 @@ import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/repositories/attachment_repository.dart';
 import 'package:sqflite/sqflite.dart' show Database;
+import 'package:uuid/uuid.dart';
 
 /// Provides persistence operations for financial transactions and their attachments.
 class TransactionRepository {
@@ -17,15 +18,21 @@ class TransactionRepository {
   final DatabaseHelper _databaseHelper;
   final AttachmentRepository _attachmentRepository;
 
-  Future<int> insert(Transaction transaction) async {
+  Future<String> insert(Transaction transaction) async {
     final Database database = await _databaseHelper.database;
-    final insertedId = await database.insert(_tableName, transaction.toDatabaseMap());
+    final id = transaction.id ?? const Uuid().v4();
+    final transactionToInsert = transaction.copyWith(
+      id: id,
+      updatedAt: transaction.updatedAt ?? DateTime.now().toUtc(),
+    );
+    
+    await database.insert(_tableName, transactionToInsert.toDatabaseMap());
 
-    if (transaction.attachments.isNotEmpty) {
-      await _attachmentRepository.insertBatch(transaction.attachments, insertedId);
+    if (transactionToInsert.attachments.isNotEmpty) {
+      await _attachmentRepository.insertBatch(transactionToInsert.attachments, id);
     }
 
-    return insertedId;
+    return id;
   }
 
   Future<List<Transaction>> getAll({int? year}) async {
@@ -79,7 +86,7 @@ class TransactionRepository {
     final existingAttachments = await _attachmentRepository.getByTransactionId(id);
     final currentAttachmentIds = transaction.attachments
         .map((a) => a.id)
-        .whereType<int>()
+        .whereType<String>()
         .toSet();
 
     // Delete attachments removed by the user
@@ -98,7 +105,7 @@ class TransactionRepository {
     }
   }
 
-  Future<void> moveToTrash(int id) async {
+  Future<void> moveToTrash(String id) async {
     final Database database = await _databaseHelper.database;
     await database.update(
       _tableName,
@@ -121,7 +128,7 @@ class TransactionRepository {
     return _populateAttachments(rawTransactions);
   }
 
-  Future<void> restore(int id) async {
+  Future<void> restore(String id) async {
     final Database database = await _databaseHelper.database;
     await database.update(
       _tableName,
@@ -131,7 +138,7 @@ class TransactionRepository {
     );
   }
 
-  Future<void> permanentlyDelete(int id) async {
+  Future<void> permanentlyDelete(String id) async {
     final Database database = await _databaseHelper.database;
     await database.delete(
       _tableName,
@@ -158,7 +165,7 @@ class TransactionRepository {
   Future<List<Transaction>> _populateAttachments(List<Transaction> transactions) async {
     if (transactions.isEmpty) return transactions;
 
-    final txIds = transactions.map((t) => t.id).whereType<int>().toList();
+    final txIds = transactions.map((t) => t.id).whereType<String>().toList();
     if (txIds.isEmpty) return transactions;
 
     final attachmentsMap = await _attachmentRepository.getByTransactionIds(txIds);

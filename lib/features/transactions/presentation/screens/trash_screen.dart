@@ -180,47 +180,65 @@ class _TrashTransactionTile extends StatelessWidget {
         : 'Deleted ${deletedAt.day}/${deletedAt.month}/${deletedAt.year}';
 
     return Card(
-      child: ListTile(
-        leading: Icon(
-          isIncome ? AppIcons.income : AppIcons.expense,
-          color: isIncome ? context.semantic.success : context.colors.error,
-        ),
-        title: Text(transaction.category),
-        subtitle: Text(
-          '${transactionDate.day}/${transactionDate.month}/${transactionDate.year}'
-          '${transaction.note.isEmpty ? '' : ' • ${transaction.note}'}'
-          '${deletedLabel.isEmpty ? '' : '\n$deletedLabel'}',
-        ),
-        isThreeLine: deletedLabel.isNotEmpty,
-        trailing: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(
-              '$amountPrefix₹${transaction.amount.toStringAsFixed(0)}',
-              style: context.text.titleMedium?.copyWith(
-                color: isIncome ? context.semantic.success : context.colors.error,
-                fontWeight: FontWeight.bold,
+            Icon(
+              isIncome ? AppIcons.income : AppIcons.expense,
+              color: isIncome ? context.semantic.success : context.colors.error,
+              size: AppIcons.mediumSize,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    transaction.category,
+                    style: context.text.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    '${transactionDate.day}/${transactionDate.month}/${transactionDate.year}'
+                    '${transaction.note.isEmpty ? '' : ' • ${transaction.note}'}'
+                    '${deletedLabel.isEmpty ? '' : '\n$deletedLabel'}',
+                    style: context.text.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
+            const SizedBox(width: AppSpacing.lg),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                IconButton(
-                  onPressed: onRestore,
-                  icon: const Icon(AppIcons.restore, size: AppSizes.iconSmall),
-                  tooltip: 'Restore',
-                  constraints: const BoxConstraints(),
-                  padding: const EdgeInsets.all(AppSpacing.xs),
+                Text(
+                  '$amountPrefix₹${transaction.amount.toStringAsFixed(0)}',
+                  style: context.text.titleMedium?.copyWith(
+                    color: isIncome ? context.semantic.success : context.colors.error,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(width: AppSpacing.xs),
-                IconButton(
-                  onPressed: onDeletePermanently,
-                  icon: const Icon(AppIcons.delete, size: AppSizes.iconSmall),
-                  tooltip: 'Delete permanently',
-                  constraints: const BoxConstraints(),
-                  padding: const EdgeInsets.all(AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xs),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: onRestore,
+                      icon: const Icon(AppIcons.restore),
+                      tooltip: 'Restore',
+                    ),
+                    IconButton(
+                      onPressed: onDeletePermanently,
+                      icon: const Icon(AppIcons.delete),
+                      tooltip: 'Delete permanently',
+                    ),
+                  ],
                 ),
               ],
             ),

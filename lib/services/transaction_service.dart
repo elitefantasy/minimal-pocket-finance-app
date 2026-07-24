@@ -19,7 +19,7 @@ class TransactionService {
     return _transactionRepository.getTrashed();
   }
 
-  Future<void> restoreDeletedTransaction(int id) {
+  Future<void> restoreDeletedTransaction(String id) {
     return _transactionRepository.restore(id);
   }
 
@@ -27,11 +27,11 @@ class TransactionService {
     return _transactionRepository.update(transaction);
   }
 
-  Future<void> deleteTransaction(int id) {
+  Future<void> deleteTransaction(String id) {
     return _transactionRepository.moveToTrash(id);
   }
 
-  Future<void> permanentlyDeleteTransaction(int id) {
+  Future<void> permanentlyDeleteTransaction(String id) {
     return _transactionRepository.permanentlyDelete(id);
   }
 

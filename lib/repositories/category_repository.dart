@@ -1,6 +1,7 @@
 import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/models/category.dart';
 import 'package:sqflite/sqflite.dart' show Database, Sqflite;
+import 'package:uuid/uuid.dart';
 
 /// Provides persistence operations for transaction categories.
 class CategoryRepository {
@@ -11,9 +12,15 @@ class CategoryRepository {
 
   final DatabaseHelper _databaseHelper;
 
-  Future<int> insert(Category category) async {
+  Future<String> insert(Category category) async {
     final Database database = await _databaseHelper.database;
-    return database.insert(_tableName, category.toMap());
+    final id = category.id ?? const Uuid().v4();
+    final categoryToInsert = category.copyWith(
+      id: id,
+      updatedAt: category.updatedAt ?? DateTime.now().toUtc(),
+    );
+    await database.insert(_tableName, categoryToInsert.toMap());
+    return id;
   }
 
   Future<List<Category>> getAll() async {
@@ -42,7 +49,7 @@ class CategoryRepository {
     );
   }
 
-  Future<void> delete(int id) async {
+  Future<void> delete(String id) async {
     final Database database = await _databaseHelper.database;
     await database.delete(
       _tableName,

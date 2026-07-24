@@ -1,6 +1,7 @@
 import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:sqflite/sqflite.dart' show Database;
+import 'package:uuid/uuid.dart';
 
 /// Provides persistence operations for file attachments associated with transactions.
 class AttachmentRepository {
@@ -10,24 +11,35 @@ class AttachmentRepository {
 
   final DatabaseHelper _databaseHelper;
 
-  Future<int> insert(Attachment attachment) async {
+  Future<String> insert(Attachment attachment) async {
     final Database database = await _databaseHelper.database;
-    return database.insert(_tableName, attachment.toMap());
+    final id = attachment.id ?? const Uuid().v4();
+    final attachmentToInsert = attachment.copyWith(
+      id: id,
+      updatedAt: attachment.updatedAt ?? DateTime.now().toUtc(),
+    );
+    await database.insert(_tableName, attachmentToInsert.toMap());
+    return id;
   }
 
-  Future<void> insertBatch(List<Attachment> attachments, int transactionId) async {
+  Future<void> insertBatch(List<Attachment> attachments, String transactionId) async {
     if (attachments.isEmpty) return;
 
     final Database database = await _databaseHelper.database;
     final batch = database.batch();
+    const uuid = Uuid();
     for (final attachment in attachments) {
-      final attachmentWithTxId = attachment.copyWith(transactionId: transactionId);
+      final attachmentWithTxId = attachment.copyWith(
+        id: attachment.id ?? uuid.v4(),
+        transactionId: transactionId,
+        updatedAt: attachment.updatedAt ?? DateTime.now().toUtc(),
+      );
       batch.insert(_tableName, attachmentWithTxId.toMap());
     }
     await batch.commit(noResult: true);
   }
 
-  Future<List<Attachment>> getByTransactionId(int transactionId) async {
+  Future<List<Attachment>> getByTransactionId(String transactionId) async {
     final Database database = await _databaseHelper.database;
     final maps = await database.query(
       _tableName,
@@ -39,8 +51,8 @@ class AttachmentRepository {
   }
 
   /// Bulk loads attachments for multiple transaction IDs to prevent N+1 queries.
-  Future<Map<int, List<Attachment>>> getByTransactionIds(List<int> transactionIds) async {
-    if (transactionIds.isEmpty) return <int, List<Attachment>>{};
+  Future<Map<String, List<Attachment>>> getByTransactionIds(List<String> transactionIds) async {
+    if (transactionIds.isEmpty) return <String, List<Attachment>>{};
 
     final Database database = await _databaseHelper.database;
     final placeholders = List.filled(transactionIds.length, '?').join(',');
@@ -51,7 +63,7 @@ class AttachmentRepository {
       orderBy: 'created_at ASC',
     );
 
-    final result = <int, List<Attachment>>{};
+    final result = <String, List<Attachment>>{};
     for (final map in maps) {
       final attachment = Attachment.fromMap(map);
       final txId = attachment.transactionId;
@@ -62,7 +74,7 @@ class AttachmentRepository {
     return result;
   }
 
-  Future<void> delete(int id) async {
+  Future<void> delete(String id) async {
     final Database database = await _databaseHelper.database;
     await database.delete(
       _tableName,
@@ -71,7 +83,7 @@ class AttachmentRepository {
     );
   }
 
-  Future<void> deleteByTransactionId(int transactionId) async {
+  Future<void> deleteByTransactionId(String transactionId) async {
     final Database database = await _databaseHelper.database;
     await database.delete(
       _tableName,

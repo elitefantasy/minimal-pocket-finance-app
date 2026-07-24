@@ -2,13 +2,14 @@ import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:sqflite/sqflite.dart' show Database;
+import 'package:uuid/uuid.dart';
 
 /// Provides persistence operations for recurring transactions.
 abstract interface class RecurringProcessingRepository {
   Future<List<RecurringTransaction>> getAll();
 
   Future<bool> insertOccurrence({
-    required int recurringId,
+    required String recurringId,
     required Transaction transaction,
     required DateTime processedDate,
     required DateTime updatedAt,
@@ -22,9 +23,15 @@ class RecurringRepository implements RecurringProcessingRepository {
 
   final DatabaseHelper _databaseHelper;
 
-  Future<int> insert(RecurringTransaction recurring) async {
+  Future<String> insert(RecurringTransaction recurring) async {
     final Database database = await _databaseHelper.database;
-    return database.insert(_tableName, recurring.toMap());
+    final id = recurring.id ?? const Uuid().v4();
+    final recurringToInsert = recurring.copyWith(
+      id: id,
+      updatedAt: recurring.updatedAt,
+    );
+    await database.insert(_tableName, recurringToInsert.toMap());
+    return id;
   }
 
   @override
@@ -54,7 +61,7 @@ class RecurringRepository implements RecurringProcessingRepository {
     );
   }
 
-  Future<void> delete(int id) async {
+  Future<void> delete(String id) async {
     final Database database = await _databaseHelper.database;
     await database.delete(
       _tableName,
@@ -70,7 +77,7 @@ class RecurringRepository implements RecurringProcessingRepository {
 
   @override
   Future<bool> insertOccurrence({
-    required int recurringId,
+    required String recurringId,
     required Transaction transaction,
     required DateTime processedDate,
     required DateTime updatedAt,
@@ -97,7 +104,11 @@ class RecurringRepository implements RecurringProcessingRepository {
         return false;
       }
 
-      await databaseTransaction.insert('transactions', transaction.toDatabaseMap());
+      final transactionWithId = transaction.copyWith(
+        id: transaction.id ?? const Uuid().v4(),
+        updatedAt: transaction.updatedAt ?? DateTime.now().toUtc(),
+      );
+      await databaseTransaction.insert('transactions', transactionWithId.toDatabaseMap());
       await databaseTransaction.update(
         _tableName,
         <String, Object?>{
