@@ -583,10 +583,20 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
       final existingTransactions = await txService.getAllTransactions();
 
       final existingTransactionsMap = <String, Transaction>{};
+      final existingSignatures = <String, Transaction>{};
+
+      // Normalized UTC signature matching to handle independently generated UUIDs during v4->v5 migration
+      String txSignature(Transaction t) {
+        final dateUtcIso = t.date.toUtc().toIso8601String();
+        final amountFormatted = t.amount.toStringAsFixed(2);
+        return '${dateUtcIso}_${amountFormatted}_${t.type.toLowerCase()}_${t.category.toLowerCase()}_${t.note.trim()}';
+      }
+
       for (final t in existingTransactions) {
         if (t.id != null) {
           existingTransactionsMap[t.id!] = t;
         }
+        existingSignatures[txSignature(t)] = t;
       }
 
       var addedCount = 0;
@@ -636,7 +646,13 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
           }
 
           final incomingTx = Transaction.fromMap(rawMap);
-          final existingTx = incomingTx.id != null ? existingTransactionsMap[incomingTx.id!] : null;
+          var existingTx = incomingTx.id != null ? existingTransactionsMap[incomingTx.id!] : null;
+          
+          if (existingTx == null) {
+            // Fallback to signature deduplication
+            final incomingSig = txSignature(incomingTx);
+            existingTx = existingSignatures[incomingSig];
+          }
 
           if (existingTx == null) {
             // New transaction from peer
@@ -699,17 +715,30 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
         final recurringRepo = ref.read(recurringRepositoryProvider);
         final existingRecurring = await recurringRepo.getAll();
         final existingRecurringMap = <String, RecurringTransaction>{};
+        final existingRecurringSignatures = <String, RecurringTransaction>{};
+
+        String rtSignature(RecurringTransaction rt) {
+          final amountFormatted = rt.amount.toStringAsFixed(2);
+          return '${amountFormatted}_${rt.type.toLowerCase()}_${rt.category.toLowerCase()}_${rt.note.trim()}_${rt.dayOfMonth}';
+        }
+
         for (final rt in existingRecurring) {
           if (rt.id != null) {
             existingRecurringMap[rt.id!] = rt;
           }
+          existingRecurringSignatures[rtSignature(rt)] = rt;
         }
 
         for (final rawItem in rawRecurringList) {
           try {
             if (rawItem is! Map<String, dynamic>) continue;
             final incomingRt = RecurringTransaction.fromMap(Map<String, dynamic>.from(rawItem));
-            final existingRt = incomingRt.id != null ? existingRecurringMap[incomingRt.id!] : null;
+            var existingRt = incomingRt.id != null ? existingRecurringMap[incomingRt.id!] : null;
+
+            if (existingRt == null) {
+              final incomingSig = rtSignature(incomingRt);
+              existingRt = existingRecurringSignatures[incomingSig];
+            }
 
             if (existingRt == null) {
               await recurringRepo.insert(incomingRt);

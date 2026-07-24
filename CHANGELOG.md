@@ -1,6 +1,4 @@
 ## Planned Feature
-- currently p2p sync does not sync the recurring transaction settings[ the transaction that tells app to create transaction on that day]
-
 🚨 1. High-Priority Improvements (Data Integrity for Sync)
 - history should also show that transaction is recurring just like how recurring transactions how
 - Tombstones for Deletions (Improvement): Right now, deleted transactions are excluded from sync. If Device A deletes a record and syncs with Device B, Device B will just keep its old copy. You need a "tombstone" mechanism to tell other devices that a record was explicitly deleted.
