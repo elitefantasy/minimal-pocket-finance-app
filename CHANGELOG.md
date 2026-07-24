@@ -1,9 +1,7 @@
 ## Planned Feature
+- currently p2p sync does not sync the recurring transaction settings[ the transaction that tells app to create transaction on that day]
+
 🚨 1. High-Priority Improvements (Data Integrity for Sync)
-- Migrate to UUIDs (Improvement/Refactor): Currently, transactions use local SQLite auto-increment IDs. If you sync data from Device A to Device B, there will be ID collisions. Refactoring the database to use UUIDs and origin tracking is critical before real-world P2P usage.
-
-commit: Refactor the SQLite database and Dart data models to migrate from auto-increment IDs to UUIDs to prepare for real-world P2P synchronization.
-
 - history should also show that transaction is recurring just like how recurring transactions how
 - Tombstones for Deletions (Improvement): Right now, deleted transactions are excluded from sync. If Device A deletes a record and syncs with Device B, Device B will just keep its old copy. You need a "tombstone" mechanism to tell other devices that a record was explicitly deleted.
 - DataChannel Chunking (Improvement): WebRTC DataChannels have message size limits. Since your database includes images, sending the full transaction set in one message will fail on large databases. Implementing chunking is essential for reliability.
@@ -16,9 +14,11 @@ commit: Refactor the SQLite database and Dart data models to migrate from auto-i
 
 # Unreleased:
 ### features
+- feat: Refactor the SQLite database and Dart data models to migrate from auto-increment IDs to UUIDs to prepare for real-world P2P synchronization.
 - feat: implement secure P2P synchronization architecture with E2EE crypto service, signaling support, and pairing UI
 - feat: Image Attachments for Transactions 
 ### fixes
+- fix: overflow issue with trash transaction tiles
 - fix: in windows fixed missingpluginexception error because SAF plugin channels are native to Android and do not exist on Desktop platforms. 
 - fix: more menu is missing by bottom 39 pixel
 

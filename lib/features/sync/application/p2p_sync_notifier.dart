@@ -8,11 +8,13 @@ import 'package:akm_finance_manager/app/providers.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:akm_finance_manager/models/recurring_transaction.dart';
 import 'package:akm_finance_manager/services/attachment_service.dart';
 import 'package:akm_finance_manager/services/p2p/p2p_crypto_service.dart';
 import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
 import 'package:akm_finance_manager/services/p2p/signaling_client.dart';
 import 'package:akm_finance_manager/services/p2p/webrtc_sync_service.dart';
+import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -536,9 +538,13 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
       'transactions': serializedTxList,
     };
 
+    final recurringRepo = ref.read(recurringRepositoryProvider);
+    final recurringTransactions = await recurringRepo.getAll();
+    payload['recurring_transactions'] = recurringTransactions.map((rt) => rt.toMap()).toList();
+
     final encrypted = _cryptoService.encryptPayload(payload, code);
     final sent = await _webrtcService.sendData(encrypted);
-    _log('Sent ${transactions.length} transactions to peer (success=$sent).');
+    _log('Sent ${transactions.length} transactions and ${recurringTransactions.length} recurring transactions to peer (success=$sent).');
   }
 
   Future<Uint8List?> _resizeImageBytes(
@@ -576,16 +582,11 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
       final txService = ref.read(transactionServiceProvider);
       final existingTransactions = await txService.getAllTransactions();
 
-      // Normalized UTC signature matching to prevent local database ID collisions & timezone mismatches
-      String txSignature(Transaction t) {
-        final dateUtcIso = t.date.toUtc().toIso8601String();
-        final amountFormatted = t.amount.toStringAsFixed(2);
-        return '${dateUtcIso}_${amountFormatted}_${t.type.toLowerCase()}_${t.category.toLowerCase()}_${t.note.trim()}';
-      }
-
-      final existingSignatures = <String, Transaction>{};
+      final existingTransactionsMap = <String, Transaction>{};
       for (final t in existingTransactions) {
-        existingSignatures[txSignature(t)] = t;
+        if (t.id != null) {
+          existingTransactionsMap[t.id!] = t;
+        }
       }
 
       var addedCount = 0;
@@ -595,7 +596,6 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
         try {
           if (rawItem is! Map<String, dynamic>) continue;
           final rawMap = Map<String, dynamic>.from(rawItem);
-          rawMap['id'] = null; // Explicitly remove remote primary key
 
           // Process & save physical file attachments if present
           final rawAttachments = rawMap['attachments'] as List<dynamic>?;
@@ -636,21 +636,21 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
           }
 
           final incomingTx = Transaction.fromMap(rawMap);
-          final incomingSig = txSignature(incomingTx);
-
-          final existingTx = existingSignatures[incomingSig];
+          final existingTx = incomingTx.id != null ? existingTransactionsMap[incomingTx.id!] : null;
 
           if (existingTx == null) {
-            // New transaction from peer: strip remote SQLite ID so local device assigns a new primary key
+            // New transaction from peer
             final newTx = incomingTx.copyWith(
-              id: null,
               attachments: processedAttachments,
             );
             await txService.addTransaction(newTx);
             addedCount++;
             _log('Added new synced transaction: ${newTx.note} (${newTx.amount})');
           } else {
-            // Transaction already exists locally: merge any new attachments
+            // Transaction already exists locally: merge any new attachments or update fields
+            var needsUpdate = false;
+            var updatedTx = existingTx;
+
             if (processedAttachments.isNotEmpty && existingTx.id != null) {
               final existingAttNames =
                   existingTx.attachments.map((a) => a.fileName).toSet();
@@ -659,16 +659,31 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
                   .toList();
 
               if (newAttsToInsert.isNotEmpty) {
-                final updatedTx = existingTx.copyWith(
+                updatedTx = updatedTx.copyWith(
                   attachments: <Attachment>[
-                    ...existingTx.attachments,
+                    ...updatedTx.attachments,
                     ...newAttsToInsert,
                   ],
                 );
-                await txService.updateTransaction(updatedTx);
-                updatedCount++;
-                _log('Updated attachments for existing transaction id=${existingTx.id}.');
+                needsUpdate = true;
+                _log('Added attachments for existing transaction id=${existingTx.id}.');
               }
+            }
+
+            // Also check if the incoming transaction has a newer updated_at timestamp
+            if (incomingTx.updatedAt != null) {
+              if (existingTx.updatedAt == null || incomingTx.updatedAt!.isAfter(existingTx.updatedAt!)) {
+                updatedTx = incomingTx.copyWith(
+                  attachments: updatedTx.attachments, // preserve merged attachments
+                );
+                needsUpdate = true;
+                _log('Updated fields for existing transaction id=${existingTx.id} from newer peer version.');
+              }
+            }
+
+            if (needsUpdate) {
+              await txService.updateTransaction(updatedTx);
+              updatedCount++;
             }
           }
         } catch (txErr, txSt) {
@@ -676,16 +691,54 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
         }
       }
 
-      await ref.read(transactionNotifierProvider.notifier).refresh();
+      var recurringAddedCount = 0;
+      var recurringUpdatedCount = 0;
+      final rawRecurringList = payload['recurring_transactions'] as List<dynamic>?;
 
-      _log('Sync complete: $addedCount new entries added, '
-          '$updatedCount existing updated.');
+      if (rawRecurringList != null) {
+        final recurringRepo = ref.read(recurringRepositoryProvider);
+        final existingRecurring = await recurringRepo.getAll();
+        final existingRecurringMap = <String, RecurringTransaction>{};
+        for (final rt in existingRecurring) {
+          if (rt.id != null) {
+            existingRecurringMap[rt.id!] = rt;
+          }
+        }
+
+        for (final rawItem in rawRecurringList) {
+          try {
+            if (rawItem is! Map<String, dynamic>) continue;
+            final incomingRt = RecurringTransaction.fromMap(Map<String, dynamic>.from(rawItem));
+            final existingRt = incomingRt.id != null ? existingRecurringMap[incomingRt.id!] : null;
+
+            if (existingRt == null) {
+              await recurringRepo.insert(incomingRt);
+              recurringAddedCount++;
+              _log('Added new synced recurring transaction: ${incomingRt.note} (${incomingRt.amount})');
+            } else {
+              if (incomingRt.updatedAt.isAfter(existingRt.updatedAt)) {
+                await recurringRepo.update(incomingRt);
+                recurringUpdatedCount++;
+                _log('Updated recurring transaction id=${existingRt.id} from newer peer version.');
+              }
+            }
+          } catch (e, st) {
+            _log('Error importing individual recurring transaction item: $e\n$st');
+          }
+        }
+      }
+
+      await ref.read(transactionNotifierProvider.notifier).refresh();
+      ref.invalidate(recurringNotifierProvider);
+
+      _log('Sync complete: $addedCount new txs added, $updatedCount txs updated. '
+          '$recurringAddedCount new recurring txs, $recurringUpdatedCount recurring txs updated.');
 
       state = AsyncData(
         state.valueOrNull?.copyWith(
               isSyncing: false,
               isRemoteChangeDetected: false,
-              statusMessage: 'Synced successfully ($addedCount new entries added).',
+              statusMessage: 'Synced successfully ($addedCount tx, $recurringAddedCount recurring added).',
             ) ??
             const P2PSyncState(),
       );

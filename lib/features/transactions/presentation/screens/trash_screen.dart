@@ -1,6 +1,5 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_sizes.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/transactions/application/trash_transactions_provider.dart';
