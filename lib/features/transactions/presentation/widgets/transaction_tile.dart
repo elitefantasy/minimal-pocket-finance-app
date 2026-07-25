@@ -1,5 +1,6 @@
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_radius.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/attachments/presentation/widgets/attachment_viewer_dialog.dart';
@@ -84,11 +85,15 @@ class TransactionTile extends ConsumerWidget {
                       children: <Widget>[
                         if (transaction.isRecurring)
                           Chip(
-                            avatar: const Icon(
+                            avatar: Icon(
                               AppIcons.repeat,
                               size: AppIcons.smallSize,
+                              color: context.colors.secondary,
                             ),
-                            label: const Text('Monthly'),
+                            label: const Text('Recurring'),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.pill,
+                            ),
                             visualDensity: VisualDensity.compact,
                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             labelStyle: context.text.labelSmall,

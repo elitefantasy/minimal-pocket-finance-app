@@ -1,6 +1,6 @@
 ## Planned Feature
 🚨 1. High-Priority Improvements (Data Integrity for Sync)
-- history should also show that transaction is recurring just like how recurring transactions how
+- history should also show that transaction is recurring just like how recurring transactions show
 - Tombstones for Deletions (Improvement): Right now, deleted transactions are excluded from sync. If Device A deletes a record and syncs with Device B, Device B will just keep its old copy. You need a "tombstone" mechanism to tell other devices that a record was explicitly deleted.
 - DataChannel Chunking (Improvement): WebRTC DataChannels have message size limits. Since your database includes images, sending the full transaction set in one message will fail on large databases. Implementing chunking is essential for reliability.
 
@@ -12,10 +12,12 @@
 
 # Unreleased:
 ### features
+- feat(sync): add recurring transactions to P2P sync and use UUID deduplication
 - feat: Refactor the SQLite database and Dart data models to migrate from auto-increment IDs to UUIDs to prepare for real-world P2P synchronization.
 - feat: implement secure P2P synchronization architecture with E2EE crypto service, signaling support, and pairing UI
 - feat: Image Attachments for Transactions 
 ### fixes
+- fix(sync): add signature fallback to prevent duplicates from v5 migration
 - fix: overflow issue with trash transaction tiles
 - fix: in windows fixed missingpluginexception error because SAF plugin channels are native to Android and do not exist on Desktop platforms. 
 - fix: more menu is missing by bottom 39 pixel
