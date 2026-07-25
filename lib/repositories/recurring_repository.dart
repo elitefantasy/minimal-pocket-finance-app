@@ -2,13 +2,16 @@ import 'package:akm_finance_manager/core/database/database_helper.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:sqflite/sqflite.dart' show Database;
+import 'package:uuid/uuid.dart';
+import 'package:akm_finance_manager/models/tombstone.dart';
+import 'package:akm_finance_manager/repositories/tombstone_repository.dart';
 
 /// Provides persistence operations for recurring transactions.
 abstract interface class RecurringProcessingRepository {
   Future<List<RecurringTransaction>> getAll();
 
   Future<bool> insertOccurrence({
-    required int recurringId,
+    required String recurringId,
     required Transaction transaction,
     required DateTime processedDate,
     required DateTime updatedAt,
@@ -16,15 +19,26 @@ abstract interface class RecurringProcessingRepository {
 }
 
 class RecurringRepository implements RecurringProcessingRepository {
-  RecurringRepository(this._databaseHelper);
+  RecurringRepository(
+    this._databaseHelper, {
+    TombstoneRepository? tombstoneRepository,
+  }) : _tombstoneRepository = 
+           tombstoneRepository ?? TombstoneRepository(_databaseHelper);
 
   static const String _tableName = 'recurring_transactions';
 
   final DatabaseHelper _databaseHelper;
+  final TombstoneRepository _tombstoneRepository;
 
-  Future<int> insert(RecurringTransaction recurring) async {
+  Future<String> insert(RecurringTransaction recurring) async {
     final Database database = await _databaseHelper.database;
-    return database.insert(_tableName, recurring.toMap());
+    final id = recurring.id ?? const Uuid().v4();
+    final recurringToInsert = recurring.copyWith(
+      id: id,
+      updatedAt: recurring.updatedAt,
+    );
+    await database.insert(_tableName, recurringToInsert.toMap());
+    return id;
   }
 
   @override
@@ -54,23 +68,39 @@ class RecurringRepository implements RecurringProcessingRepository {
     );
   }
 
-  Future<void> delete(int id) async {
+  Future<void> delete(String id) async {
     final Database database = await _databaseHelper.database;
     await database.delete(
       _tableName,
       where: 'id = ?',
       whereArgs: <Object?>[id],
     );
+    await _tombstoneRepository.insert(Tombstone(
+      id: id,
+      tableName: _tableName,
+      deletedAt: DateTime.now().toUtc(),
+    ));
   }
 
   Future<void> deleteAll() async {
     final Database database = await _databaseHelper.database;
+    final maps = await database.query(_tableName);
+    final ids = maps.map((e) => e['id'] as String).toList();
+    
     await database.delete(_tableName);
+    
+    await _tombstoneRepository.insertBatch(
+      ids.map((id) => Tombstone(
+        id: id,
+        tableName: _tableName,
+        deletedAt: DateTime.now().toUtc(),
+      )).toList(),
+    );
   }
 
   @override
   Future<bool> insertOccurrence({
-    required int recurringId,
+    required String recurringId,
     required Transaction transaction,
     required DateTime processedDate,
     required DateTime updatedAt,
@@ -97,7 +127,11 @@ class RecurringRepository implements RecurringProcessingRepository {
         return false;
       }
 
-      await databaseTransaction.insert('transactions', transaction.toMap());
+      final transactionWithId = transaction.copyWith(
+        id: transaction.id ?? const Uuid().v4(),
+        updatedAt: transaction.updatedAt ?? DateTime.now().toUtc(),
+      );
+      await databaseTransaction.insert('transactions', transactionWithId.toDatabaseMap());
       await databaseTransaction.update(
         _tableName,
         <String, Object?>{

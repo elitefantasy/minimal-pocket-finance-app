@@ -1,107 +1,76 @@
-# Changelog
+## Planned Feature
+1. UI/UX Changes & Roadmap
+- Conflict Resolution Screen
+If the same transaction was edited differently on both phones while offline, the app currently has to guess which one to keep (usually based on timestamps).
 
-All notable changes to **Minimal Pocket Finance** will be documented in this file.
+The Change: If a conflict is detected, pause the sync and show a side-by-side comparison UI. Ask the user: "Both devices edited the 'Groceries' transaction. Which version would you like to keep?"
 
-The format is based on **Keep a Changelog**, and this project follows **Semantic Versioning**.
+# Unreleased:
+### features
+- feat(categories): add category deletion confirmation dialog and auto-recreation of default categories
+- feat(sync): add transaction categories to P2P sync payload
+- feat(sync): add WebRTC ACK protocol and fix one-way push timeout issue
+- feat(sync): Directional Sync Choices and Enhanced Connection States
+- feat: implement tombstone mechanism for P2P sync deletions
+- feat(ui): update recurring transaction chip styling
+- feat(sync): add recurring transactions to P2P sync and use UUID deduplication
+- feat: Refactor the SQLite database and Dart data models to migrate from auto-increment IDs to UUIDs to prepare for real-world P2P synchronization.
+- feat: implement secure P2P synchronization architecture with E2EE crypto service, signaling support, and pairing UI
+- feat: Image Attachments for Transactions 
+### fixes
+- fix: process recurring transactions before normal transactions during sync
+- fix(sync): add signature fallback to prevent duplicates from v5 migration
+- fix: overflow issue with trash transaction tiles
+- fix: in windows fixed missingpluginexception error because SAF plugin channels are native to Android and do not exist on Desktop platforms. 
+- fix: more menu is missing by bottom 39 pixel
 
----
 
-## [1.0.0] - 2026-07-06
+# Released: v2.0.0
+### 🚀 New Features
+- feat: add full export path resolution for Android database and CSV exports 
+- feat: trash bin implementation
+- feat: add persisted global year filter
+- feat(transactions): preserve selected date across navigation
+- feat(dashboard): add monthly average expense card based on recorded expense months
+- feat: quickly open related transactions from dashboard and statistics
+- feat: add searchable category picker with smart category creation
+### changes
+- changes: reset database version to 1 
+- changes: timestamped database backups/exports.
+- changes: read app version dynamically using package_info_plus
+### UI and themes
+- feat(ui): make transaction notes optional with animated expandable field
+- feat(theme): add centralized design system infrastructure
+- feat(theme): complete Material 3 design system infrastructure
+- Add application launcher icons
+- feat(dashboard): polish finance overview visuals
+- feat(forms): polish transaction entry experience
+- feat(history): polish transaction activity experience
+- feat(statistics): polish summary and category insights UI
+- feat(categories): polish category management UI
+- feat(recurring): polish recurring transaction management UI
+- style(data-management): polish danger zone card style: unify Material 3 presentation consistency
+ 
+### optimization
+- Optimization: The expensive calculations inside dashboardSummaryProvider are not recomputed
+refactor(dashboard): separate top category sorting from dashboard summary and improve sort indicator UI
+- refactor(theme): align component defaults with design tokens
+- refactor(ui): migrate reusable widgets to design system tokens
 
-Initial public release of **Minimal Pocket Finance**.
+### 🐛 Bug Fixes
+- fix: initialize SQLite FFI before desktop app startup
+- fix: initialize history filters after first frame
+- fix: in windows shows full path where exported database is located
 
-### Added
+# v1.0.0
+### 🚀 New Features
+- Add centralized app snackbar service
+- Implemented recurring transaction origin tracking with a relational nullable origin column instead of any note-based inference.
+- feat(about): add clickable GitHub link using UrlLauncherService
+- Release: v1 release codebase
 
-* Dashboard showing:
 
-  * Current Balance
-  * Total Income
-  * Total Expense
-  * Current Month Expense
-  * Top Expense Category
-  * Recent Transactions
-* Add income and expense transactions.
-* Edit existing transactions.
-* Delete transactions.
-* Undo transaction deletion.
-* Transaction history screen.
-* Transaction search.
-* Transaction filtering.
-* Transaction sorting.
-* Optional notes for transactions.
-* Custom category management.
-* Protection against deleting categories that are currently in use.
-* Monthly recurring income and expense support.
-* Automatic recurring transaction processing.
-* Edit and delete recurring transactions.
-* Statistics dashboard including:
 
-  * Income
-  * Expense
-  * Balance
-  * Transaction count
-  * Highest income
-  * Highest expense
-  * Category totals
-  * Monthly average expense by category
-* Multiple SQLite database support.
-* Create, rename, delete, and switch databases.
-* Database import support.
-* Database export support.
-* CSV transaction export.
-* About screen with application information.
-* Clickable GitHub repository link.
-* Dynamic application version detection using `package_info_plus`.
-* Centralized snackbar service for user feedback.
 
-### Changed
 
-* Recurring transactions now generate transactions only on their scheduled processing date instead of immediately upon creation.
-* Recurring transaction origin tracking migrated from note-based detection to relational origin tracking.
-* Export and import workflows improved for better consistency.
 
-### Technical
-
-* Flutter application using Material 3.
-* Riverpod state management.
-* GoRouter navigation.
-* SQLite local database.
-* Repository pattern.
-* Feature-based project structure.
-* Offline-first architecture.
-* Android support.
-* Windows desktop support.
-
-### Fixed
-
-* Various stability improvements during the initial development cycle.
-
----
-
-## [Unreleased] v1.1.0
-
-### Added
-
-* Application launcher icons.
-
-### Improved
-
-* Complete Material 3 design system.
-* Centralized theme infrastructure.
-* Shared spacing, typography, sizing, radius, icons, and color tokens.
-* Reusable UI components.
-* Dashboard layout and visual polish.
-* Transaction entry experience.
-* Transaction history experience.
-* Statistics screen.
-* Category management interface.
-* Recurring transaction interface.
-* Data management interface.
-* Danger Zone redesign.
-* Monthly average dashboard calculations.
-* Dashboard performance optimizations.
-* Last selected transaction date is preserved across navigation.
-
-### Fixed
-
-* Windows SQLite FFI initialization during desktop startup.

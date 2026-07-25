@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 /// Provides lazy, shared access to the application's SQLite database.
 class DatabaseHelper {
@@ -11,7 +12,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int databaseVersion = 1;
+  static const int databaseVersion = 6;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -98,6 +99,7 @@ class DatabaseHelper {
       onConfigure: _onConfigure,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
+      onOpen: _onOpen,
     );
   }
 
@@ -121,11 +123,50 @@ class DatabaseHelper {
     await database.execute('PRAGMA foreign_keys = ON');
   }
 
+  Future<void> _onOpen(Database database) async {
+    await _ensureTablesExist(database);
+  }
+
+  /// Wipes all tables except for pairing/config tables if any exist.
+  Future<void> wipeAllData() async {
+    final db = await database;
+    await db.transaction((txn) async {
+      await txn.delete('transactions');
+      await txn.delete('recurring_transactions');
+      await txn.delete('categories');
+      await txn.delete('attachments');
+      await txn.delete('tombstones');
+    });
+  }
+
+  Future<void> _ensureTablesExist(Database database) async {
+    await database.execute('''
+      CREATE TABLE IF NOT EXISTS attachments (
+        id TEXT PRIMARY KEY,
+        transaction_id TEXT NOT NULL,
+        file_path TEXT NOT NULL,
+        file_type TEXT NOT NULL,
+        file_name TEXT,
+        file_size INTEGER,
+        created_at TEXT NOT NULL,
+        device_id TEXT,
+        updated_at TEXT,
+        FOREIGN KEY (transaction_id)
+          REFERENCES transactions(id)
+          ON DELETE CASCADE
+      )
+    ''');
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS index_attachments_transaction_id '
+      'ON attachments(transaction_id)',
+    );
+  }
+
   Future<void> _onCreate(Database database, int version) async {
     final batch = database.batch()
       ..execute('''
         CREATE TABLE recurring_transactions (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id TEXT PRIMARY KEY,
           type TEXT NOT NULL,
           amount REAL NOT NULL,
           category TEXT NOT NULL,
@@ -135,20 +176,23 @@ class DatabaseHelper {
           last_processed_date TEXT,
           created_at TEXT NOT NULL,
           start_date TEXT NOT NULL,
-          updated_at TEXT NOT NULL
+          updated_at TEXT NOT NULL,
+          device_id TEXT
         )
       ''')
       ..execute('''
         CREATE TABLE transactions (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id TEXT PRIMARY KEY,
           type TEXT NOT NULL CHECK(type IN ('Income', 'Expense')),
           amount REAL NOT NULL,
           category TEXT NOT NULL,
           note TEXT NOT NULL,
           date TEXT NOT NULL,
-          recurring_transaction_id INTEGER,
+          recurring_transaction_id TEXT,
           generated_at TEXT,
           deleted_at TEXT,
+          device_id TEXT,
+          updated_at TEXT,
           FOREIGN KEY (recurring_transaction_id)
             REFERENCES recurring_transactions(id)
             ON DELETE SET NULL
@@ -156,8 +200,26 @@ class DatabaseHelper {
       ''')
       ..execute('''
         CREATE TABLE categories (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL UNIQUE
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL UNIQUE,
+          device_id TEXT,
+          updated_at TEXT
+        )
+      ''')
+      ..execute('''
+        CREATE TABLE attachments (
+          id TEXT PRIMARY KEY,
+          transaction_id TEXT NOT NULL,
+          file_path TEXT NOT NULL,
+          file_type TEXT NOT NULL,
+          file_name TEXT,
+          file_size INTEGER,
+          created_at TEXT NOT NULL,
+          device_id TEXT,
+          updated_at TEXT,
+          FOREIGN KEY (transaction_id)
+            REFERENCES transactions(id)
+            ON DELETE CASCADE
         )
       ''')
       ..execute('CREATE INDEX index_transactions_date ON transactions(date)')
@@ -171,7 +233,19 @@ class DatabaseHelper {
       ..execute(
         'CREATE INDEX index_transactions_recurring_transaction_id '
         'ON transactions(recurring_transaction_id)',
-      );
+      )
+      ..execute(
+        'CREATE INDEX index_attachments_transaction_id '
+        'ON attachments(transaction_id)',
+      )
+      ..execute('''
+        CREATE TABLE tombstones (
+          id TEXT NOT NULL,
+          table_name TEXT NOT NULL,
+          deleted_at TEXT NOT NULL,
+          PRIMARY KEY (id, table_name)
+        )
+      ''');
 
     await batch.commit(noResult: true);
     await _insertDefaultCategoriesIfEmpty(database);
@@ -182,8 +256,132 @@ class DatabaseHelper {
     int oldVersion,
     int newVersion,
   ) async {
-    // Database version reset to v1 as baseline schema.
-    // Future schema migrations starting from v1 will be added here.
+    if (oldVersion < 2) {
+      await _ensureTablesExist(database);
+    }
+    
+    if (oldVersion < 3) {
+      try {
+        await database.execute(
+          'ALTER TABLE transactions ADD COLUMN deleted_at TEXT',
+        );
+      } catch (e) {
+        if (!e.toString().contains('duplicate column')) {
+          rethrow;
+        }
+      }
+      await database.execute(
+        'CREATE INDEX IF NOT EXISTS index_transactions_deleted_at ON transactions(deleted_at)',
+      );
+    }
+
+    if (oldVersion < 4) {
+      await _ensureTablesExist(database);
+    }
+    
+    if (oldVersion < 5) {
+      await _migrateToV5(database);
+    }
+    
+    if (oldVersion < 6) {
+      await _migrateToV6(database);
+    }
+  }
+
+  Future<void> _migrateToV6(Database database) async {
+    await database.execute('''
+      CREATE TABLE IF NOT EXISTS tombstones (
+        id TEXT NOT NULL,
+        table_name TEXT NOT NULL,
+        deleted_at TEXT NOT NULL,
+        PRIMARY KEY (id, table_name)
+      )
+    ''');
+  }
+
+  Future<void> _migrateToV5(Database database) async {
+    const uuid = Uuid();
+    
+    // 1. Rename old tables
+    await database.execute('ALTER TABLE recurring_transactions RENAME TO old_recurring_transactions');
+    await database.execute('ALTER TABLE transactions RENAME TO old_transactions');
+    await database.execute('ALTER TABLE categories RENAME TO old_categories');
+    await database.execute('ALTER TABLE attachments RENAME TO old_attachments');
+
+    // 2. Create new tables
+    // Drop existing indices from renamed tables to avoid creation conflicts
+    await database.execute('DROP INDEX IF EXISTS index_transactions_date');
+    await database.execute('DROP INDEX IF EXISTS index_transactions_category');
+    await database.execute('DROP INDEX IF EXISTS index_transactions_type');
+    await database.execute('DROP INDEX IF EXISTS index_transactions_deleted_at');
+    await database.execute('DROP INDEX IF EXISTS index_transactions_recurring_transaction_id');
+    await database.execute('DROP INDEX IF EXISTS index_attachments_transaction_id');
+    await _onCreate(database, 5);
+
+    // 3. Migrate Categories
+    final oldCategories = await database.query('old_categories');
+    for (final row in oldCategories) {
+      final newId = uuid.v4();
+      await database.insert(
+        'categories',
+        {
+          'id': newId,
+          'name': row['name'],
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        },
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+
+    // 4. Migrate Recurring Transactions
+    final recurringMap = <int, String>{};
+    final oldRecurring = await database.query('old_recurring_transactions');
+    for (final row in oldRecurring) {
+      final oldId = row['id'] as int;
+      final newId = uuid.v4();
+      recurringMap[oldId] = newId;
+      final newRow = Map<String, dynamic>.from(row);
+      newRow['id'] = newId;
+      await database.insert('recurring_transactions', newRow);
+    }
+
+    // 5. Migrate Transactions
+    final transactionMap = <int, String>{};
+    final oldTransactions = await database.query('old_transactions');
+    for (final row in oldTransactions) {
+      final oldId = row['id'] as int;
+      final newId = uuid.v4();
+      transactionMap[oldId] = newId;
+      final newRow = Map<String, dynamic>.from(row);
+      newRow['id'] = newId;
+      if (newRow['recurring_transaction_id'] != null) {
+        newRow['recurring_transaction_id'] = recurringMap[newRow['recurring_transaction_id'] as int];
+      }
+      newRow['updated_at'] = DateTime.now().toUtc().toIso8601String();
+      await database.insert('transactions', newRow);
+    }
+
+    // 6. Migrate Attachments
+    final oldAttachments = await database.query('old_attachments');
+    for (final row in oldAttachments) {
+      final newId = uuid.v4();
+      final newRow = Map<String, dynamic>.from(row);
+      newRow['id'] = newId;
+      if (newRow['transaction_id'] != null) {
+        newRow['transaction_id'] = transactionMap[newRow['transaction_id'] as int];
+      }
+      newRow['updated_at'] = DateTime.now().toUtc().toIso8601String();
+      // Only insert if the transaction still exists (we don't want orphaned attachments crashing due to FK)
+      if (newRow['transaction_id'] != null) {
+        await database.insert('attachments', newRow);
+      }
+    }
+
+    // 7. Drop old tables
+    await database.execute('DROP TABLE old_attachments');
+    await database.execute('DROP TABLE old_transactions');
+    await database.execute('DROP TABLE old_recurring_transactions');
+    await database.execute('DROP TABLE old_categories');
   }
 
   Future<void> _insertDefaultCategoriesIfEmpty(Database database) async {
@@ -206,9 +404,14 @@ class DatabaseHelper {
       'Other',
     ];
     final batch = database.batch();
+    const uuid = Uuid();
 
     for (final category in defaultCategories) {
-      batch.insert('categories', <String, Object?>{'name': category});
+      batch.insert('categories', <String, Object?>{
+        'id': uuid.v4(),
+        'name': category,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      });
     }
 
     await batch.commit(noResult: true);

@@ -6,6 +6,7 @@ import 'package:akm_finance_manager/features/data_management/application/databas
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/backup_card.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/database_card.dart';
 import 'package:akm_finance_manager/features/data_management/presentation/widgets/database_tile.dart';
+import 'package:akm_finance_manager/features/sync/presentation/widgets/p2p_sync_status_card.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,8 @@ class DataManagementScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(AppSpacing.page),
           children: <Widget>[
             DatabaseCard(databaseName: state.currentDatabase),
+            const SizedBox(height: AppSpacing.section),
+            const P2PSyncStatusCard(),
             const SizedBox(height: AppSpacing.section),
             Row(
               children: <Widget>[

@@ -1,5 +1,6 @@
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
+import 'package:akm_finance_manager/core/theme/app_radius.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
@@ -59,10 +60,19 @@ class RecentTransactionsCard extends StatelessWidget {
                         if (transaction.isRecurring) ...[
                           const SizedBox(width: AppSpacing.sm),
                           Chip(
-                            label: const Text('Monthly'),
+                            avatar: Icon(
+                              AppIcons.repeat,
+                              size: AppIcons.smallSize,
+                              color: context.colors.secondary,
+                            ),
+                            label: const Text('Recurring'),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.pill,
+                            ),
                             visualDensity: VisualDensity.compact,
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            labelStyle: context.text.labelSmall,
+                            padding: EdgeInsets.zero,
                           ),
                         ],
                       ],

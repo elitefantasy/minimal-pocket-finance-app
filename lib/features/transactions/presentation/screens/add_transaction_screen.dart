@@ -13,10 +13,11 @@ import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
 
 // Model imports
+import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 
-// Feature Feature Notifiers & Providers
+// Feature Notifiers & Providers
 import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
 import 'package:akm_finance_manager/features/recurring/application/recurring_processing_provider.dart';
@@ -24,6 +25,7 @@ import 'package:akm_finance_manager/features/transactions/application/selected_t
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 
 // Feature UI Widgets
+import 'package:akm_finance_manager/features/attachments/presentation/widgets/attachment_picker_section.dart';
 import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
@@ -32,7 +34,7 @@ import 'package:akm_finance_manager/features/transactions/presentation/widgets/n
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/transaction_type_buttons.dart';
 
 /// Screen allowing users to input and create either standard or recurring
-/// income and expense transactions.
+/// income and expense transactions with optional image attachments.
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({super.key});
 
@@ -53,6 +55,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   bool _repeatMonthly = false;
   bool _isSaving = false;
   bool _showNoteField = false;
+  List<Attachment> _attachments = <Attachment>[];
 
   @override
   void dispose() {
@@ -119,6 +122,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           category: _selectedCategory!,
           note: _noteController.text.trim(),
           date: selectedDate,
+          attachments: _attachments,
         );
 
         // Add a normal one-off transaction
@@ -136,6 +140,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       setState(() {
         _repeatMonthly = false;
         _showNoteField = false;
+        _attachments = <Attachment>[];
       });
 
       // Show success notification banner
@@ -255,7 +260,18 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 DayOfMonthField(controller: _dayOfMonthController),
               ],
-              const SizedBox(height: AppSpacing.xl),
+              const SizedBox(height: AppSpacing.lg),
+
+              // Attachments picker section (Only displayed for standard transactions)
+              if (!_repeatMonthly) ...<Widget>[
+                AttachmentPickerSection(
+                  attachments: _attachments,
+                  onAttachmentsChanged: (updated) {
+                    setState(() => _attachments = updated);
+                  },
+                ),
+                const SizedBox(height: AppSpacing.xl),
+              ],
 
               // Income / Expense trigger submission button row
               TransactionTypeButtons(

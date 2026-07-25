@@ -179,35 +179,65 @@ class _TrashTransactionTile extends StatelessWidget {
         : 'Deleted ${deletedAt.day}/${deletedAt.month}/${deletedAt.year}';
 
     return Card(
-      child: ListTile(
-        leading: Icon(
-          isIncome ? AppIcons.income : AppIcons.expense,
-          color: isIncome ? context.semantic.success : context.colors.error,
-        ),
-        title: Text(transaction.category),
-        subtitle: Text(
-          '${transactionDate.day}/${transactionDate.month}/${transactionDate.year}'
-          '${transaction.note.isEmpty ? '' : ' • ${transaction.note}'}'
-          '${deletedLabel.isEmpty ? '' : '\n$deletedLabel'}',
-        ),
-        isThreeLine: deletedLabel.isNotEmpty,
-        trailing: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text('$amountPrefix₹${transaction.amount.toStringAsFixed(0)}'),
-            Row(
-              mainAxisSize: MainAxisSize.min,
+            Icon(
+              isIncome ? AppIcons.income : AppIcons.expense,
+              color: isIncome ? context.semantic.success : context.colors.error,
+              size: AppIcons.mediumSize,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    transaction.category,
+                    style: context.text.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    '${transactionDate.day}/${transactionDate.month}/${transactionDate.year}'
+                    '${transaction.note.isEmpty ? '' : ' • ${transaction.note}'}'
+                    '${deletedLabel.isEmpty ? '' : '\n$deletedLabel'}',
+                    style: context.text.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.lg),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                IconButton(
-                  onPressed: onRestore,
-                  icon: const Icon(AppIcons.restore),
-                  tooltip: 'Restore',
+                Text(
+                  '$amountPrefix₹${transaction.amount.toStringAsFixed(0)}',
+                  style: context.text.titleMedium?.copyWith(
+                    color: isIncome ? context.semantic.success : context.colors.error,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                IconButton(
-                  onPressed: onDeletePermanently,
-                  icon: const Icon(AppIcons.delete),
-                  tooltip: 'Delete permanently',
+                const SizedBox(height: AppSpacing.xs),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: onRestore,
+                      icon: const Icon(AppIcons.restore),
+                      tooltip: 'Restore',
+                    ),
+                    IconButton(
+                      onPressed: onDeletePermanently,
+                      icon: const Icon(AppIcons.delete),
+                      tooltip: 'Delete permanently',
+                    ),
+                  ],
                 ),
               ],
             ),

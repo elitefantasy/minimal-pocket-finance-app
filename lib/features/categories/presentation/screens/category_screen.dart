@@ -1,3 +1,4 @@
+import 'package:akm_finance_manager/app/providers.dart';
 import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
 import 'package:akm_finance_manager/core/theme/app_icons.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
@@ -90,14 +91,34 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
   Future<void> _deleteCategory(Category category) async {
     try {
-      final blockReason = await ref
-          .read(categoryNotifierProvider.notifier)
-          .deletionBlockReason(category);
+      final repo = ref.read(categoryRepositoryProvider);
+      final usageCount = await repo.getUsageCount(category.name);
+
       if (!mounted) {
         return;
       }
-      if (blockReason != null) {
-        _showError(blockReason);
+
+      if (usageCount > 0) {
+        final action = await showDialog<_CategoryDeleteAction>(
+          context: context,
+          builder: (dialogContext) => _CategoryInUseDialog(
+            category: category,
+            usageCount: usageCount,
+          ),
+        );
+
+        if (action == _CategoryDeleteAction.deleteAll && mounted) {
+          final message = await ref
+              .read(categoryNotifierProvider.notifier)
+              .deleteCategoryAndTransactions(category);
+          if (mounted) {
+            if (message == null) {
+              _showSuccess('Category and $usageCount associated transaction(s) deleted.');
+            } else {
+              _showMessage(message);
+            }
+          }
+        }
         return;
       }
 
@@ -339,6 +360,57 @@ class _DeleteCategoryDialog extends StatelessWidget {
           ),
           onPressed: () => Navigator.of(context).pop(true),
           child: const Text('Delete'),
+        ),
+      ],
+    );
+  }
+}
+
+
+enum _CategoryDeleteAction { cancel, deleteAll }
+
+class _CategoryInUseDialog extends StatelessWidget {
+  const _CategoryInUseDialog({
+    required this.category,
+    required this.usageCount,
+  });
+
+  final Category category;
+  final int usageCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Row(
+        children: <Widget>[
+          Icon(Icons.warning_amber_rounded, color: context.colors.error),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              'Category in Use',
+              style: context.text.titleLarge,
+            ),
+          ),
+        ],
+      ),
+      content: Text(
+        'The category "${category.name}" is currently used by $usageCount existing transaction(s).\n\n'
+        'You cannot delete this category directly while transactions are using it. '
+        'Would you like to delete all $usageCount associated transaction(s) along with this category?',
+        style: context.text.bodyMedium,
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(_CategoryDeleteAction.cancel),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: context.colors.error,
+            foregroundColor: context.colors.onError,
+          ),
+          onPressed: () => Navigator.of(context).pop(_CategoryDeleteAction.deleteAll),
+          child: Text('Delete Category & $usageCount Transaction(s)'),
         ),
       ],
     );

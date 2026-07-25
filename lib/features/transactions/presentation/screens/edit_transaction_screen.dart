@@ -13,6 +13,7 @@ import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 
 // Model imports
+import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 
 // Application State/Notifier imports
@@ -20,6 +21,7 @@ import 'package:akm_finance_manager/features/categories/application/category_not
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 
 // Presentation Widget imports
+import 'package:akm_finance_manager/features/attachments/presentation/widgets/attachment_picker_section.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
 import 'package:akm_finance_manager/features/transactions/presentation/widgets/date_picker_field.dart';
@@ -47,6 +49,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
   // Trackable form state fields
   late String _selectedCategory;
   late DateTime _selectedDate;
+  late List<Attachment> _attachments;
   bool _isSaving = false;
   bool _showNoteField = false;
 
@@ -63,6 +66,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     _showNoteField = widget.transaction.note.trim().isNotEmpty;
     _selectedCategory = widget.transaction.category;
     _selectedDate = widget.transaction.date;
+    _attachments = List<Attachment>.from(widget.transaction.attachments);
   }
 
   @override
@@ -89,6 +93,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
         category: _selectedCategory,
         note: _noteController.text.trim(),
         date: _selectedDate,
+        attachments: _attachments,
       );
 
       // Dispatch update request to the global transaction state notifier
@@ -192,6 +197,15 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
                     setState(() {
                       _selectedDate = date;
                     });
+                  },
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Attachments section
+                AttachmentPickerSection(
+                  attachments: _attachments,
+                  onAttachmentsChanged: (updated) {
+                    setState(() => _attachments = updated);
                   },
                 ),
                 const SizedBox(height: AppSpacing.xl),

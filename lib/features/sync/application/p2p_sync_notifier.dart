@@ -1,0 +1,947 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:akm_finance_manager/app/providers.dart';
+import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
+import 'package:akm_finance_manager/models/attachment.dart';
+import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:akm_finance_manager/models/recurring_transaction.dart';
+import 'package:akm_finance_manager/models/category.dart';
+import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
+import 'package:akm_finance_manager/models/tombstone.dart';
+import 'package:akm_finance_manager/models/sync_mode.dart';
+import 'package:akm_finance_manager/services/attachment_service.dart';
+import 'package:akm_finance_manager/services/p2p/p2p_crypto_service.dart';
+import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
+import 'package:akm_finance_manager/services/p2p/signaling_client.dart';
+import 'package:akm_finance_manager/services/p2p/webrtc_sync_service.dart';
+import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class P2PSyncState {
+  const P2PSyncState({
+    this.isPaired = false,
+    this.pairingCode,
+    this.isSignalingConnected = false,
+    this.isRemoteChangeDetected = false,
+    this.remoteDeviceName,
+    this.remoteLastUpdated,
+    this.isSyncing = false,
+    this.statusMessage = 'Disconnected',
+  });
+
+  final bool isPaired;
+  final String? pairingCode;
+  final bool isSignalingConnected;
+  final bool isRemoteChangeDetected;
+  final String? remoteDeviceName;
+  final DateTime? remoteLastUpdated;
+  final bool isSyncing;
+  final String statusMessage;
+
+  P2PSyncState copyWith({
+    bool? isPaired,
+    String? pairingCode,
+    bool? isSignalingConnected,
+    bool? isRemoteChangeDetected,
+    String? remoteDeviceName,
+    DateTime? remoteLastUpdated,
+    bool? isSyncing,
+    String? statusMessage,
+  }) {
+    return P2PSyncState(
+      isPaired: isPaired ?? this.isPaired,
+      pairingCode: pairingCode ?? this.pairingCode,
+      isSignalingConnected: isSignalingConnected ?? this.isSignalingConnected,
+      isRemoteChangeDetected:
+          isRemoteChangeDetected ?? this.isRemoteChangeDetected,
+      remoteDeviceName: remoteDeviceName ?? this.remoteDeviceName,
+      remoteLastUpdated: remoteLastUpdated ?? this.remoteLastUpdated,
+      isSyncing: isSyncing ?? this.isSyncing,
+      statusMessage: statusMessage ?? this.statusMessage,
+    );
+  }
+}
+
+class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
+  final P2PCryptoService _cryptoService = P2PCryptoService();
+  final SignalingClient _signalingClient = SignalingClient(debug: true);
+  final WebRTCSyncService _webrtcService = WebRTCSyncService();
+  final AttachmentService _attachmentService = AttachmentService();
+
+  static const String _prefPairingKey = 'p2p_pairing_code';
+  static const String _prefDeviceName = 'p2p_device_name';
+
+  /// Heartbeat interval for presence broadcasts.
+  ///
+  /// ntfy.sh public tier allows ~250 messages/day. At 10 minutes per heartbeat,
+  /// two devices produce ~288 messages/day, which is within limits and leaves
+  /// headroom for signaling messages (offer/answer/ICE).
+  static const Duration _heartbeatInterval = Duration(minutes: 10);
+
+  late String _deviceId;
+  Timer? _heartbeatTimer;
+  Completer<bool>? _syncCompleter;
+  Timer? _syncTimeout;
+
+  @override
+  Future<P2PSyncState> build() async {
+    unawaited(P2PLogger.init());
+    final prefs = await SharedPreferences.getInstance();
+    final savedPairingCode = prefs.getString(_prefPairingKey);
+
+    var deviceId = prefs.getString(_prefDeviceName);
+    if (deviceId == null ||
+        deviceId.isEmpty ||
+        deviceId == 'localhost' ||
+        deviceId == 'localhost.localdomain') {
+      final randomSuffix = (Random().nextInt(900000) + 100000).toString();
+      final platformName = Platform.isAndroid
+          ? 'Android'
+          : Platform.isIOS
+              ? 'iOS'
+              : Platform.isWindows
+                  ? 'Windows'
+                  : Platform.operatingSystem;
+      deviceId = '$platformName-$randomSuffix';
+      await prefs.setString(_prefDeviceName, deviceId);
+    }
+    _deviceId = deviceId;
+    _log('Device ID: $_deviceId');
+
+    _setupSignalingListeners();
+    _setupWebRTCListeners();
+
+    if (savedPairingCode != null && savedPairingCode.isNotEmpty) {
+      unawaited(_connectSignaling(savedPairingCode));
+      return P2PSyncState(
+        isPaired: true,
+        pairingCode: savedPairingCode,
+        statusMessage: 'Connecting to P2P signaling...',
+      );
+    }
+
+    return const P2PSyncState();
+  }
+
+  void _setupSignalingListeners() {
+    _signalingClient.onConnected = () {
+      _log('Signaling connected. Starting heartbeat.');
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              isSignalingConnected: true,
+              statusMessage: 'Online & Listening for peer',
+            ) ??
+            const P2PSyncState(
+              isSignalingConnected: true,
+              statusMessage: 'Online & Listening for peer',
+            ),
+      );
+      _startHeartbeat();
+    };
+
+    _signalingClient.onDisconnected = () {
+      _log('Signaling disconnected.');
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              isSignalingConnected: false,
+              statusMessage: 'Disconnected from signaling',
+            ) ??
+            const P2PSyncState(
+              isSignalingConnected: false,
+              statusMessage: 'Disconnected from signaling',
+            ),
+      );
+      _stopHeartbeat();
+    };
+
+    _signalingClient.onPresenceReceived = (senderId, encryptedPayload) {
+      final code = state.valueOrNull?.pairingCode;
+      if (code == null) return;
+
+      final payload = _cryptoService.decryptPayload(encryptedPayload, code);
+      if (payload == null) {
+        _log('Failed to decrypt presence from $senderId (wrong key?).');
+        return;
+      }
+
+      final remoteDeviceName = payload['device'] as String? ?? senderId;
+      final remoteTimestampIso = payload['timestamp'] as String?;
+      final remoteTimestamp = remoteTimestampIso != null
+          ? DateTime.tryParse(remoteTimestampIso)
+          : null;
+
+      _log('Presence received from $remoteDeviceName.');
+
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              isRemoteChangeDetected: true,
+              remoteDeviceName: remoteDeviceName,
+              remoteLastUpdated: remoteTimestamp,
+              statusMessage: 'Peer online: $remoteDeviceName',
+            ) ??
+            P2PSyncState(
+              isRemoteChangeDetected: true,
+              remoteDeviceName: remoteDeviceName,
+              remoteLastUpdated: remoteTimestamp,
+              statusMessage: 'Peer online: $remoteDeviceName',
+            ),
+      );
+    };
+
+    _signalingClient.onSignalReceived = (senderId, signalData) async {
+      final type = signalData['type'] as String?;
+      _log('Signal received from $senderId: type=$type');
+
+      try {
+        if (type == 'offer') {
+          final answerData = await _webrtcService.handleOffer(signalData);
+          // Await the answer publish so ICE candidates queue behind it
+          final sent =
+              await _signalingClient.sendSignal(answerData, _deviceId);
+          if (!sent) {
+            _log('WARNING: Failed to publish SDP answer.');
+          }
+        } else if (type == 'answer') {
+          await _webrtcService.handleAnswer(signalData);
+        } else if (type == 'candidate') {
+          await _webrtcService.handleIceCandidate(signalData);
+        } else {
+          _log('Unknown signal type: $type');
+        }
+      } catch (e) {
+        _log('Error handling signal type=$type: $e');
+      }
+    };
+  }
+
+  void _setupWebRTCListeners() {
+    _webrtcService.onIceCandidate = (candidateData) {
+      // ICE candidates are queued behind offer/answer by SignalingClient's
+      // sequential publish queue.
+      _signalingClient.sendSignal(candidateData, _deviceId);
+    };
+
+    _webrtcService.onDataReceived = (encryptedData) async {
+      final code = state.valueOrNull?.pairingCode;
+      if (code == null) return;
+
+      final payload = _cryptoService.decryptPayload(encryptedData, code);
+      if (payload == null) {
+        _log('Failed to decrypt data channel message.');
+        return;
+      }
+
+      final action = payload['action'] as String?;
+      _log('Data channel action received: $action');
+
+      if (action == 'request_sync') {
+        await _sendLocalDataToPeer(SyncMode.merge);
+      } else if (action == 'sync_payload') {
+        await _processIncomingSyncPayload(payload);
+      } else if (action == 'sync_ack') {
+        _log('Received sync ACK from peer.');
+        state = AsyncData(
+          state.valueOrNull?.copyWith(
+                isSyncing: false,
+                isRemoteChangeDetected: false,
+                statusMessage: 'Synced successfully with peer.',
+              ) ??
+              const P2PSyncState(),
+        );
+        if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+          _syncCompleter!.complete(true);
+        }
+      }
+    };
+
+    _webrtcService.onConnectionStateChanged = (isOpen) {
+      _log('Data channel ${isOpen ? "opened" : "closed"}.');
+    };
+  }
+
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = Timer.periodic(_heartbeatInterval, (_) {
+      broadcastPresence();
+    });
+    // Send initial presence immediately
+    broadcastPresence();
+  }
+
+  void _stopHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+  }
+
+  Future<void> broadcastPresence() async {
+    final code = state.valueOrNull?.pairingCode;
+    if (code == null || !_signalingClient.isConnected) return;
+
+    final payload = <String, dynamic>{
+      'device': _deviceId,
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+
+    final encrypted = _cryptoService.encryptPayload(payload, code);
+    final sent = await _signalingClient.sendPresence(encrypted, _deviceId);
+    if (!sent) {
+      _log('Presence broadcast failed.');
+    }
+  }
+
+  /// Create new pairing key for host device.
+  Future<String> createPairingCode() async {
+    final code = _cryptoService.generatePairingCode();
+    await savePairingCode(code);
+    return code;
+  }
+
+  /// Save pairing code and join signaling network.
+  Future<void> savePairingCode(String code) async {
+    final cleanCode = code.toUpperCase().trim();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefPairingKey, cleanCode);
+
+    state = AsyncData(
+      state.valueOrNull?.copyWith(
+            isPaired: true,
+            pairingCode: cleanCode,
+            statusMessage: 'Connecting to P2P signaling...',
+          ) ??
+          P2PSyncState(
+            isPaired: true,
+            pairingCode: cleanCode,
+            statusMessage: 'Connecting to P2P signaling...',
+          ),
+    );
+
+    await _connectSignaling(cleanCode);
+  }
+
+  Future<void> _connectSignaling(String code) async {
+    final roomId = _cryptoService.deriveRoomId(code);
+    _log('Connecting signaling for room (truncated): '
+        '${roomId.substring(0, 8)}…');
+    try {
+      await _signalingClient.connect(roomId, _deviceId);
+    } catch (e) {
+      _log('Signaling connection failed: $e');
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              isSignalingConnected: false,
+              statusMessage: 'Signaling offline/timeout. Tap to retry.',
+            ) ??
+            P2PSyncState(
+              isPaired: true,
+              pairingCode: code,
+              isSignalingConnected: false,
+              statusMessage: 'Signaling offline/timeout. Tap to retry.',
+            ),
+      );
+    }
+  }
+
+  /// Manually retry connecting to signaling network.
+  Future<void> retryConnect() async {
+    final code = state.valueOrNull?.pairingCode;
+    if (code != null && code.isNotEmpty) {
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              statusMessage: 'Reconnecting to P2P signaling...',
+            ) ??
+            P2PSyncState(
+              isPaired: true,
+              pairingCode: code,
+              statusMessage: 'Reconnecting to P2P signaling...',
+            ),
+      );
+      await _connectSignaling(code);
+    }
+  }
+
+  /// Disconnect and clear pairing key.
+  Future<void> unpair() async {
+    _stopHeartbeat();
+    await _signalingClient.disconnect();
+    await _webrtcService.close();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefPairingKey);
+
+    state = const AsyncData(P2PSyncState());
+  }
+
+  /// Trigger sync with remote peer.
+  Future<void> syncNow({SyncMode mode = SyncMode.merge}) async {
+    final current = state.valueOrNull;
+    if (current == null || !current.isPaired || current.pairingCode == null) {
+      return;
+    }
+
+    // Prevent double-sync
+    if (current.isSyncing) {
+      _log('syncNow skipped: already syncing.');
+      return;
+    }
+
+    // Fail fast if signaling is not connected
+    if (!_signalingClient.isConnected) {
+      _log('syncNow aborted: signaling not connected.');
+      state = AsyncData(
+        current.copyWith(
+          statusMessage: 'Cannot sync: signaling offline. Tap to retry.',
+        ),
+      );
+      return;
+    }
+
+    state = AsyncData(
+      current.copyWith(
+        isSyncing: true,
+        statusMessage: 'Creating WebRTC offer...',
+      ),
+    );
+
+    // Create a completer that _processIncomingSyncPayload will complete
+    _syncCompleter = Completer<bool>();
+
+    try {
+      final offerData = await _webrtcService.createOffer();
+      _log('SDP offer created, publishing via signaling...');
+
+      // Await the offer publish so ICE candidates queue behind it
+      final offerSent =
+          await _signalingClient.sendSignal(offerData, _deviceId);
+      if (!offerSent) {
+        throw StateError('Failed to publish SDP offer via signaling.');
+      }
+
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              statusMessage: 'Waiting for peer to respond...',
+            ) ??
+            current,
+      );
+
+      // Use the completer-based wait instead of busy-poll
+      final channelOpened = await _webrtcService.waitForChannelOpen(
+        timeout: const Duration(seconds: 20),
+      );
+
+      if (channelOpened) {
+        _log('Data channel open. Requesting sync data from peer.');
+        state = AsyncData(
+          state.valueOrNull?.copyWith(
+                statusMessage: 'Requesting data from peer...',
+              ) ??
+              current,
+        );
+
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        await _sendLocalDataToPeer(mode);
+
+        // Start a safety timeout — if peer doesn't respond in 30s, give up
+        _syncTimeout?.cancel();
+        _syncTimeout = Timer(const Duration(seconds: 30), () {
+          if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+            _log('Sync response timed out after 30s.');
+            _syncCompleter!.complete(false);
+          }
+        });
+
+        // Wait for the sync payload to arrive and be processed
+        final syncCompleted = await _syncCompleter!.future;
+        _syncTimeout?.cancel();
+        _syncTimeout = null;
+
+        if (!syncCompleted) {
+          state = AsyncData(
+            state.valueOrNull?.copyWith(
+                  isSyncing: false,
+                  statusMessage:
+                      'Sync timed out waiting for peer data. Try again.',
+                ) ??
+                current,
+          );
+        }
+      } else {
+        _log('Data channel did not open within timeout.');
+        state = AsyncData(
+          current.copyWith(
+            isSyncing: false,
+            statusMessage: 'P2P channel timeout. Peer may be offline.',
+          ),
+        );
+      }
+    } catch (e) {
+      _log('syncNow error: $e');
+      _syncCompleter?.complete(false);
+      state = AsyncData(
+        current.copyWith(
+          isSyncing: false,
+          statusMessage: 'Sync error: $e',
+        ),
+      );
+    } finally {
+      // Allow data channel buffers to flush before closing WebRTC connection
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      _syncCompleter = null;
+      await _webrtcService.close();
+    }
+  }
+
+  Future<void> _sendAckToPeer() async {
+    final code = state.valueOrNull?.pairingCode;
+    if (code == null) return;
+    final payload = <String, dynamic>{
+      'action': 'sync_ack',
+    };
+    final encrypted = _cryptoService.encryptPayload(payload, code);
+    await _webrtcService.sendData(encrypted);
+  }
+
+  Future<void> _sendLocalDataToPeer(SyncMode mode) async {
+    final code = state.valueOrNull?.pairingCode;
+    if (code == null) return;
+
+    if (mode == SyncMode.pull) {
+      _log('Pull mode requested. Sending pull signal to peer...');
+      final payload = <String, dynamic>{
+        'action': 'sync_payload',
+        'sync_mode': mode.name,
+      };
+      final encrypted = _cryptoService.encryptPayload(payload, code);
+      await _webrtcService.sendData(encrypted);
+      return;
+    }
+
+    _log('Sending local transaction data (mode=${mode.name}) & physical attachments to peer...');
+    final txService = ref.read(transactionServiceProvider);
+    final transactions = await txService.getAllIncludingTrashed();
+
+    final serializedTxList = <Map<String, dynamic>>[];
+    for (final tx in transactions) {
+      final txMap = tx.toMap();
+      if (tx.attachments.isNotEmpty) {
+        final attachmentMaps = <Map<String, dynamic>>[];
+        for (final att in tx.attachments) {
+          final attMap = att.toMap();
+          try {
+            final file = File(att.filePath);
+            if (await file.exists()) {
+              var bytes = await file.readAsBytes();
+              if (att.isImage) {
+                _log('Compressing image attachment "${att.fileName}" (${bytes.length} bytes)...');
+                final resized = await _resizeImageBytes(bytes, maxDimension: 400);
+                if (resized != null) {
+                  bytes = resized;
+                  _log('Compressed image thumbnail to ${bytes.length} bytes for fast P2P transfer.');
+                }
+              }
+
+              // Guardrail: limit individual attachment bytes to 500 KB to keep WebRTC channel fast
+              if (bytes.length <= 500 * 1024) {
+                attMap['file_bytes_base64'] = base64Encode(bytes);
+                _log('Attached physical file "${att.fileName ?? att.filePath}" (${bytes.length} bytes) for TX id=${tx.id}.');
+              } else {
+                _log('Skipped heavy attachment payload for "${att.fileName}" (${bytes.length} bytes > 500 KB limit).');
+              }
+            } else {
+              _log('Attachment file not found on disk at ${att.filePath}');
+            }
+          } catch (e) {
+            _log('Could not read attachment file ${att.filePath}: $e');
+          }
+          attachmentMaps.add(attMap);
+        }
+        txMap['attachments'] = attachmentMaps;
+      }
+      serializedTxList.add(txMap);
+    }
+
+    final payload = <String, dynamic>{
+      'action': 'sync_payload',
+      'sync_mode': mode.name,
+      'transactions': serializedTxList,
+    };
+
+    final categoryRepo = ref.read(categoryRepositoryProvider);
+    final categories = await categoryRepo.getAll();
+    payload['categories'] = categories.map((c) => c.toMap()).toList();
+
+    final recurringRepo = ref.read(recurringRepositoryProvider);
+    final recurringTransactions = await recurringRepo.getAll();
+    payload['recurring_transactions'] = recurringTransactions.map((rt) => rt.toMap()).toList();
+
+    final tombstoneRepo = ref.read(tombstoneRepositoryProvider);
+    final tombstones = await tombstoneRepo.getAll();
+    payload['tombstones'] = tombstones.map((t) => t.toMap()).toList();
+
+    final encrypted = _cryptoService.encryptPayload(payload, code);
+    final sent = await _webrtcService.sendData(encrypted);
+    _log('Sent ${transactions.length} transactions and ${recurringTransactions.length} recurring transactions to peer (success=$sent).');
+  }
+
+  Future<Uint8List?> _resizeImageBytes(
+    Uint8List bytes, {
+    int maxDimension = 400,
+  }) async {
+    try {
+      final codec = await ui.instantiateImageCodec(
+        bytes,
+        targetWidth: maxDimension,
+      );
+      final frame = await codec.getNextFrame();
+      final image = frame.image;
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      _log('Image resize error: $e');
+      return null;
+    }
+  }
+
+  Future<void> _processIncomingSyncPayload(
+    Map<String, dynamic> payload,
+  ) async {
+    final incomingModeStr = payload['sync_mode'] as String?;
+    final incomingMode = SyncMode.values.firstWhere(
+      (e) => e.name == incomingModeStr,
+      orElse: () => SyncMode.merge,
+    );
+
+    _log('Received sync payload with mode: ${incomingMode.name}');
+
+    if (incomingMode == SyncMode.pull) {
+      _log('Peer requested pull. Pushing data to peer...');
+      await _sendLocalDataToPeer(SyncMode.push);
+      if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+        _syncCompleter!.complete(true);
+      }
+      return;
+    }
+
+    if (incomingMode == SyncMode.push) {
+      _log('Peer pushed data. Wiping local database before importing...');
+      final dbHelper = ref.read(databaseProvider);
+      await dbHelper.wipeAllData();
+    }
+
+    final rawTxList = payload['transactions'] as List<dynamic>?;
+    if (rawTxList == null) {
+      if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+        _syncCompleter!.complete(false);
+      }
+      return;
+    }
+
+    _log('Processing incoming sync payload: ${rawTxList.length} transactions.');
+    try {
+      var tombstonesProcessed = 0;
+      final rawTombstones = payload['tombstones'] as List<dynamic>?;
+      if (rawTombstones != null) {
+        final tombstoneRepo = ref.read(tombstoneRepositoryProvider);
+        final txService = ref.read(transactionServiceProvider);
+        final recurringRepo = ref.read(recurringRepositoryProvider);
+        final categoryRepo = ref.read(categoryRepositoryProvider);
+        
+        for (final item in rawTombstones) {
+          if (item is! Map<String, dynamic>) continue;
+          final tombstone = Tombstone.fromMap(Map<String, dynamic>.from(item));
+          
+          if (tombstone.tableName == 'transactions') {
+            await txService.permanentlyDeleteTransaction(tombstone.id);
+          } else if (tombstone.tableName == 'recurring_transactions') {
+            await recurringRepo.delete(tombstone.id);
+          } else if (tombstone.tableName == 'categories') {
+            await categoryRepo.delete(tombstone.id);
+          }
+          await tombstoneRepo.insert(tombstone);
+          tombstonesProcessed++;
+        }
+      }
+
+      var categoriesAddedCount = 0;
+      var categoriesUpdatedCount = 0;
+      final rawCategoryList = payload['categories'] as List<dynamic>?;
+      if (rawCategoryList != null) {
+        final categoryRepo = ref.read(categoryRepositoryProvider);
+        final existingCategories = await categoryRepo.getAll();
+        final existingCategoryMap = {
+          for (final c in existingCategories) if (c.id != null) c.id!: c,
+        };
+        final existingCategoryNameMap = {
+          for (final c in existingCategories) c.name.toLowerCase(): c,
+        };
+
+        for (final item in rawCategoryList) {
+          if (item is! Map<String, dynamic>) continue;
+          final incomingCategory = Category.fromMap(item);
+          if (incomingCategory.id == null) continue;
+
+          final existingById = existingCategoryMap[incomingCategory.id];
+          final existingByName = existingCategoryNameMap[incomingCategory.name.toLowerCase()];
+
+          if (existingById != null) {
+            if (incomingCategory.updatedAt != null &&
+                (existingById.updatedAt == null ||
+                    incomingCategory.updatedAt!.isAfter(existingById.updatedAt!))) {
+              await categoryRepo.update(incomingCategory);
+              categoriesUpdatedCount++;
+            }
+          } else if (existingByName != null) {
+            if (incomingCategory.updatedAt != null &&
+                (existingByName.updatedAt == null ||
+                    incomingCategory.updatedAt!.isAfter(existingByName.updatedAt!))) {
+              await categoryRepo.update(existingByName.copyWith(
+                id: existingByName.id,
+                name: incomingCategory.name,
+                updatedAt: incomingCategory.updatedAt,
+              ));
+              categoriesUpdatedCount++;
+            }
+          } else {
+            await categoryRepo.insert(incomingCategory);
+            categoriesAddedCount++;
+          }
+        }
+      }
+
+      var recurringAddedCount = 0;
+      var recurringUpdatedCount = 0;
+      final rawRecurringList = payload['recurring_transactions'] as List<dynamic>?;
+
+      if (rawRecurringList != null) {
+        final recurringRepo = ref.read(recurringRepositoryProvider);
+        final existingRecurring = await recurringRepo.getAll();
+        final existingRecurringMap = <String, RecurringTransaction>{};
+        final existingRecurringSignatures = <String, RecurringTransaction>{};
+
+        String rtSignature(RecurringTransaction rt) {
+          final amountFormatted = rt.amount.toStringAsFixed(2);
+          return '${amountFormatted}_${rt.type.toLowerCase()}_${rt.category.toLowerCase()}_${rt.note.trim()}_${rt.dayOfMonth}';
+        }
+
+        for (final rt in existingRecurring) {
+          if (rt.id != null) {
+            existingRecurringMap[rt.id!] = rt;
+          }
+          existingRecurringSignatures[rtSignature(rt)] = rt;
+        }
+
+        for (final rawItem in rawRecurringList) {
+          try {
+            if (rawItem is! Map<String, dynamic>) continue;
+            final incomingRt = RecurringTransaction.fromMap(Map<String, dynamic>.from(rawItem));
+            var existingRt = incomingRt.id != null ? existingRecurringMap[incomingRt.id!] : null;
+
+            if (existingRt == null) {
+              final incomingSig = rtSignature(incomingRt);
+              existingRt = existingRecurringSignatures[incomingSig];
+            }
+
+            if (existingRt == null) {
+              await recurringRepo.insert(incomingRt);
+              recurringAddedCount++;
+              _log('Added new synced recurring transaction: ${incomingRt.note} (${incomingRt.amount})');
+            } else {
+              if (incomingRt.updatedAt.isAfter(existingRt.updatedAt)) {
+                await recurringRepo.update(incomingRt);
+                recurringUpdatedCount++;
+                _log('Updated recurring transaction id=${existingRt.id} from newer peer version.');
+              }
+            }
+          } catch (e, st) {
+            _log('Error importing individual recurring transaction item: $e\n$st');
+          }
+        }
+      }
+
+      final txService = ref.read(transactionServiceProvider);
+      final existingTransactions = await txService.getAllTransactions();
+
+      final existingTransactionsMap = <String, Transaction>{};
+      final existingSignatures = <String, Transaction>{};
+
+      // Normalized UTC signature matching to handle independently generated UUIDs during v4->v5 migration
+      String txSignature(Transaction t) {
+        final dateUtcIso = t.date.toUtc().toIso8601String();
+        final amountFormatted = t.amount.toStringAsFixed(2);
+        return '${dateUtcIso}_${amountFormatted}_${t.type.toLowerCase()}_${t.category.toLowerCase()}_${t.note.trim()}';
+      }
+
+      for (final t in existingTransactions) {
+        if (t.id != null) {
+          existingTransactionsMap[t.id!] = t;
+        }
+        existingSignatures[txSignature(t)] = t;
+      }
+
+      var addedCount = 0;
+      var updatedCount = 0;
+
+      for (final rawItem in rawTxList) {
+        try {
+          if (rawItem is! Map<String, dynamic>) continue;
+          final rawMap = Map<String, dynamic>.from(rawItem);
+
+          // Process & save physical file attachments if present
+          final rawAttachments = rawMap['attachments'] as List<dynamic>?;
+          final processedAttachments = <Attachment>[];
+
+          if (rawAttachments != null && rawAttachments.isNotEmpty) {
+            for (final attItem in rawAttachments) {
+              if (attItem is! Map<String, dynamic>) continue;
+              final attMap = Map<String, dynamic>.from(attItem);
+              final base64BytesStr = attMap['file_bytes_base64'] as String?;
+
+              if (base64BytesStr != null && base64BytesStr.isNotEmpty) {
+                try {
+                  final bytes = base64Decode(base64BytesStr);
+                  final fileType = AttachmentType.fromString(
+                    attMap['file_type'] as String? ?? 'other',
+                  );
+                  final originalName = attMap['file_name'] as String?;
+
+                  final savedAttachment =
+                      await _attachmentService.saveBytesToStorage(
+                    bytes,
+                    fileType: fileType,
+                    originalName: originalName,
+                  );
+
+                  attMap['file_path'] = savedAttachment.filePath;
+                  _log('Saved incoming attachment "${savedAttachment.fileName}" to local disk: ${savedAttachment.filePath}');
+                } catch (e) {
+                  _log('Failed to save incoming attachment bytes: $e');
+                }
+              }
+              // Create attachment without remote database ID
+              final attWithoutId = Attachment.fromMap(attMap).copyWith(id: null);
+              processedAttachments.add(attWithoutId);
+            }
+            rawMap['attachments'] = processedAttachments.map((a) => a.toMap()).toList();
+          }
+
+          final incomingTx = Transaction.fromMap(rawMap);
+          var existingTx = incomingTx.id != null ? existingTransactionsMap[incomingTx.id!] : null;
+          
+          if (existingTx == null) {
+            // Fallback to signature deduplication
+            final incomingSig = txSignature(incomingTx);
+            existingTx = existingSignatures[incomingSig];
+          }
+
+          if (existingTx == null) {
+            // New transaction from peer
+            final newTx = incomingTx.copyWith(
+              attachments: processedAttachments,
+            );
+            await txService.addTransaction(newTx);
+            addedCount++;
+            _log('Added new synced transaction: ${newTx.note} (${newTx.amount})');
+          } else {
+            // Transaction already exists locally: merge any new attachments or update fields
+            var needsUpdate = false;
+            var updatedTx = existingTx;
+
+            if (processedAttachments.isNotEmpty && existingTx.id != null) {
+              final existingAttNames =
+                  existingTx.attachments.map((a) => a.fileName).toSet();
+              final newAttsToInsert = processedAttachments
+                  .where((p) => !existingAttNames.contains(p.fileName))
+                  .toList();
+
+              if (newAttsToInsert.isNotEmpty) {
+                updatedTx = updatedTx.copyWith(
+                  attachments: <Attachment>[
+                    ...updatedTx.attachments,
+                    ...newAttsToInsert,
+                  ],
+                );
+                needsUpdate = true;
+                _log('Added attachments for existing transaction id=${existingTx.id}.');
+              }
+            }
+
+            // Also check if the incoming transaction has a newer updated_at timestamp
+            if (incomingTx.updatedAt != null) {
+              if (existingTx.updatedAt == null || incomingTx.updatedAt!.isAfter(existingTx.updatedAt!)) {
+                updatedTx = incomingTx.copyWith(
+                  attachments: updatedTx.attachments, // preserve merged attachments
+                );
+                needsUpdate = true;
+                _log('Updated fields for existing transaction id=${existingTx.id} from newer peer version.');
+              }
+            }
+
+            if (needsUpdate) {
+              await txService.updateTransaction(updatedTx);
+              updatedCount++;
+            }
+          }
+        } catch (txErr, txSt) {
+          _log('Error importing individual transaction item: $txErr\n$txSt');
+        }
+      }
+
+      await ref.read(transactionNotifierProvider.notifier).refresh();
+      ref.invalidate(recurringNotifierProvider);
+      ref.invalidate(categoryNotifierProvider);
+
+      _log('Sync complete: $addedCount new txs added, $updatedCount txs updated. '
+          '$categoriesAddedCount new categories added, $categoriesUpdatedCount categories updated. '
+          '$recurringAddedCount new recurring txs, $recurringUpdatedCount recurring txs updated. '
+          '$tombstonesProcessed tombstones processed.');
+
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              isSyncing: false,
+              isRemoteChangeDetected: false,
+              statusMessage: 'Synced successfully ($addedCount tx, $categoriesAddedCount categories added).',
+            ) ??
+            const P2PSyncState(),
+      );
+
+      // Signal the sync completer so syncNow() can finish immediately
+      if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+        _syncCompleter!.complete(true);
+      }
+
+      // Send ACK or response payload back to peer
+      if (incomingMode == SyncMode.push || incomingMode == SyncMode.mergeResponse) {
+        _log('Sending sync ACK back to peer...');
+        await _sendAckToPeer();
+      } else if (incomingMode == SyncMode.merge) {
+        _log('Sending merge response back to peer...');
+        await _sendLocalDataToPeer(SyncMode.mergeResponse);
+      }
+    } catch (e, st) {
+      _log('Error processing sync payload: $e\n$st');
+      state = AsyncData(
+        state.valueOrNull?.copyWith(
+              isSyncing: false,
+              statusMessage: 'Failed to merge peer data: $e',
+            ) ??
+            const P2PSyncState(),
+      );
+      if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+        _syncCompleter!.complete(false);
+      }
+    }
+  }
+
+  void _log(String message) {
+    P2PLogger.log('[P2P.Sync] $message');
+  }
+}
+
+final p2pSyncNotifierProvider =
+    AsyncNotifierProvider<P2PSyncNotifier, P2PSyncState>(
+      P2PSyncNotifier.new,
+    );

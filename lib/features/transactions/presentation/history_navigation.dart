@@ -11,12 +11,12 @@ abstract final class HistoryNavigation {
     bool? isRecurring,
   }) {
     final queryParameters = <String, String>{
-      if (category != null) 'category': category,
+      'category': ?category,
       if (transactionType != TransactionFilter.all)
         'type': transactionType.name,
-      if (month != null) 'month': month.month.toString(),
-      if (month != null) 'year': month.year.toString(),
-      if (isRecurring != null) 'recurring': isRecurring.toString(),
+      'month': ?month?.month.toString(),
+      'year': ?month?.year.toString(),
+      'recurring': ?isRecurring?.toString(),
     };
     context.go(Uri(path: '/history', queryParameters: queryParameters).toString());
   }

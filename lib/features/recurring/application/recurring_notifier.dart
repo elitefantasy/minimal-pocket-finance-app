@@ -18,7 +18,7 @@ class RecurringNotifier extends AsyncNotifier<List<RecurringTransaction>> {
     await _refresh();
   }
 
-  Future<void> deleteRecurring(int id) async {
+  Future<void> deleteRecurring(String id) async {
     await ref.read(recurringRepositoryProvider).delete(id);
     await _refresh();
   }

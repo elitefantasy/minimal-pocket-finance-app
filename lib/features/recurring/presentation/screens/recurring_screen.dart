@@ -180,7 +180,9 @@ class _DeleteRecurringDialog extends StatelessWidget {
         children: <Widget>[
           Icon(AppIcons.delete, color: context.colors.error),
           const SizedBox(width: AppSpacing.sm),
-          Text('Delete recurring transaction?', style: context.text.titleLarge),
+          Expanded(
+            child: Text('Delete recurring transaction?', style: context.text.titleLarge),
+          ),
         ],
       ),
       content: Text(

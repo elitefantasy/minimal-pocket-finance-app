@@ -1,10 +1,8 @@
-import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/features/transactions/application/selected_year_provider.dart';
 import 'package:akm_finance_manager/models/dashboard_summary.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 /// A Riverpod provider that listens to transaction changes and computes
 /// raw aggregated analytics required by the dashboard.
 /// Note: Sorting logic has been decoupled to allow targeted UI rebuilds.
