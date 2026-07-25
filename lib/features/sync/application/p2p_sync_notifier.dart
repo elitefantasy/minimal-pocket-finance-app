@@ -9,6 +9,8 @@ import 'package:akm_finance_manager/features/transactions/application/transactio
 import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
+import 'package:akm_finance_manager/models/category.dart';
+import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
 import 'package:akm_finance_manager/models/tombstone.dart';
 import 'package:akm_finance_manager/models/sync_mode.dart';
 import 'package:akm_finance_manager/services/attachment_service.dart';
@@ -568,6 +570,10 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
       'transactions': serializedTxList,
     };
 
+    final categoryRepo = ref.read(categoryRepositoryProvider);
+    final categories = await categoryRepo.getAll();
+    payload['categories'] = categories.map((c) => c.toMap()).toList();
+
     final recurringRepo = ref.read(recurringRepositoryProvider);
     final recurringTransactions = await recurringRepo.getAll();
     payload['recurring_transactions'] = recurringTransactions.map((rt) => rt.toMap()).toList();
@@ -657,6 +663,52 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
           }
           await tombstoneRepo.insert(tombstone);
           tombstonesProcessed++;
+        }
+      }
+
+      var categoriesAddedCount = 0;
+      var categoriesUpdatedCount = 0;
+      final rawCategoryList = payload['categories'] as List<dynamic>?;
+      if (rawCategoryList != null) {
+        final categoryRepo = ref.read(categoryRepositoryProvider);
+        final existingCategories = await categoryRepo.getAll();
+        final existingCategoryMap = {
+          for (final c in existingCategories) if (c.id != null) c.id!: c,
+        };
+        final existingCategoryNameMap = {
+          for (final c in existingCategories) c.name.toLowerCase(): c,
+        };
+
+        for (final item in rawCategoryList) {
+          if (item is! Map<String, dynamic>) continue;
+          final incomingCategory = Category.fromMap(item);
+          if (incomingCategory.id == null) continue;
+
+          final existingById = existingCategoryMap[incomingCategory.id];
+          final existingByName = existingCategoryNameMap[incomingCategory.name.toLowerCase()];
+
+          if (existingById != null) {
+            if (incomingCategory.updatedAt != null &&
+                (existingById.updatedAt == null ||
+                    incomingCategory.updatedAt!.isAfter(existingById.updatedAt!))) {
+              await categoryRepo.update(incomingCategory);
+              categoriesUpdatedCount++;
+            }
+          } else if (existingByName != null) {
+            if (incomingCategory.updatedAt != null &&
+                (existingByName.updatedAt == null ||
+                    incomingCategory.updatedAt!.isAfter(existingByName.updatedAt!))) {
+              await categoryRepo.update(existingByName.copyWith(
+                id: existingByName.id,
+                name: incomingCategory.name,
+                updatedAt: incomingCategory.updatedAt,
+              ));
+              categoriesUpdatedCount++;
+            }
+          } else {
+            await categoryRepo.insert(incomingCategory);
+            categoriesAddedCount++;
+          }
         }
       }
 
@@ -840,8 +892,10 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
 
       await ref.read(transactionNotifierProvider.notifier).refresh();
       ref.invalidate(recurringNotifierProvider);
+      ref.invalidate(categoryNotifierProvider);
 
       _log('Sync complete: $addedCount new txs added, $updatedCount txs updated. '
+          '$categoriesAddedCount new categories added, $categoriesUpdatedCount categories updated. '
           '$recurringAddedCount new recurring txs, $recurringUpdatedCount recurring txs updated. '
           '$tombstonesProcessed tombstones processed.');
 
@@ -849,7 +903,7 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
         state.valueOrNull?.copyWith(
               isSyncing: false,
               isRemoteChangeDetected: false,
-              statusMessage: 'Synced successfully ($addedCount tx, $recurringAddedCount recurring added).',
+              statusMessage: 'Synced successfully ($addedCount tx, $categoriesAddedCount categories added).',
             ) ??
             const P2PSyncState(),
       );
