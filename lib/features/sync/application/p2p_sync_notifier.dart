@@ -9,6 +9,7 @@ import 'package:akm_finance_manager/features/transactions/application/transactio
 import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
+import 'package:akm_finance_manager/models/tombstone.dart';
 import 'package:akm_finance_manager/services/attachment_service.dart';
 import 'package:akm_finance_manager/services/p2p/p2p_crypto_service.dart';
 import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
@@ -491,7 +492,7 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
 
     _log('Sending local transaction data & physical attachments to peer...');
     final txService = ref.read(transactionServiceProvider);
-    final transactions = await txService.getAllTransactions();
+    final transactions = await txService.getAllIncludingTrashed();
 
     final serializedTxList = <Map<String, dynamic>>[];
     for (final tx in transactions) {
@@ -542,6 +543,10 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
     final recurringTransactions = await recurringRepo.getAll();
     payload['recurring_transactions'] = recurringTransactions.map((rt) => rt.toMap()).toList();
 
+    final tombstoneRepo = ref.read(tombstoneRepositoryProvider);
+    final tombstones = await tombstoneRepo.getAll();
+    payload['tombstones'] = tombstones.map((t) => t.toMap()).toList();
+
     final encrypted = _cryptoService.encryptPayload(payload, code);
     final sent = await _webrtcService.sendData(encrypted);
     _log('Sent ${transactions.length} transactions and ${recurringTransactions.length} recurring transactions to peer (success=$sent).');
@@ -579,6 +584,30 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
 
     _log('Processing incoming sync payload: ${rawTxList.length} transactions.');
     try {
+      var tombstonesProcessed = 0;
+      final rawTombstones = payload['tombstones'] as List<dynamic>?;
+      if (rawTombstones != null) {
+        final tombstoneRepo = ref.read(tombstoneRepositoryProvider);
+        final txService = ref.read(transactionServiceProvider);
+        final recurringRepo = ref.read(recurringRepositoryProvider);
+        final categoryRepo = ref.read(categoryRepositoryProvider);
+        
+        for (final item in rawTombstones) {
+          if (item is! Map<String, dynamic>) continue;
+          final tombstone = Tombstone.fromMap(Map<String, dynamic>.from(item));
+          
+          if (tombstone.tableName == 'transactions') {
+            await txService.permanentlyDeleteTransaction(tombstone.id);
+          } else if (tombstone.tableName == 'recurring_transactions') {
+            await recurringRepo.delete(tombstone.id);
+          } else if (tombstone.tableName == 'categories') {
+            await categoryRepo.delete(tombstone.id);
+          }
+          await tombstoneRepo.insert(tombstone);
+          tombstonesProcessed++;
+        }
+      }
+
       var recurringAddedCount = 0;
       var recurringUpdatedCount = 0;
       final rawRecurringList = payload['recurring_transactions'] as List<dynamic>?;
@@ -761,7 +790,8 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
       ref.invalidate(recurringNotifierProvider);
 
       _log('Sync complete: $addedCount new txs added, $updatedCount txs updated. '
-          '$recurringAddedCount new recurring txs, $recurringUpdatedCount recurring txs updated.');
+          '$recurringAddedCount new recurring txs, $recurringUpdatedCount recurring txs updated. '
+          '$tombstonesProcessed tombstones processed.');
 
       state = AsyncData(
         state.valueOrNull?.copyWith(

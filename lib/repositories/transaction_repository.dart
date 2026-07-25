@@ -4,19 +4,25 @@ import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/repositories/attachment_repository.dart';
 import 'package:sqflite/sqflite.dart' show Database;
 import 'package:uuid/uuid.dart';
+import 'package:akm_finance_manager/models/tombstone.dart';
+import 'package:akm_finance_manager/repositories/tombstone_repository.dart';
 
 /// Provides persistence operations for financial transactions and their attachments.
 class TransactionRepository {
   TransactionRepository(
     this._databaseHelper, {
     AttachmentRepository? attachmentRepository,
+    TombstoneRepository? tombstoneRepository,
   }) : _attachmentRepository =
-            attachmentRepository ?? AttachmentRepository(_databaseHelper);
+            attachmentRepository ?? AttachmentRepository(_databaseHelper),
+       _tombstoneRepository = 
+            tombstoneRepository ?? TombstoneRepository(_databaseHelper);
 
   static const String _tableName = 'transactions';
 
   final DatabaseHelper _databaseHelper;
   final AttachmentRepository _attachmentRepository;
+  final TombstoneRepository _tombstoneRepository;
 
   Future<String> insert(Transaction transaction) async {
     final Database database = await _databaseHelper.database;
@@ -44,6 +50,18 @@ class TransactionRepository {
           ? 'deleted_at IS NULL'
           : "deleted_at IS NULL AND strftime('%Y', date) = ?",
       whereArgs: year == null ? null : <Object>[year.toString()],
+      orderBy: 'date DESC',
+    );
+
+    final rawTransactions = maps.map(Transaction.fromMap).toList(growable: false);
+    return _populateAttachments(rawTransactions);
+  }
+
+  Future<List<Transaction>> getAllIncludingTrashed() async {
+    final Database database = await _databaseHelper.database;
+    await _purgeExpired(database);
+    final maps = await database.query(
+      _tableName,
       orderBy: 'date DESC',
     );
 
@@ -145,20 +163,55 @@ class TransactionRepository {
       where: 'id = ? AND deleted_at IS NOT NULL',
       whereArgs: <Object?>[id],
     );
+    await _tombstoneRepository.insert(Tombstone(
+      id: id,
+      tableName: _tableName,
+      deletedAt: DateTime.now().toUtc(),
+    ));
   }
 
   Future<void> emptyTrash() async {
     final Database database = await _databaseHelper.database;
+    final maps = await database.query(_tableName, where: 'deleted_at IS NOT NULL');
+    final ids = maps.map((e) => e['id'] as String).toList();
+    
     await database.delete(_tableName, where: 'deleted_at IS NOT NULL');
+    
+    await _tombstoneRepository.insertBatch(
+      ids.map((id) => Tombstone(
+        id: id,
+        tableName: _tableName,
+        deletedAt: DateTime.now().toUtc(),
+      )).toList(),
+    );
   }
 
-  Future<void> _purgeExpired(Database database) {
+  Future<void> _purgeExpired(Database database) async {
     final expiry = DateTime.now().subtract(const Duration(days: 30));
-    return database.delete(
+    final expiryStr = expiry.toIso8601String();
+    
+    final maps = await database.query(
       _tableName,
       where: 'deleted_at IS NOT NULL AND deleted_at < ?',
-      whereArgs: <Object>[expiry.toIso8601String()],
+      whereArgs: <Object>[expiryStr],
     );
+    final ids = maps.map((e) => e['id'] as String).toList();
+    
+    if (ids.isNotEmpty) {
+      await database.delete(
+        _tableName,
+        where: 'deleted_at IS NOT NULL AND deleted_at < ?',
+        whereArgs: <Object>[expiryStr],
+      );
+      
+      await _tombstoneRepository.insertBatch(
+        ids.map((id) => Tombstone(
+          id: id,
+          tableName: _tableName,
+          deletedAt: DateTime.now().toUtc(),
+        )).toList(),
+      );
+    }
   }
 
   /// Bulk loads attachments for transactions to avoid N+1 query overhead.

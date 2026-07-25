@@ -11,6 +11,10 @@ class TransactionService {
     return _transactionRepository.getAll(year: year);
   }
 
+  Future<List<Transaction>> getAllIncludingTrashed() {
+    return _transactionRepository.getAllIncludingTrashed();
+  }
+
   Future<void> addTransaction(Transaction transaction) async {
     await _transactionRepository.insert(transaction);
   }

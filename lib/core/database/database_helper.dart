@@ -12,7 +12,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
 
   static const String defaultDatabaseName = 'finance.db';
-  static const int databaseVersion = 5;
+  static const int databaseVersion = 6;
   static const String _selectionFileName = '.current_database';
 
   Future<Database>? _databaseFuture;
@@ -225,7 +225,15 @@ class DatabaseHelper {
       ..execute(
         'CREATE INDEX index_attachments_transaction_id '
         'ON attachments(transaction_id)',
-      );
+      )
+      ..execute('''
+        CREATE TABLE tombstones (
+          id TEXT NOT NULL,
+          table_name TEXT NOT NULL,
+          deleted_at TEXT NOT NULL,
+          PRIMARY KEY (id, table_name)
+        )
+      ''');
 
     await batch.commit(noResult: true);
     await _insertDefaultCategoriesIfEmpty(database);
@@ -262,6 +270,21 @@ class DatabaseHelper {
     if (oldVersion < 5) {
       await _migrateToV5(database);
     }
+    
+    if (oldVersion < 6) {
+      await _migrateToV6(database);
+    }
+  }
+
+  Future<void> _migrateToV6(Database database) async {
+    await database.execute('''
+      CREATE TABLE IF NOT EXISTS tombstones (
+        id TEXT NOT NULL,
+        table_name TEXT NOT NULL,
+        deleted_at TEXT NOT NULL,
+        PRIMARY KEY (id, table_name)
+      )
+    ''');
   }
 
   Future<void> _migrateToV5(Database database) async {
