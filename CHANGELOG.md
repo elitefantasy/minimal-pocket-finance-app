@@ -1,6 +1,5 @@
 ## Planned Feature
-
-🎨 4. UI/UX Changes & Roadmap
+1. UI/UX Changes & Roadmap
 - Conflict Resolution Screen
 If the same transaction was edited differently on both phones while offline, the app currently has to guess which one to keep (usually based on timestamps).
 
@@ -8,6 +7,7 @@ The Change: If a conflict is detected, pause the sync and show a side-by-side co
 
 # Unreleased:
 ### features
+- feat(categories): add category deletion confirmation dialog and auto-recreation of default categories
 - feat(sync): add transaction categories to P2P sync payload
 - feat(sync): add WebRTC ACK protocol and fix one-way push timeout issue
 - feat(sync): Directional Sync Choices and Enhanced Connection States
