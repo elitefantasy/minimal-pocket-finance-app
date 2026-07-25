@@ -1,22 +1,22 @@
 ## Planned Feature
--
-🚨 1. High-Priority Improvements (Data Integrity for Sync)
-- Tombstones for Deletions (Improvement): Right now, deleted transactions are excluded from sync. If Device A deletes a record and syncs with Device B, Device B will just keep its old copy. You need a "tombstone" mechanism to tell other devices that a record was explicitly deleted.
-- DataChannel Chunking (Improvement): WebRTC DataChannels have message size limits. Since your database includes images, sending the full transaction set in one message will fail on large databases. Implementing chunking is essential for reliability.
-
-🌐 2. Networking Feature
-- TURN Server Integration (Feature): Your current WebRTC implementation is STUN-only, which works on local networks or permissive NATs, but will reliably fail if one device is on cellular data or a strict symmetric NAT. Adding TURN server support will make the P2P sharing bulletproof across any network.
-
+feat(sync): add WebRTC ACK protocol and fix one-way push timeout issue
+feat(sync): Directional Sync Choices and Enhanced Connection States
 🎨 4. UI/UX Changes & Roadmap
-- Sync Progress UI (UI Change): If you implement data chunking (mentioned in section 1), you will need a UI that shows the real-time progress of the transfer (e.g., a progress bar or "X of Y records synced") rather than a static loading spinner.
+- Conflict Resolution Screen
+If the same transaction was edited differently on both phones while offline, the app currently has to guess which one to keep (usually based on timestamps).
+
+The Change: If a conflict is detected, pause the sync and show a side-by-side comparison UI. Ask the user: "Both devices edited the 'Groceries' transaction. Which version would you like to keep?"
 
 # Unreleased:
 ### features
+- feat: implement tombstone mechanism for P2P sync deletions
+- feat(ui): update recurring transaction chip styling
 - feat(sync): add recurring transactions to P2P sync and use UUID deduplication
 - feat: Refactor the SQLite database and Dart data models to migrate from auto-increment IDs to UUIDs to prepare for real-world P2P synchronization.
 - feat: implement secure P2P synchronization architecture with E2EE crypto service, signaling support, and pairing UI
 - feat: Image Attachments for Transactions 
 ### fixes
+- fix: process recurring transactions before normal transactions during sync
 - fix(sync): add signature fallback to prevent duplicates from v5 migration
 - fix: overflow issue with trash transaction tiles
 - fix: in windows fixed missingpluginexception error because SAF plugin channels are native to Android and do not exist on Desktop platforms. 

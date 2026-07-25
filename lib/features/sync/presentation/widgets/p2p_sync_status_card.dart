@@ -2,6 +2,7 @@ import 'package:akm_finance_manager/core/theme/app_icons.dart';
 import 'package:akm_finance_manager/core/theme/app_spacing.dart';
 import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
 import 'package:akm_finance_manager/features/sync/application/p2p_sync_notifier.dart';
+import 'package:akm_finance_manager/models/sync_mode.dart';
 import 'package:akm_finance_manager/features/sync/presentation/widgets/p2p_pairing_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,59 @@ class P2PSyncStatusCard extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (context) => const P2PPairingDialog(),
+    );
+  }
+
+  void _showSyncOptionsBottomSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  child: Text(
+                    'Select Sync Mode',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                ListTile(
+                  leading: Icon(Icons.merge_type, color: Theme.of(context).colorScheme.primary),
+                  title: const Text('Merge Data (Recommended)'),
+                  subtitle: const Text('Safely combine data from both devices.'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ref.read(p2pSyncNotifierProvider.notifier).syncNow(mode: SyncMode.merge);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.upload, color: Theme.of(context).colorScheme.error),
+                  title: const Text('Push Data'),
+                  subtitle: const Text('Replace peer device data with this device.'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ref.read(p2pSyncNotifierProvider.notifier).syncNow(mode: SyncMode.push);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.download, color: Theme.of(context).colorScheme.error),
+                  title: const Text('Pull Data'),
+                  subtitle: const Text('Replace this device data with peer device.'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ref.read(p2pSyncNotifierProvider.notifier).syncNow(mode: SyncMode.pull);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -187,9 +241,7 @@ class P2PSyncStatusCard extends ConsumerWidget {
                           ),
                         ),
                         FilledButton(
-                          onPressed: () => ref
-                              .read(p2pSyncNotifierProvider.notifier)
-                              .syncNow(),
+                          onPressed: () => _showSyncOptionsBottomSheet(context, ref),
                           child: const Text('Sync Now'),
                         ),
                       ],
@@ -198,9 +250,7 @@ class P2PSyncStatusCard extends ConsumerWidget {
                 ] else ...<Widget>[
                   const SizedBox(height: AppSpacing.sm),
                   OutlinedButton.icon(
-                    onPressed: () => ref
-                        .read(p2pSyncNotifierProvider.notifier)
-                        .syncNow(),
+                    onPressed: () => _showSyncOptionsBottomSheet(context, ref),
                     icon: const Icon(Icons.sync),
                     label: const Text('Sync Now with Peer'),
                   ),

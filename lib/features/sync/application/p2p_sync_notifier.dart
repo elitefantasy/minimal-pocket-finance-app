@@ -10,6 +10,7 @@ import 'package:akm_finance_manager/models/attachment.dart';
 import 'package:akm_finance_manager/models/transaction.dart';
 import 'package:akm_finance_manager/models/recurring_transaction.dart';
 import 'package:akm_finance_manager/models/tombstone.dart';
+import 'package:akm_finance_manager/models/sync_mode.dart';
 import 'package:akm_finance_manager/services/attachment_service.dart';
 import 'package:akm_finance_manager/services/p2p/p2p_crypto_service.dart';
 import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
@@ -237,9 +238,22 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
       _log('Data channel action received: $action');
 
       if (action == 'request_sync') {
-        await _sendLocalDataToPeer();
+        await _sendLocalDataToPeer(SyncMode.merge);
       } else if (action == 'sync_payload') {
         await _processIncomingSyncPayload(payload);
+      } else if (action == 'sync_ack') {
+        _log('Received sync ACK from peer.');
+        state = AsyncData(
+          state.valueOrNull?.copyWith(
+                isSyncing: false,
+                isRemoteChangeDetected: false,
+                statusMessage: 'Synced successfully with peer.',
+              ) ??
+              const P2PSyncState(),
+        );
+        if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+          _syncCompleter!.complete(true);
+        }
       }
     };
 
@@ -361,7 +375,7 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
   }
 
   /// Trigger sync with remote peer.
-  Future<void> syncNow() async {
+  Future<void> syncNow({SyncMode mode = SyncMode.merge}) async {
     final current = state.valueOrNull;
     if (current == null || !current.isPaired || current.pairingCode == null) {
       return;
@@ -426,15 +440,8 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
               current,
         );
 
-        final requestPayload = <String, dynamic>{'action': 'request_sync'};
-        final encryptedReq = _cryptoService.encryptPayload(
-          requestPayload,
-          current.pairingCode!,
-        );
-        final sent = await _webrtcService.sendData(encryptedReq);
-        if (!sent) {
-          throw StateError('Failed to send sync request over data channel.');
-        }
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        await _sendLocalDataToPeer(mode);
 
         // Start a safety timeout — if peer doesn't respond in 30s, give up
         _syncTimeout?.cancel();
@@ -486,11 +493,32 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
     }
   }
 
-  Future<void> _sendLocalDataToPeer() async {
+  Future<void> _sendAckToPeer() async {
+    final code = state.valueOrNull?.pairingCode;
+    if (code == null) return;
+    final payload = <String, dynamic>{
+      'action': 'sync_ack',
+    };
+    final encrypted = _cryptoService.encryptPayload(payload, code);
+    await _webrtcService.sendData(encrypted);
+  }
+
+  Future<void> _sendLocalDataToPeer(SyncMode mode) async {
     final code = state.valueOrNull?.pairingCode;
     if (code == null) return;
 
-    _log('Sending local transaction data & physical attachments to peer...');
+    if (mode == SyncMode.pull) {
+      _log('Pull mode requested. Sending pull signal to peer...');
+      final payload = <String, dynamic>{
+        'action': 'sync_payload',
+        'sync_mode': mode.name,
+      };
+      final encrypted = _cryptoService.encryptPayload(payload, code);
+      await _webrtcService.sendData(encrypted);
+      return;
+    }
+
+    _log('Sending local transaction data (mode=${mode.name}) & physical attachments to peer...');
     final txService = ref.read(transactionServiceProvider);
     final transactions = await txService.getAllIncludingTrashed();
 
@@ -536,6 +564,7 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
 
     final payload = <String, dynamic>{
       'action': 'sync_payload',
+      'sync_mode': mode.name,
       'transactions': serializedTxList,
     };
 
@@ -574,6 +603,29 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
   Future<void> _processIncomingSyncPayload(
     Map<String, dynamic> payload,
   ) async {
+    final incomingModeStr = payload['sync_mode'] as String?;
+    final incomingMode = SyncMode.values.firstWhere(
+      (e) => e.name == incomingModeStr,
+      orElse: () => SyncMode.merge,
+    );
+
+    _log('Received sync payload with mode: ${incomingMode.name}');
+
+    if (incomingMode == SyncMode.pull) {
+      _log('Peer requested pull. Pushing data to peer...');
+      await _sendLocalDataToPeer(SyncMode.push);
+      if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
+        _syncCompleter!.complete(true);
+      }
+      return;
+    }
+
+    if (incomingMode == SyncMode.push) {
+      _log('Peer pushed data. Wiping local database before importing...');
+      final dbHelper = ref.read(databaseProvider);
+      await dbHelper.wipeAllData();
+    }
+
     final rawTxList = payload['transactions'] as List<dynamic>?;
     if (rawTxList == null) {
       if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
@@ -805,6 +857,15 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
       // Signal the sync completer so syncNow() can finish immediately
       if (_syncCompleter != null && !_syncCompleter!.isCompleted) {
         _syncCompleter!.complete(true);
+      }
+
+      // Send ACK or response payload back to peer
+      if (incomingMode == SyncMode.push || incomingMode == SyncMode.mergeResponse) {
+        _log('Sending sync ACK back to peer...');
+        await _sendAckToPeer();
+      } else if (incomingMode == SyncMode.merge) {
+        _log('Sending merge response back to peer...');
+        await _sendLocalDataToPeer(SyncMode.mergeResponse);
       }
     } catch (e, st) {
       _log('Error processing sync payload: $e\n$st');

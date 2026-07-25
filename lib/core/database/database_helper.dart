@@ -127,6 +127,18 @@ class DatabaseHelper {
     await _ensureTablesExist(database);
   }
 
+  /// Wipes all tables except for pairing/config tables if any exist.
+  Future<void> wipeAllData() async {
+    final db = await database;
+    await db.transaction((txn) async {
+      await txn.delete('transactions');
+      await txn.delete('recurring_transactions');
+      await txn.delete('categories');
+      await txn.delete('attachments');
+      await txn.delete('tombstones');
+    });
+  }
+
   Future<void> _ensureTablesExist(Database database) async {
     await database.execute('''
       CREATE TABLE IF NOT EXISTS attachments (
