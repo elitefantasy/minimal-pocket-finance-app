@@ -1,6 +1,6 @@
 ## Planned Feature
+- there is problem with p2p sync still: the recurring transaction setting was synced succesfully but all the transactions it created did not synced.
 🚨 1. High-Priority Improvements (Data Integrity for Sync)
-- history should also show that transaction is recurring just like how recurring transactions show
 - Tombstones for Deletions (Improvement): Right now, deleted transactions are excluded from sync. If Device A deletes a record and syncs with Device B, Device B will just keep its old copy. You need a "tombstone" mechanism to tell other devices that a record was explicitly deleted.
 - DataChannel Chunking (Improvement): WebRTC DataChannels have message size limits. Since your database includes images, sending the full transaction set in one message will fail on large databases. Implementing chunking is essential for reliability.
 

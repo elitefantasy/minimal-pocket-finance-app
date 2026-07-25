@@ -579,6 +579,56 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
 
     _log('Processing incoming sync payload: ${rawTxList.length} transactions.');
     try {
+      var recurringAddedCount = 0;
+      var recurringUpdatedCount = 0;
+      final rawRecurringList = payload['recurring_transactions'] as List<dynamic>?;
+
+      if (rawRecurringList != null) {
+        final recurringRepo = ref.read(recurringRepositoryProvider);
+        final existingRecurring = await recurringRepo.getAll();
+        final existingRecurringMap = <String, RecurringTransaction>{};
+        final existingRecurringSignatures = <String, RecurringTransaction>{};
+
+        String rtSignature(RecurringTransaction rt) {
+          final amountFormatted = rt.amount.toStringAsFixed(2);
+          return '${amountFormatted}_${rt.type.toLowerCase()}_${rt.category.toLowerCase()}_${rt.note.trim()}_${rt.dayOfMonth}';
+        }
+
+        for (final rt in existingRecurring) {
+          if (rt.id != null) {
+            existingRecurringMap[rt.id!] = rt;
+          }
+          existingRecurringSignatures[rtSignature(rt)] = rt;
+        }
+
+        for (final rawItem in rawRecurringList) {
+          try {
+            if (rawItem is! Map<String, dynamic>) continue;
+            final incomingRt = RecurringTransaction.fromMap(Map<String, dynamic>.from(rawItem));
+            var existingRt = incomingRt.id != null ? existingRecurringMap[incomingRt.id!] : null;
+
+            if (existingRt == null) {
+              final incomingSig = rtSignature(incomingRt);
+              existingRt = existingRecurringSignatures[incomingSig];
+            }
+
+            if (existingRt == null) {
+              await recurringRepo.insert(incomingRt);
+              recurringAddedCount++;
+              _log('Added new synced recurring transaction: ${incomingRt.note} (${incomingRt.amount})');
+            } else {
+              if (incomingRt.updatedAt.isAfter(existingRt.updatedAt)) {
+                await recurringRepo.update(incomingRt);
+                recurringUpdatedCount++;
+                _log('Updated recurring transaction id=${existingRt.id} from newer peer version.');
+              }
+            }
+          } catch (e, st) {
+            _log('Error importing individual recurring transaction item: $e\n$st');
+          }
+        }
+      }
+
       final txService = ref.read(transactionServiceProvider);
       final existingTransactions = await txService.getAllTransactions();
 
@@ -704,56 +754,6 @@ class P2PSyncNotifier extends AsyncNotifier<P2PSyncState> {
           }
         } catch (txErr, txSt) {
           _log('Error importing individual transaction item: $txErr\n$txSt');
-        }
-      }
-
-      var recurringAddedCount = 0;
-      var recurringUpdatedCount = 0;
-      final rawRecurringList = payload['recurring_transactions'] as List<dynamic>?;
-
-      if (rawRecurringList != null) {
-        final recurringRepo = ref.read(recurringRepositoryProvider);
-        final existingRecurring = await recurringRepo.getAll();
-        final existingRecurringMap = <String, RecurringTransaction>{};
-        final existingRecurringSignatures = <String, RecurringTransaction>{};
-
-        String rtSignature(RecurringTransaction rt) {
-          final amountFormatted = rt.amount.toStringAsFixed(2);
-          return '${amountFormatted}_${rt.type.toLowerCase()}_${rt.category.toLowerCase()}_${rt.note.trim()}_${rt.dayOfMonth}';
-        }
-
-        for (final rt in existingRecurring) {
-          if (rt.id != null) {
-            existingRecurringMap[rt.id!] = rt;
-          }
-          existingRecurringSignatures[rtSignature(rt)] = rt;
-        }
-
-        for (final rawItem in rawRecurringList) {
-          try {
-            if (rawItem is! Map<String, dynamic>) continue;
-            final incomingRt = RecurringTransaction.fromMap(Map<String, dynamic>.from(rawItem));
-            var existingRt = incomingRt.id != null ? existingRecurringMap[incomingRt.id!] : null;
-
-            if (existingRt == null) {
-              final incomingSig = rtSignature(incomingRt);
-              existingRt = existingRecurringSignatures[incomingSig];
-            }
-
-            if (existingRt == null) {
-              await recurringRepo.insert(incomingRt);
-              recurringAddedCount++;
-              _log('Added new synced recurring transaction: ${incomingRt.note} (${incomingRt.amount})');
-            } else {
-              if (incomingRt.updatedAt.isAfter(existingRt.updatedAt)) {
-                await recurringRepo.update(incomingRt);
-                recurringUpdatedCount++;
-                _log('Updated recurring transaction id=${existingRt.id} from newer peer version.');
-              }
-            }
-          } catch (e, st) {
-            _log('Error importing individual recurring transaction item: $e\n$st');
-          }
         }
       }
 
