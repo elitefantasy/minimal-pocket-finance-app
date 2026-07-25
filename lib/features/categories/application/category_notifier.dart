@@ -1,5 +1,7 @@
 import 'package:akm_finance_manager/app/providers.dart';
+import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
 import 'package:akm_finance_manager/models/category.dart';
+import 'package:akm_finance_manager/models/tombstone.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CategoryNotifier extends AsyncNotifier<List<Category>> {
@@ -66,11 +68,6 @@ class CategoryNotifier extends AsyncNotifier<List<Category>> {
   }
 
   Future<String?> deleteCategory(Category category) async {
-    final blockReason = await deletionBlockReason(category);
-    if (blockReason != null) {
-      return blockReason;
-    }
-
     final id = category.id;
     if (id == null) {
       throw ArgumentError.value(
@@ -84,6 +81,48 @@ class CategoryNotifier extends AsyncNotifier<List<Category>> {
     await _refresh();
     return null;
   }
+
+  Future<String?> deleteCategoryAndTransactions(Category category) async {
+    final id = category.id;
+    if (id == null) {
+      return 'Category ID is required.';
+    }
+
+    final dbHelper = ref.read(databaseProvider);
+    final database = await dbHelper.database;
+    final tombstoneRepo = ref.read(tombstoneRepositoryProvider);
+
+    final maps = await database.query(
+      'transactions',
+      columns: ['id'],
+      where: 'category = ?',
+      whereArgs: [category.name],
+    );
+    final txIds = maps.map((e) => e['id'] as String).toList();
+
+    if (txIds.isNotEmpty) {
+      await database.delete(
+        'transactions',
+        where: 'category = ?',
+        whereArgs: [category.name],
+      );
+      await tombstoneRepo.insertBatch(
+        txIds
+            .map((txId) => Tombstone(
+                  id: txId,
+                  tableName: 'transactions',
+                  deletedAt: DateTime.now().toUtc(),
+                ))
+            .toList(),
+      );
+    }
+
+    await ref.read(categoryRepositoryProvider).delete(id);
+    await _refresh();
+    ref.invalidate(transactionNotifierProvider);
+    return null;
+  }
+
 
   Future<List<Category>> _currentCategories() async {
     final categories = state.asData?.value;

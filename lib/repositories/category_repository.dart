@@ -19,6 +19,40 @@ class CategoryRepository {
   final DatabaseHelper _databaseHelper;
   final TombstoneRepository _tombstoneRepository;
 
+  static const List<String> defaultCategories = <String>[
+    'Food',
+    'Travel',
+    'Shopping',
+    'Medical',
+    'Education',
+    'Other',
+  ];
+
+  Future<void> ensureDefaultCategoriesExist() async {
+    final Database database = await _databaseHelper.database;
+    final maps = await database.query(_tableName, columns: ['name']);
+    final existingNames = maps.map((e) => (e['name'] as String).toLowerCase()).toSet();
+
+    final batch = database.batch();
+    var hasNew = false;
+    const uuid = Uuid();
+
+    for (final defaultCat in defaultCategories) {
+      if (!existingNames.contains(defaultCat.toLowerCase())) {
+        batch.insert(_tableName, <String, Object?>{
+          'id': uuid.v4(),
+          'name': defaultCat,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        });
+        hasNew = true;
+      }
+    }
+
+    if (hasNew) {
+      await batch.commit(noResult: true);
+    }
+  }
+
   Future<String> insert(Category category) async {
     final Database database = await _databaseHelper.database;
     final id = category.id ?? const Uuid().v4();
@@ -31,6 +65,7 @@ class CategoryRepository {
   }
 
   Future<List<Category>> getAll() async {
+    await ensureDefaultCategoriesExist();
     final Database database = await _databaseHelper.database;
     final maps = await database.query(_tableName, orderBy: 'name ASC');
 
@@ -70,14 +105,18 @@ class CategoryRepository {
     ));
   }
 
-  Future<bool> isCategoryInUse(String name) async {
+  Future<int> getUsageCount(String name) async {
     final Database database = await _databaseHelper.database;
     final result = await database.rawQuery(
       'SELECT COUNT(*) FROM $_transactionsTableName WHERE category = ?',
       <Object?>[name],
     );
-    final count = Sqflite.firstIntValue(result) ?? 0;
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
 
+  Future<bool> isCategoryInUse(String name) async {
+    final count = await getUsageCount(name);
     return count > 0;
   }
 }
+

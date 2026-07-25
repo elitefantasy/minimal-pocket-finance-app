@@ -8,6 +8,7 @@ The Change: If a conflict is detected, pause the sync and show a side-by-side co
 
 # Unreleased:
 ### features
+- feat(sync): add transaction categories to P2P sync payload
 - feat(sync): add WebRTC ACK protocol and fix one-way push timeout issue
 - feat(sync): Directional Sync Choices and Enhanced Connection States
 - feat: implement tombstone mechanism for P2P sync deletions
