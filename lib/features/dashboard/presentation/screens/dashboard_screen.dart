@@ -76,9 +76,8 @@ class DashboardScreen extends ConsumerWidget {
                   title: 'Current Balance',
                   value: '₹${summary.balance.toStringAsFixed(0)}',
                 ),
-                const SizedBox(
-                  height: AppSpacing.lg,
-                ), // Vertical element spacing
+                const SizedBox(height: AppSpacing.lg),
+
                 // Split metrics display container block
                 Row(
                   children: [
@@ -94,9 +93,7 @@ class DashboardScreen extends ConsumerWidget {
                         value: '₹${summary.income.toStringAsFixed(0)}',
                       ),
                     ),
-                    const SizedBox(
-                      width: AppSpacing.lg,
-                    ), // Horizontal gap spacing split
+                    const SizedBox(width: AppSpacing.lg),
                     Expanded(
                       // Right Pillar: Outbound Expenses
                       child: SummaryCard(
@@ -110,17 +107,6 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
-
-                // Dynamic Top Expenditure Visual Categories Card
-                TopCategoriesCard(
-                  categories: sortedCategories,
-                  onCategoryTap: (category) => HistoryNavigation.open(
-                    context,
-                    category: category.name,
-                    transactionType: TransactionFilter.expense,
-                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
 
@@ -144,6 +130,17 @@ class DashboardScreen extends ConsumerWidget {
                   title: 'Monthly Average',
                   amount:
                       '₹${summary.averageMonthlyExpense.toStringAsFixed(0)}',
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Dynamic Top Expenditure Visual Categories Card
+                TopCategoriesCard(
+                  categories: sortedCategories,
+                  onCategoryTap: (category) => HistoryNavigation.open(
+                    context,
+                    category: category.name,
+                    transactionType: TransactionFilter.expense,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
 
