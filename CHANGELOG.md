@@ -6,6 +6,13 @@ If the same transaction was edited differently on both phones while offline, the
 The Change: If a conflict is detected, pause the sync and show a side-by-side comparison UI. Ask the user: "Both devices edited the 'Groceries' transaction. Which version would you like to keep?"
 
 # Unreleased:
+# version 2.1.1
+- chore: rename package to minimal_pocket_finance_app in pubspec.yaml
+- fix(about): enable dynamic versioning from pubspec.yaml and platform config
+- feat: configure Android build settings and migrate flutter_launcher_icons to dev_dependencies so that app size decreases
+- UI: style(dashboard): reorder home screen section layout
+
+# Version 2.1.0
 ### features
 - feat(categories): add category deletion confirmation dialog and auto-recreation of default categories
 - feat(sync): add transaction categories to P2P sync payload
