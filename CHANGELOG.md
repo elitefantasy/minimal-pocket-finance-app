@@ -18,6 +18,7 @@ The Change: If a conflict is detected, pause the sync and show a side-by-side co
 - feat: implement secure P2P synchronization architecture with E2EE crypto service, signaling support, and pairing UI
 - feat: Image Attachments for Transactions 
 ### fixes
+- fix(database): resolve v2.0.0 database migration crash and add dynamic DB version to about screen
 - fix: process recurring transactions before normal transactions during sync
 - fix(sync): add signature fallback to prevent duplicates from v5 migration
 - fix: overflow issue with trash transaction tiles

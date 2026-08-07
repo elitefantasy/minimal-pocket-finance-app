@@ -47,7 +47,7 @@ class AboutScreen extends ConsumerWidget {
                       'Version Unknown • Database v${DatabaseHelper.databaseVersion}',
                     ),
                     data: (packageInfo) => _VersionText(
-                      'Version ${packageInfo.version} • Database v${DatabaseHelper.databaseVersion}',
+                      'Version ${packageInfo.version}+${packageInfo.buildNumber} • Database v${DatabaseHelper.databaseVersion}',
                     ),
                   ),
                 ],
