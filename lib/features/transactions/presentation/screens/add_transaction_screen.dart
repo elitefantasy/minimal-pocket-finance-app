@@ -5,33 +5,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Application Core/Shared imports
-import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
-import 'package:akm_finance_manager/core/theme/app_durations.dart';
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
-import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
+import 'package:minimal_pocket_finance_app/core/notifications/app_snackbar_service.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_durations.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/shared/widgets/app_scaffold.dart';
 
 // Model imports
-import 'package:akm_finance_manager/models/attachment.dart';
-import 'package:akm_finance_manager/models/recurring_transaction.dart';
-import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:minimal_pocket_finance_app/models/attachment.dart';
+import 'package:minimal_pocket_finance_app/models/recurring_transaction.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
 
 // Feature Notifiers & Providers
-import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
-import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
-import 'package:akm_finance_manager/features/recurring/application/recurring_processing_provider.dart';
-import 'package:akm_finance_manager/features/transactions/application/selected_transaction_date_provider.dart';
-import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/categories/application/category_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/application/recurring_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/application/recurring_processing_provider.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/selected_transaction_date_provider.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_notifier.dart';
 
 // Feature UI Widgets
-import 'package:akm_finance_manager/features/attachments/presentation/widgets/attachment_picker_section.dart';
-import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/date_picker_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/transaction_type_buttons.dart';
+import 'package:minimal_pocket_finance_app/features/attachments/presentation/widgets/attachment_picker_section.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/presentation/widgets/day_of_month_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/amount_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/category_search_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/date_picker_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/note_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/transaction_type_buttons.dart';
 
 /// Screen allowing users to input and create either standard or recurring
 /// income and expense transactions with optional image attachments.

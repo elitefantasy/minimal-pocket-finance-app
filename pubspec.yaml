@@ -1,5 +1,5 @@
-name: akm_finance_manager
-description: "A new Flutter project."
+name: minimal_pocket_finance_app
+description: "A lightweight, offline-first personal finance management application with local SQLite storage and P2P synchronization built with Flutter."
 publish_to: 'none'
 
 version: 1.0.0+1

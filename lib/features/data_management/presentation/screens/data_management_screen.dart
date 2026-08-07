@@ -1,13 +1,13 @@
-import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
-import 'package:akm_finance_manager/features/data_management/application/database_manager_notifier.dart';
-import 'package:akm_finance_manager/features/data_management/presentation/widgets/backup_card.dart';
-import 'package:akm_finance_manager/features/data_management/presentation/widgets/database_card.dart';
-import 'package:akm_finance_manager/features/data_management/presentation/widgets/database_tile.dart';
-import 'package:akm_finance_manager/features/sync/presentation/widgets/p2p_sync_status_card.dart';
-import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
+import 'package:minimal_pocket_finance_app/core/notifications/app_snackbar_service.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/features/data_management/application/database_manager_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/backup_card.dart';
+import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/database_card.dart';
+import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/database_tile.dart';
+import 'package:minimal_pocket_finance_app/features/sync/presentation/widgets/p2p_sync_status_card.dart';
+import 'package:minimal_pocket_finance_app/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

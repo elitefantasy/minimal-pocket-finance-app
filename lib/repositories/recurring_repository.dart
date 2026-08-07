@@ -1,10 +1,10 @@
-import 'package:akm_finance_manager/core/database/database_helper.dart';
-import 'package:akm_finance_manager/models/recurring_transaction.dart';
-import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:minimal_pocket_finance_app/core/database/database_helper.dart';
+import 'package:minimal_pocket_finance_app/models/recurring_transaction.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
 import 'package:sqflite/sqflite.dart' show Database;
 import 'package:uuid/uuid.dart';
-import 'package:akm_finance_manager/models/tombstone.dart';
-import 'package:akm_finance_manager/repositories/tombstone_repository.dart';
+import 'package:minimal_pocket_finance_app/models/tombstone.dart';
+import 'package:minimal_pocket_finance_app/repositories/tombstone_repository.dart';
 
 /// Provides persistence operations for recurring transactions.
 abstract interface class RecurringProcessingRepository {

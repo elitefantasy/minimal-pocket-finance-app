@@ -1,5 +1,5 @@
-import 'package:akm_finance_manager/core/theme/app_colors.dart';
-import 'package:akm_finance_manager/core/theme/app_gradients.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_colors.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_gradients.dart';
 import 'package:flutter/material.dart';
 
 /// Semantic colors not represented directly by [ColorScheme].

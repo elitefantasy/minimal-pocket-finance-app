@@ -1,15 +1,15 @@
-import 'package:akm_finance_manager/features/about/presentation/screens/about_screen.dart';
-import 'package:akm_finance_manager/features/categories/presentation/screens/category_screen.dart';
-import 'package:akm_finance_manager/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:akm_finance_manager/features/data_management/presentation/screens/data_management_screen.dart';
-import 'package:akm_finance_manager/features/recurring/presentation/screens/recurring_screen.dart';
-import 'package:akm_finance_manager/features/statistics/presentation/screens/statistics_screen.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/screens/add_transaction_screen.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/screens/edit_transaction_screen.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/screens/history_screen.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/screens/trash_screen.dart';
-import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
-import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:minimal_pocket_finance_app/features/about/presentation/screens/about_screen.dart';
+import 'package:minimal_pocket_finance_app/features/categories/presentation/screens/category_screen.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:minimal_pocket_finance_app/features/data_management/presentation/screens/data_management_screen.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/presentation/screens/recurring_screen.dart';
+import 'package:minimal_pocket_finance_app/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/screens/add_transaction_screen.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/screens/edit_transaction_screen.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/screens/history_screen.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/screens/trash_screen.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_filter_provider.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(

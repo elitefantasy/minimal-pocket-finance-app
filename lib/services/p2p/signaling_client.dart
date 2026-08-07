@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
+import 'package:minimal_pocket_finance_app/services/p2p/p2p_logger.dart';
 
 /// A transport-level error raised while opening the ntfy signaling stream.
 class SignalingConnectionException implements Exception {

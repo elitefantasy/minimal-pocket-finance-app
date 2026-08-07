@@ -1,14 +1,14 @@
-import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
-import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
-import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
-import 'package:akm_finance_manager/features/recurring/presentation/widgets/recurring_transaction_card.dart';
-import 'package:akm_finance_manager/features/recurring/presentation/widgets/recurring_transaction_dialog.dart';
-import 'package:akm_finance_manager/models/category.dart';
-import 'package:akm_finance_manager/models/recurring_transaction.dart';
-import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
+import 'package:minimal_pocket_finance_app/core/notifications/app_snackbar_service.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/features/categories/application/category_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/application/recurring_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/presentation/widgets/recurring_transaction_card.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/presentation/widgets/recurring_transaction_dialog.dart';
+import 'package:minimal_pocket_finance_app/models/category.dart';
+import 'package:minimal_pocket_finance_app/models/recurring_transaction.dart';
+import 'package:minimal_pocket_finance_app/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

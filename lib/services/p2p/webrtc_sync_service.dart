@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
+import 'package:minimal_pocket_finance_app/services/p2p/p2p_logger.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 /// WebRTC Peer-to-Peer data connection service handling direct E2E WebRTC DataChannel transfer.

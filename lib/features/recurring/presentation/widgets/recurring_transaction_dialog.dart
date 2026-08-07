@@ -1,12 +1,12 @@
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
-import 'package:akm_finance_manager/features/recurring/presentation/widgets/day_of_month_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
-import 'package:akm_finance_manager/models/category.dart';
-import 'package:akm_finance_manager/models/recurring_transaction.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/presentation/widgets/day_of_month_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/amount_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/category_search_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/note_field.dart';
+import 'package:minimal_pocket_finance_app/models/category.dart';
+import 'package:minimal_pocket_finance_app/models/recurring_transaction.dart';
 import 'package:flutter/material.dart';
 
 class RecurringTransactionDialog extends StatefulWidget {

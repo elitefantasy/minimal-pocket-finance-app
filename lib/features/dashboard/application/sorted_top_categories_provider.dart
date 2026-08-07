@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'dashboard_summary_provider.dart';
 import 'top_category_sort_provider.dart';
-import 'package:akm_finance_manager/models/dashboard_summary.dart';
+import 'package:minimal_pocket_finance_app/models/dashboard_summary.dart';
 
 final sortedTopCategoriesProvider =
     Provider<AsyncValue<List<TopCategorySummary>>>((ref) {

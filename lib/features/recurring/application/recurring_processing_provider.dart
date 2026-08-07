@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:akm_finance_manager/app/providers.dart';
-import 'package:akm_finance_manager/features/recurring/application/recurring_notifier.dart';
-import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
-import 'package:akm_finance_manager/services/recurring_processing_service.dart';
+import 'package:minimal_pocket_finance_app/app/providers.dart';
+import 'package:minimal_pocket_finance_app/features/recurring/application/recurring_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_notifier.dart';
+import 'package:minimal_pocket_finance_app/services/recurring_processing_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

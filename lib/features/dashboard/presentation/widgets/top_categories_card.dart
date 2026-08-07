@@ -1,10 +1,10 @@
-import 'package:akm_finance_manager/models/dashboard_summary.dart';
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/models/dashboard_summary.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:akm_finance_manager/features/dashboard/application/top_category_sort_provider.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/application/top_category_sort_provider.dart';
 
 /// A card that displays a list of top spending categories.
 /// Includes a dropdown option to sort categories by monthly average or total expense.

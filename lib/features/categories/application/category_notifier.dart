@@ -1,7 +1,7 @@
-import 'package:akm_finance_manager/app/providers.dart';
-import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
-import 'package:akm_finance_manager/models/category.dart';
-import 'package:akm_finance_manager/models/tombstone.dart';
+import 'package:minimal_pocket_finance_app/app/providers.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_notifier.dart';
+import 'package:minimal_pocket_finance_app/models/category.dart';
+import 'package:minimal_pocket_finance_app/models/tombstone.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CategoryNotifier extends AsyncNotifier<List<Category>> {

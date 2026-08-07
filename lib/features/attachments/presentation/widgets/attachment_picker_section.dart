@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:akm_finance_manager/app/providers.dart';
-import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
-import 'package:akm_finance_manager/features/attachments/presentation/widgets/attachment_viewer_dialog.dart';
-import 'package:akm_finance_manager/models/attachment.dart';
+import 'package:minimal_pocket_finance_app/app/providers.dart';
+import 'package:minimal_pocket_finance_app/core/notifications/app_snackbar_service.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/features/attachments/presentation/widgets/attachment_viewer_dialog.dart';
+import 'package:minimal_pocket_finance_app/models/attachment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

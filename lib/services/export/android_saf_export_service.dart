@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:akm_finance_manager/services/export/android_export_location_service.dart';
-import 'package:akm_finance_manager/core/constants/app_constants.dart';
-import 'package:akm_finance_manager/models/export_result.dart';
+import 'package:minimal_pocket_finance_app/services/export/android_export_location_service.dart';
+import 'package:minimal_pocket_finance_app/core/constants/app_constants.dart';
+import 'package:minimal_pocket_finance_app/models/export_result.dart';
 
 import 'package:saf_stream/saf_stream.dart';
 import 'package:saf_util/saf_util.dart';

@@ -1,4 +1,4 @@
-import 'package:akm_finance_manager/shared/widgets/app_bottom_navigation_bar.dart';
+import 'package:minimal_pocket_finance_app/shared/widgets/app_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

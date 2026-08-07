@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:akm_finance_manager/core/constants/app_constants.dart';
-import 'package:akm_finance_manager/core/database/database_helper.dart';
-import 'package:akm_finance_manager/repositories/transaction_repository.dart';
-import 'package:akm_finance_manager/services/export/export_service.dart';
-import 'package:akm_finance_manager/services/import/android_saf_import_service.dart';
-import 'package:akm_finance_manager/models/export_result.dart';
+import 'package:minimal_pocket_finance_app/core/constants/app_constants.dart';
+import 'package:minimal_pocket_finance_app/core/database/database_helper.dart';
+import 'package:minimal_pocket_finance_app/repositories/transaction_repository.dart';
+import 'package:minimal_pocket_finance_app/services/export/export_service.dart';
+import 'package:minimal_pocket_finance_app/services/import/android_saf_import_service.dart';
+import 'package:minimal_pocket_finance_app/models/export_result.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';

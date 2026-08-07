@@ -1,4 +1,4 @@
-import 'package:akm_finance_manager/services/preferences/preferences_service.dart';
+import 'package:minimal_pocket_finance_app/services/preferences/preferences_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SelectedYearNotifier extends StateNotifier<int?> {

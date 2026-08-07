@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:akm_finance_manager/models/attachment.dart';
+import 'package:minimal_pocket_finance_app/models/attachment.dart';
 
 /// An immutable financial transaction.
 class Transaction {

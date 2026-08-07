@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:akm_finance_manager/models/attachment.dart';
+import 'package:minimal_pocket_finance_app/models/attachment.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;

@@ -1,10 +1,10 @@
-import 'package:akm_finance_manager/core/theme/app_colors.dart';
-import 'package:akm_finance_manager/core/theme/app_elevations.dart';
-import 'package:akm_finance_manager/core/theme/app_radius.dart';
-import 'package:akm_finance_manager/core/theme/app_sizes.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/app_theme_extensions.dart';
-import 'package:akm_finance_manager/core/theme/app_typography.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_colors.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_elevations.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_radius.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_sizes.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_theme_extensions.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 /// Central Material 3 theme configuration for the application.

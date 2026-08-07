@@ -1,7 +1,7 @@
-import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
-import 'package:akm_finance_manager/core/constants/app_constants.dart';
-import 'package:akm_finance_manager/core/theme/app_theme.dart';
-import 'package:akm_finance_manager/routes/app_router.dart';
+import 'package:minimal_pocket_finance_app/core/notifications/app_snackbar_service.dart';
+import 'package:minimal_pocket_finance_app/core/constants/app_constants.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_theme.dart';
+import 'package:minimal_pocket_finance_app/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

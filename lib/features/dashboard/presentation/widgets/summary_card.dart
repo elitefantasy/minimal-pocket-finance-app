@@ -1,8 +1,8 @@
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_radius.dart';
-import 'package:akm_finance_manager/core/theme/app_shadows.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_radius.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_shadows.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 
 enum SummaryCardTone { balance, income, expense }

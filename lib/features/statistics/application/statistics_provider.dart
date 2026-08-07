@@ -1,5 +1,5 @@
-import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
-import 'package:akm_finance_manager/models/statistics_summary.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_notifier.dart';
+import 'package:minimal_pocket_finance_app/models/statistics_summary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final statisticsProvider = Provider<AsyncValue<StatisticsSummary>>((ref) {

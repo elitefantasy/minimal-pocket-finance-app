@@ -6,26 +6,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // Core & Notification imports
-import 'package:akm_finance_manager/core/notifications/app_snackbar_service.dart';
-import 'package:akm_finance_manager/core/theme/app_durations.dart';
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/core/notifications/app_snackbar_service.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_durations.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
 
 // Model imports
-import 'package:akm_finance_manager/models/attachment.dart';
-import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:minimal_pocket_finance_app/models/attachment.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
 
 // Application State/Notifier imports
-import 'package:akm_finance_manager/features/categories/application/category_notifier.dart';
-import 'package:akm_finance_manager/features/transactions/application/transaction_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/categories/application/category_notifier.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_notifier.dart';
 
 // Presentation Widget imports
-import 'package:akm_finance_manager/features/attachments/presentation/widgets/attachment_picker_section.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/amount_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/category_search_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/date_picker_field.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/note_field.dart';
+import 'package:minimal_pocket_finance_app/features/attachments/presentation/widgets/attachment_picker_section.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/amount_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/category_search_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/date_picker_field.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/note_field.dart';
 
 /// Screen that provides input controls to modify an existing transaction record.
 class EditTransactionScreen extends ConsumerStatefulWidget {

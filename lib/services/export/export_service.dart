@@ -3,9 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-import 'package:akm_finance_manager/services/export/android_saf_export_service.dart';
-import 'package:akm_finance_manager/core/constants/app_constants.dart';
-import 'package:akm_finance_manager/models/export_result.dart';
+import 'package:minimal_pocket_finance_app/services/export/android_saf_export_service.dart';
+import 'package:minimal_pocket_finance_app/core/constants/app_constants.dart';
+import 'package:minimal_pocket_finance_app/models/export_result.dart';
 
 /// Resolves the platform's public Downloads directory.
 ///

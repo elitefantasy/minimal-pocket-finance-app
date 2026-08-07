@@ -2,7 +2,7 @@
 
 import 'package:saf_util/saf_util.dart';
 
-import 'package:akm_finance_manager/services/export/export_preferences.dart';
+import 'package:minimal_pocket_finance_app/services/export/export_preferences.dart';
 
 class AndroidExportLocationService {
   // SAF helper

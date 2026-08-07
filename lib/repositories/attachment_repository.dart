@@ -1,5 +1,5 @@
-import 'package:akm_finance_manager/core/database/database_helper.dart';
-import 'package:akm_finance_manager/models/attachment.dart';
+import 'package:minimal_pocket_finance_app/core/database/database_helper.dart';
+import 'package:minimal_pocket_finance_app/models/attachment.dart';
 import 'package:sqflite/sqflite.dart' show Database;
 import 'package:uuid/uuid.dart';
 

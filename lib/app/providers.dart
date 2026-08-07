@@ -1,14 +1,14 @@
-import 'package:akm_finance_manager/core/database/database_helper.dart';
-import 'package:akm_finance_manager/repositories/attachment_repository.dart';
-import 'package:akm_finance_manager/repositories/category_repository.dart';
-import 'package:akm_finance_manager/repositories/database_management_repository.dart';
-import 'package:akm_finance_manager/repositories/recurring_repository.dart';
-import 'package:akm_finance_manager/repositories/tombstone_repository.dart';
-import 'package:akm_finance_manager/repositories/transaction_repository.dart';
-import 'package:akm_finance_manager/services/attachment_service.dart';
-import 'package:akm_finance_manager/services/transaction_service.dart';
-import 'package:akm_finance_manager/services/export/export_service.dart';
-import 'package:akm_finance_manager/services/url_launcher_service.dart';
+import 'package:minimal_pocket_finance_app/core/database/database_helper.dart';
+import 'package:minimal_pocket_finance_app/repositories/attachment_repository.dart';
+import 'package:minimal_pocket_finance_app/repositories/category_repository.dart';
+import 'package:minimal_pocket_finance_app/repositories/database_management_repository.dart';
+import 'package:minimal_pocket_finance_app/repositories/recurring_repository.dart';
+import 'package:minimal_pocket_finance_app/repositories/tombstone_repository.dart';
+import 'package:minimal_pocket_finance_app/repositories/transaction_repository.dart';
+import 'package:minimal_pocket_finance_app/services/attachment_service.dart';
+import 'package:minimal_pocket_finance_app/services/transaction_service.dart';
+import 'package:minimal_pocket_finance_app/services/export/export_service.dart';
+import 'package:minimal_pocket_finance_app/services/url_launcher_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final urlLauncherServiceProvider = Provider<UrlLauncherService>((ref) {

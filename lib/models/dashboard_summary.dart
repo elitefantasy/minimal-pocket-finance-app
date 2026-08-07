@@ -1,4 +1,4 @@
-import 'package:akm_finance_manager/models/transaction.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
 
 /// Immutable aggregate data displayed by the dashboard.
 class DashboardSummary {

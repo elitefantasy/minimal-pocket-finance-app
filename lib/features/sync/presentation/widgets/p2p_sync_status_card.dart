@@ -1,9 +1,9 @@
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
-import 'package:akm_finance_manager/features/sync/application/p2p_sync_notifier.dart';
-import 'package:akm_finance_manager/models/sync_mode.dart';
-import 'package:akm_finance_manager/features/sync/presentation/widgets/p2p_pairing_dialog.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/features/sync/application/p2p_sync_notifier.dart';
+import 'package:minimal_pocket_finance_app/models/sync_mode.dart';
+import 'package:minimal_pocket_finance_app/features/sync/presentation/widgets/p2p_pairing_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,4 +1,4 @@
-import 'package:akm_finance_manager/core/theme/app_sizes.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_sizes.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical Material icons and icon sizes used by the application.

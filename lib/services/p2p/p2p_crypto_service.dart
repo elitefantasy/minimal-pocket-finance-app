@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:akm_finance_manager/services/p2p/p2p_logger.dart';
+import 'package:minimal_pocket_finance_app/services/p2p/p2p_logger.dart';
 import 'package:crypto/crypto.dart';
 
 /// Cryptographic service providing end-to-end encryption (E2EE),

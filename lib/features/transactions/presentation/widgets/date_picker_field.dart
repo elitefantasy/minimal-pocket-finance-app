@@ -1,5 +1,5 @@
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

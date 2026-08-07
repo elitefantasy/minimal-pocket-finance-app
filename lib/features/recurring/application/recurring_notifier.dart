@@ -1,5 +1,5 @@
-import 'package:akm_finance_manager/app/providers.dart';
-import 'package:akm_finance_manager/models/recurring_transaction.dart';
+import 'package:minimal_pocket_finance_app/app/providers.dart';
+import 'package:minimal_pocket_finance_app/models/recurring_transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RecurringNotifier extends AsyncNotifier<List<RecurringTransaction>> {

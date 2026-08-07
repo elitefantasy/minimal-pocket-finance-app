@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:akm_finance_manager/core/theme/app_radius.dart';
-import 'package:akm_finance_manager/core/theme/app_sizes.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
-import 'package:akm_finance_manager/core/theme/theme_context_extensions.dart';
-import 'package:akm_finance_manager/models/attachment.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_radius.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_sizes.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/theme_context_extensions.dart';
+import 'package:minimal_pocket_finance_app/models/attachment.dart';
 import 'package:flutter/material.dart';
 
 /// Full-screen interactive dialog to view attachments (images, PDFs, files).

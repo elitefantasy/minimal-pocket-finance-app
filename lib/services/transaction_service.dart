@@ -1,5 +1,5 @@
-import 'package:akm_finance_manager/models/transaction.dart';
-import 'package:akm_finance_manager/repositories/transaction_repository.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
+import 'package:minimal_pocket_finance_app/repositories/transaction_repository.dart';
 
 /// Coordinates business operations for financial transactions.
 class TransactionService {

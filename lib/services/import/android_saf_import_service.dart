@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:saf_stream/saf_stream.dart';
 import 'package:saf_util/saf_util.dart';
 
-import 'package:akm_finance_manager/models/import_selection.dart';
+import 'package:minimal_pocket_finance_app/models/import_selection.dart';
 
 /// Imports a SQLite database through Android's Storage Access Framework (SAF)
 /// or Desktop's native FilePicker.

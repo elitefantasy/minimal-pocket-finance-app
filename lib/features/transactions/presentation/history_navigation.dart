@@ -1,4 +1,4 @@
-import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

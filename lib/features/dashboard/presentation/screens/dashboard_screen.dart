@@ -1,18 +1,18 @@
-import 'package:akm_finance_manager/core/theme/app_icons.dart';
-import 'package:akm_finance_manager/core/theme/app_spacing.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
+import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:akm_finance_manager/features/dashboard/application/dashboard_summary_provider.dart';
-import 'package:akm_finance_manager/features/dashboard/application/sorted_top_categories_provider.dart';
-import 'package:akm_finance_manager/features/dashboard/presentation/widgets/summary_card.dart';
-import 'package:akm_finance_manager/features/dashboard/presentation/widgets/monthly_expense_card.dart';
-import 'package:akm_finance_manager/features/dashboard/presentation/widgets/top_categories_card.dart';
-import 'package:akm_finance_manager/features/dashboard/presentation/widgets/recent_transactions_card.dart';
-import 'package:akm_finance_manager/features/transactions/application/transaction_filter_provider.dart';
-import 'package:akm_finance_manager/features/transactions/application/selected_year_provider.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/history_navigation.dart';
-import 'package:akm_finance_manager/features/transactions/presentation/widgets/year_selector.dart';
-import 'package:akm_finance_manager/shared/widgets/app_scaffold.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/application/dashboard_summary_provider.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/application/sorted_top_categories_provider.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/presentation/widgets/summary_card.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/presentation/widgets/monthly_expense_card.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/presentation/widgets/top_categories_card.dart';
+import 'package:minimal_pocket_finance_app/features/dashboard/presentation/widgets/recent_transactions_card.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_filter_provider.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/selected_year_provider.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/history_navigation.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/presentation/widgets/year_selector.dart';
+import 'package:minimal_pocket_finance_app/shared/widgets/app_scaffold.dart';
 import 'package:go_router/go_router.dart';
 
 /// The main entry dashboard screen representing metrics, graphs, recent transactions,

@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:akm_finance_manager/models/recurring_transaction.dart';
-import 'package:akm_finance_manager/models/transaction.dart';
-import 'package:akm_finance_manager/repositories/recurring_repository.dart';
+import 'package:minimal_pocket_finance_app/models/recurring_transaction.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
+import 'package:minimal_pocket_finance_app/repositories/recurring_repository.dart';
 
 class RecurringProcessingService {
   RecurringProcessingService(
