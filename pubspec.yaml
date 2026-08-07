@@ -2,7 +2,7 @@ name: minimal_pocket_finance_app
 description: "A lightweight, offline-first personal finance management application with local SQLite storage and P2P synchronization built with Flutter."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 2.1.0+4
 
 environment:
   sdk: ^3.12.2
@@ -46,16 +46,15 @@ dependencies:
   
   url_launcher: ^6.3.2
   package_info_plus: ^9.0.0
-  
-  flutter_launcher_icons: ^0.14.3
   mobile_scanner: ^7.4.0
   uuid: ^4.6.0
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
   
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true

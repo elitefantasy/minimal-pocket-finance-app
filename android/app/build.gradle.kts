@@ -29,6 +29,8 @@ android {
 			versionNameSuffix = "-debug"
 		}
         release {
+            isMinifyEnabled = true
+            isShrinkResources = true
             signingConfig = signingConfigs.getByName("debug")
         }
     }
