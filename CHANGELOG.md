@@ -1,11 +1,16 @@
 ## Planned Feature
-1. UI/UX Changes & Roadmap
-- Conflict Resolution Screen
-If the same transaction was edited differently on both phones while offline, the app currently has to guess which one to keep (usually based on timestamps).
 
-The Change: If a conflict is detected, pause the sync and show a side-by-side comparison UI. Ask the user: "Both devices edited the 'Groceries' transaction. Which version would you like to keep?"
+
+
+
 
 # Unreleased:
+## Version 2.2.0
+- fix(analytics): standardize monthly average calculation across dashboard and category statistics
+- feat(export): custom export folder management with file migration prompt
+- feat(export): prompt user to rename database when exporting with prefilled default
+
+
 # version 2.1.1
 - chore: rename package to minimal_pocket_finance_app in pubspec.yaml
 - fix(about): enable dynamic versioning from pubspec.yaml and platform config

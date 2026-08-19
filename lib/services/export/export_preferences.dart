@@ -8,6 +8,11 @@ class ExportPreferences {
     return preferences.getString(_exportRootUriKey);
   }
 
+  Future<bool> isCustomExportFolderSet() async {
+    final uri = await getExportRootUri();
+    return uri != null && uri.isNotEmpty;
+  }
+
   Future<void> saveExportRootUri(String uri) async {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_exportRootUriKey, uri);

@@ -10,16 +10,59 @@ class DatabaseManagerState {
   DatabaseManagerState({
     required this.currentDatabase,
     required List<String> databases,
+    required this.exportPath,
+    required this.isCustomExportPath,
   }) : databases = List<String>.unmodifiable(databases);
 
   final String currentDatabase;
   final List<String> databases;
+  final String exportPath;
+  final bool isCustomExportPath;
 }
 
 class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
   @override
   Future<DatabaseManagerState> build() {
     return _loadState();
+  }
+
+  Future<void> changeExportFolder({
+    required String newPath,
+    required bool moveExistingFiles,
+  }) async {
+    final exportService = ref.read(exportServiceProvider);
+    final currentPath = await exportService.getExportDirectoryPath();
+
+    if (newPath == currentPath) return;
+
+    if (moveExistingFiles) {
+      await exportService.moveExportFiles(
+        sourcePath: currentPath,
+        targetPath: newPath,
+      );
+    }
+
+    await exportService.setCustomExportFolder(newPath);
+    await _refresh();
+  }
+
+  Future<void> resetExportFolder({
+    required bool moveExistingFiles,
+  }) async {
+    final exportService = ref.read(exportServiceProvider);
+    final currentPath = await exportService.getExportDirectoryPath();
+
+    await exportService.resetExportFolder();
+    final defaultPath = await exportService.getExportDirectoryPath();
+
+    if (moveExistingFiles && currentPath != defaultPath) {
+      await exportService.moveExportFiles(
+        sourcePath: currentPath,
+        targetPath: defaultPath,
+      );
+    }
+
+    await _refresh();
   }
 
   Future<String?> createDatabase(String name) async {
@@ -80,7 +123,6 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
   }
 
   Future<ExportResult> backupCurrentDatabase() async {
-    // 1. Fetch the database repository using Riverpod (ref.read).
     final location = await ref
         .read(databaseManagementRepositoryProvider)
         .backupCurrentDatabase();
@@ -94,7 +136,6 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
         .importDatabase(replace: replace);
 
     if (databaseName == null) {
-      // User cancelled the picker.
       return null;
     }
 
@@ -107,10 +148,16 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
     return databaseName;
   }
 
-  Future<ExportResult> exportCurrentDatabase() {
+  Future<String> getDefaultExportFileName() {
     return ref
         .read(databaseManagementRepositoryProvider)
-        .exportCurrentDatabase();
+        .getDefaultExportFileName();
+  }
+
+  Future<ExportResult> exportCurrentDatabase({String? customFileName}) {
+    return ref
+        .read(databaseManagementRepositoryProvider)
+        .exportCurrentDatabase(customFileName: customFileName);
   }
 
   Future<ExportResult> exportTransactionsCsv() {
@@ -121,10 +168,13 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
 
   Future<DatabaseManagerState> _loadState() async {
     final repository = ref.read(databaseManagementRepositoryProvider);
+    final exportService = ref.read(exportServiceProvider);
     await ref.read(databaseProvider).database;
     return DatabaseManagerState(
       currentDatabase: await repository.getCurrentDatabaseName(),
       databases: await repository.getDatabases(),
+      exportPath: await exportService.getExportDirectoryPath(),
+      isCustomExportPath: await exportService.isCustomExportFolder(),
     );
   }
 

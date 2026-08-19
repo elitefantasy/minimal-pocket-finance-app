@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:minimal_pocket_finance_app/services/export/android_export_location_service.dart';
-import 'package:minimal_pocket_finance_app/core/constants/app_constants.dart';
 import 'package:minimal_pocket_finance_app/models/export_result.dart';
 
 import 'package:saf_stream/saf_stream.dart';
-import 'package:saf_util/saf_util.dart';
 
 /// Handles exporting files through Android's Storage Access Framework (SAF).
 ///
@@ -19,17 +17,12 @@ import 'package:saf_util/saf_util.dart';
 class AndroidSafExportService {
   AndroidSafExportService({
     AndroidExportLocationService? locationService,
-    SafUtil? safUtil,
     SafStream? safStream,
   }) : _locationService = locationService ?? AndroidExportLocationService(),
-       _safUtil = safUtil ?? SafUtil(),
        _safStream = safStream ?? SafStream();
 
   /// Responsible for asking the user to select an export folder.
   final AndroidExportLocationService _locationService;
-
-  /// Utility methods for SAF directory operations.
-  final SafUtil _safUtil;
 
   /// Used to copy local files into SAF.
   final SafStream _safStream;
@@ -59,14 +52,9 @@ class AndroidSafExportService {
     // Minimal Pocket Finance/
     //     Database/
     //
-    final destinationFolder = await _safUtil.mkdirp(rootUri, <String>[
-      AppConstants.appName,
-      artifactFolder,
-    ]);
-
     await _safStream.pasteLocalFile(
       sourcePath,
-      destinationFolder.uri,
+      rootUri,
       fileName,
       'application/octet-stream',
       overwrite: false,
@@ -74,22 +62,19 @@ class AndroidSafExportService {
 
     final absolutePath = _resolveAbsolutePath(
       rootUri: rootUri,
-      artifactFolder: artifactFolder,
       fileName: fileName,
     );
 
     // Return exported filename.
     return ExportResult(
       fileName: fileName,
-      relativePath:
-          '${AppConstants.appName}/$artifactFolder/$fileName',
+      relativePath: fileName,
       absolutePath: absolutePath,
     );
   }
 
   String? _resolveAbsolutePath({
     required String rootUri,
-    required String artifactFolder,
     required String fileName,
   }) {
     try {
@@ -126,11 +111,10 @@ class AndroidSafExportService {
         }
       }
 
-      final subDirectory = '${AppConstants.appName}/$artifactFolder/$fileName';
       if (basePath.endsWith('/')) {
-        return '$basePath$subDirectory';
+        return '$basePath$fileName';
       } else {
-        return '$basePath/$subDirectory';
+        return '$basePath/$fileName';
       }
     } catch (_) {
       return null;

@@ -18,7 +18,7 @@ class DashboardSummary {
   final double expense;
   final double currentMonthExpense;
 
-  /// Average expense across all months that contain expense transactions.
+  /// Average monthly expense across all elapsed period months in the selected scope.
   final double averageMonthlyExpense;
   final List<Transaction> recentTransactions;
   final List<TopCategorySummary> topCategories;

@@ -43,8 +43,9 @@ final statisticsProvider = Provider<AsyncValue<StatisticsSummary>>((ref) {
                 name: entry.key,
                 totalExpense: entry.value.totalExpense,
                 monthsAppeared: entry.value.months.length,
-                averagePerMonth:
-                    entry.value.totalExpense / entry.value.months.length,
+                averagePerMonth: entry.value.months.isEmpty
+                    ? 0.0
+                    : entry.value.totalExpense / entry.value.months.length,
               ),
             )
             .toList()

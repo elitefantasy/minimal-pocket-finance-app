@@ -7,9 +7,11 @@ import 'package:minimal_pocket_finance_app/features/data_management/presentation
 import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/database_card.dart';
 import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/database_tile.dart';
 import 'package:minimal_pocket_finance_app/features/sync/presentation/widgets/p2p_sync_status_card.dart';
-import 'package:minimal_pocket_finance_app/shared/widgets/app_scaffold.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/export_location_card.dart';
+import 'package:minimal_pocket_finance_app/shared/widgets/app_scaffold.dart';
 
 class DataManagementScreen extends ConsumerWidget {
   const DataManagementScreen({super.key});
@@ -62,6 +64,13 @@ class DataManagementScreen extends ConsumerWidget {
                     )
                     .toList(growable: false),
               ),
+            ),
+            const SizedBox(height: AppSpacing.section),
+            ExportLocationCard(
+              exportPath: state.exportPath,
+              isCustomPath: state.isCustomExportPath,
+              onChangeLocation: () => _changeExportLocation(context, ref),
+              onResetToDefault: () => _resetExportLocation(context, ref),
             ),
             const SizedBox(height: AppSpacing.section),
             BackupCard(
@@ -184,10 +193,25 @@ class DataManagementScreen extends ConsumerWidget {
   }
 
   Future<void> _exportDatabase(BuildContext context, WidgetRef ref) async {
+    final notifier = ref.read(databaseManagerProvider.notifier);
+    final defaultFileName = await notifier.getDefaultExportFileName();
+
+    if (!context.mounted) return;
+
+    final exportName = await _requestName(
+      context,
+      title: 'Export Database',
+      initialValue: defaultFileName,
+    );
+
+    if (exportName == null || !context.mounted) {
+      return;
+    }
+
     await _perform(context, ref, () async {
-      final result = await ref
-          .read(databaseManagerProvider.notifier)
-          .exportCurrentDatabase();
+      final result = await notifier.exportCurrentDatabase(
+        customFileName: exportName,
+      );
 
       _showMessage(
         ref,
@@ -293,5 +317,97 @@ class DataManagementScreen extends ConsumerWidget {
 
   void _showMessage(WidgetRef ref, String message) {
     ref.read(appSnackbarProvider).showInfo(message);
+  }
+
+  Future<void> _changeExportLocation(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final selectedDirectory = await FilePicker.platform.getDirectoryPath(
+      dialogTitle: 'Select Export Folder',
+    );
+
+    if (selectedDirectory == null || !context.mounted) {
+      return;
+    }
+
+    final moveExistingFiles = await _promptExportMigration(
+      context,
+      title: 'Move Existing Exports to New Folder?',
+      message:
+          'Would you like to move your previously exported database backups and CSV files to:\n\n$selectedDirectory?',
+    );
+
+    if (moveExistingFiles == null || !context.mounted) {
+      return;
+    }
+
+    await _perform(context, ref, () async {
+      await ref.read(databaseManagerProvider.notifier).changeExportFolder(
+            newPath: selectedDirectory,
+            moveExistingFiles: moveExistingFiles,
+          );
+      if (context.mounted) {
+        _showMessage(ref, 'Export folder changed to:\n$selectedDirectory');
+      }
+    });
+  }
+
+  Future<void> _resetExportLocation(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final moveExistingFiles = await _promptExportMigration(
+      context,
+      title: 'Reset Export Folder?',
+      message:
+          'Would you like to move your exported files back to default Downloads directory?',
+    );
+
+    if (moveExistingFiles == null || !context.mounted) {
+      return;
+    }
+
+    await _perform(context, ref, () async {
+      await ref
+          .read(databaseManagerProvider.notifier)
+          .resetExportFolder(moveExistingFiles: moveExistingFiles);
+      if (context.mounted) {
+        _showMessage(ref, 'Export folder reset to default.');
+      }
+    });
+  }
+
+  Future<bool?> _promptExportMigration(
+    BuildContext context, {
+    required String title,
+    required String message,
+  }) async {
+    return showDialog<bool?>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title, style: context.text.titleLarge),
+        content: Text(
+          message,
+          style: context.text.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(null),
+            child: const Text('Cancel'),
+          ),
+          OutlinedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('New Folder Only'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Move Files'),
+          ),
+        ],
+      ),
+    );
   }
 }

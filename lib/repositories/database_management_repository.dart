@@ -148,16 +148,30 @@ class DatabaseManagementRepository {
     return databaseName;
   }
 
-  Future<ExportResult> exportCurrentDatabase() async {
+  Future<String> getDefaultExportFileName() async {
+    final databaseName = await _databaseHelper.currentDatabaseName;
+    return _backupFileName(databaseName);
+  }
+
+  Future<ExportResult> exportCurrentDatabase({String? customFileName}) async {
     final databaseName = await _databaseHelper.currentDatabaseName;
     final directoryPath = await _databaseHelper.databaseDirectoryPath;
     final sourcePath = path.join(directoryPath, databaseName);
+
+    String fileName;
+    if (customFileName != null && customFileName.trim().isNotEmpty) {
+      final trimmed = customFileName.trim();
+      fileName = trimmed.toLowerCase().endsWith('.db') ? trimmed : '$trimmed.db';
+    } else {
+      fileName = _backupFileName(databaseName);
+    }
+
     await _databaseHelper.closeDatabase();
     try {
       return await _exportService.exportFile(
         sourcePath: sourcePath,
         artifactFolder: AppConstants.databaseExportFolder,
-        fileName: _backupFileName(databaseName),
+        fileName: fileName,
       );
     } finally {
       await _databaseHelper.database;

@@ -4,7 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 import 'package:minimal_pocket_finance_app/services/export/android_saf_export_service.dart';
-import 'package:minimal_pocket_finance_app/core/constants/app_constants.dart';
+import 'package:minimal_pocket_finance_app/services/export/export_preferences.dart';
 import 'package:minimal_pocket_finance_app/models/export_result.dart';
 
 /// Resolves the platform's public Downloads directory.
@@ -41,21 +41,80 @@ class PathProviderExportDestinationResolver
   }
 }
 
-/// Copies application artifacts into a managed folder under Downloads.
+/// Copies application artifacts into a managed folder under Downloads or custom export directory.
 class ExportService {
   ExportService({
     ExportDestinationResolver? destinationResolver,
     AndroidSafExportService? androidSafExportService,
+    ExportPreferences? preferences,
   }) : _destinationResolver =
            destinationResolver ?? const PathProviderExportDestinationResolver(),
        _androidSafExportService =
-           androidSafExportService ?? AndroidSafExportService();
-
-  static const String _applicationFolder = AppConstants.appName;
+           androidSafExportService ?? AndroidSafExportService(),
+       _preferences = preferences ?? ExportPreferences();
 
   final ExportDestinationResolver _destinationResolver;
-
   final AndroidSafExportService _androidSafExportService;
+  final ExportPreferences _preferences;
+
+  /// Returns the current active export directory path (custom if configured, otherwise default downloads).
+  Future<String> getExportDirectoryPath() async {
+    final customUri = await _preferences.getExportRootUri();
+    if (customUri != null && customUri.isNotEmpty) {
+      final dir = Directory(customUri);
+      if (await dir.exists()) {
+        return customUri;
+      }
+    }
+    final downloads = await _destinationResolver.getDownloadsDirectory();
+    return downloads.path;
+  }
+
+  /// Returns whether a custom export folder is currently set.
+  Future<bool> isCustomExportFolder() async {
+    return _preferences.isCustomExportFolderSet();
+  }
+
+  /// Sets a new custom export folder path.
+  Future<void> setCustomExportFolder(String pathOrUri) async {
+    await _preferences.saveExportRootUri(pathOrUri);
+  }
+
+  /// Resets the export folder back to default downloads.
+  Future<void> resetExportFolder() async {
+    await _preferences.clearExportRootUri();
+  }
+
+  /// Moves existing export files (.db and .csv) from [sourcePath] to [targetPath].
+  Future<void> moveExportFiles({
+    required String sourcePath,
+    required String targetPath,
+  }) async {
+    if (sourcePath.isEmpty || targetPath.isEmpty || sourcePath == targetPath) {
+      return;
+    }
+
+    final sourceDir = Directory(sourcePath);
+    final targetDir = Directory(targetPath);
+
+    if (!await sourceDir.exists()) return;
+    if (!await targetDir.exists()) {
+      await targetDir.create(recursive: true);
+    }
+
+    await for (final entity in sourceDir.list()) {
+      if (entity is File) {
+        final name = path.basename(entity.path);
+        if (name.endsWith('.db') || name.endsWith('.csv')) {
+          final destFile = File(path.join(targetDir.path, name));
+          await entity.copy(destFile.path);
+          try {
+            await entity.delete();
+          } catch (_) {}
+        }
+      }
+    }
+  }
 
   /// Exports [sourcePath]. When [fileName] is supplied, uses it for the
   /// exported artifact instead of the source file's name.
@@ -82,21 +141,15 @@ class ExportService {
       }
 
       // Desktop platforms.
-      final downloadsDirectory = await _destinationResolver
-          .getDownloadsDirectory();
-
-      final destinationDirectory = Directory(
-        path.join(downloadsDirectory.path, _applicationFolder, artifactFolder),
-      );
-
-      await destinationDirectory.create(recursive: true);
+      final exportDir = await getExportDirectoryPath();
 
       final destinationPath = path.join(
-        destinationDirectory.path,
+        exportDir,
         exportedFileName,
       );
 
-      if (await File(destinationPath).exists()) {
+      final destFile = File(destinationPath);
+      if (await destFile.exists()) {
         throw ExportException('An export named $exportedFileName already exists.');
       }
 
@@ -105,8 +158,7 @@ class ExportService {
       // Desktop return
       return ExportResult(
         fileName: exportedFileName,
-        relativePath:
-            '${AppConstants.appName}/$artifactFolder/$exportedFileName',
+        relativePath: exportedFileName,
         absolutePath: exportedFile.absolute.path,
       );
     } on ExportException {
