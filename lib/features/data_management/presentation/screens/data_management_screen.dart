@@ -1,3 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:minimal_pocket_finance_app/core/notifications/app_snackbar_service.dart';
 import 'package:minimal_pocket_finance_app/core/theme/app_icons.dart';
 import 'package:minimal_pocket_finance_app/core/theme/app_spacing.dart';
@@ -6,11 +13,9 @@ import 'package:minimal_pocket_finance_app/features/data_management/application/
 import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/backup_card.dart';
 import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/database_card.dart';
 import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/database_tile.dart';
-import 'package:minimal_pocket_finance_app/features/sync/presentation/widgets/p2p_sync_status_card.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:minimal_pocket_finance_app/features/data_management/presentation/widgets/export_location_card.dart';
+import 'package:minimal_pocket_finance_app/features/sync/presentation/widgets/p2p_sync_status_card.dart';
+import 'package:minimal_pocket_finance_app/services/export/export_service.dart';
 import 'package:minimal_pocket_finance_app/shared/widgets/app_scaffold.dart';
 
 class DataManagementScreen extends ConsumerWidget {
@@ -242,7 +247,6 @@ class DataManagementScreen extends ConsumerWidget {
     return showDialog<String>(
       context: context,
       builder: (dialogContext) {
-        // The controller belongs to this dialog only.
         final controller = TextEditingController(text: initialValue);
 
         return AlertDialog(
@@ -308,6 +312,14 @@ class DataManagementScreen extends ConsumerWidget {
   ) async {
     try {
       await operation();
+    } on ExportException catch (error) {
+      if (context.mounted) {
+        if (error.message == 'Export cancelled.') {
+          ref.read(appSnackbarProvider).showInfo('Export cancelled.');
+        } else {
+          ref.read(appSnackbarProvider).showError('Operation failed: ${error.message}');
+        }
+      }
     } on Object catch (error) {
       if (context.mounted) {
         ref.read(appSnackbarProvider).showError('Operation failed: $error');
@@ -323,6 +335,21 @@ class DataManagementScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
+    // On Android, use the native Storage Access Framework folder picker
+    if (!kIsWeb && Platform.isAndroid) {
+      await _perform(context, ref, () async {
+        final notifier = ref.read(databaseManagerProvider.notifier);
+        final updated = await notifier.pickAndSetAndroidExportFolder();
+        if (updated && context.mounted) {
+          final currentPath =
+              ref.read(databaseManagerProvider).value?.exportPath ?? '';
+          _showMessage(ref, 'Export folder changed to:\n$currentPath');
+        }
+      });
+      return;
+    }
+
+    // On Desktop platforms, use system directory picker
     final selectedDirectory = await FilePicker.platform.getDirectoryPath(
       dialogTitle: 'Select Export Folder',
     );
@@ -357,11 +384,41 @@ class DataManagementScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final moveExistingFiles = await _promptExportMigration(
+    if (!kIsWeb && Platform.isAndroid) {
+      final confirmed = await _confirm(
+        context,
+        title: 'Reset Export Folder?',
+        message: 'Reset export location back to default?',
+      );
+      if (!confirmed || !context.mounted) return;
+
+      await _perform(context, ref, () async {
+        await ref.read(databaseManagerProvider.notifier).resetExportFolder(
+              moveExistingFiles: false,
+            );
+        if (context.mounted) {
+          _showMessage(ref, 'Export folder reset to default.');
+        }
+      });
+      return;
+    }
+
+    final confirmed = await _confirm(
       context,
       title: 'Reset Export Folder?',
       message:
-          'Would you like to move your exported files back to default Downloads directory?',
+          'Reset export location back to default Downloads folder?',
+    );
+
+    if (!confirmed || !context.mounted) {
+      return;
+    }
+
+    final moveExistingFiles = await _promptExportMigration(
+      context,
+      title: 'Move Exports to Default Folder?',
+      message:
+          'Would you like to move your existing exported files back to the default Downloads folder?',
     );
 
     if (moveExistingFiles == null || !context.mounted) {
@@ -369,9 +426,9 @@ class DataManagementScreen extends ConsumerWidget {
     }
 
     await _perform(context, ref, () async {
-      await ref
-          .read(databaseManagerProvider.notifier)
-          .resetExportFolder(moveExistingFiles: moveExistingFiles);
+      await ref.read(databaseManagerProvider.notifier).resetExportFolder(
+            moveExistingFiles: moveExistingFiles,
+          );
       if (context.mounted) {
         _showMessage(ref, 'Export folder reset to default.');
       }

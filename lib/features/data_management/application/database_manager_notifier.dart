@@ -46,6 +46,17 @@ class DatabaseManagerNotifier extends AsyncNotifier<DatabaseManagerState> {
     await _refresh();
   }
 
+  /// Prompts user to pick a folder on Android via SAF and updates state.
+  Future<bool> pickAndSetAndroidExportFolder() async {
+    final exportService = ref.read(exportServiceProvider);
+    final uri = await exportService.selectAndroidExportFolder();
+    if (uri != null) {
+      await _refresh();
+      return true;
+    }
+    return false;
+  }
+
   Future<void> resetExportFolder({
     required bool moveExistingFiles,
   }) async {

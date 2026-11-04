@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -8,36 +9,33 @@ import 'package:minimal_pocket_finance_app/services/export/export_preferences.da
 import 'package:minimal_pocket_finance_app/models/export_result.dart';
 
 /// Resolves the platform's public Downloads directory.
-///
-/// This boundary can later be replaced by an Android SAF implementation
-/// without changing repositories or presentation code.
-abstract interface class ExportDestinationResolver {
+abstract class ExportDestinationResolver {
+  const ExportDestinationResolver();
+
   Future<Directory> getDownloadsDirectory();
 }
 
+/// Resolves the download directory using path_provider.
 class PathProviderExportDestinationResolver
     implements ExportDestinationResolver {
   const PathProviderExportDestinationResolver();
 
   @override
   Future<Directory> getDownloadsDirectory() async {
-    if (Platform.isAndroid) {
-      final downloads = Directory('/storage/emulated/0/Download');
-
-      if (await downloads.exists()) {
-        return downloads;
+    if (!kIsWeb && Platform.isAndroid) {
+      final external = await path_provider.getExternalStorageDirectory();
+      if (external != null) {
+        return external;
       }
-
-      throw const ExportException('Public Downloads folder not found.');
     }
 
-    final directory = await path_provider.getDownloadsDirectory();
-
-    if (directory == null) {
-      throw const ExportException('Downloads directory not found.');
+    final downloads = await path_provider.getDownloadsDirectory();
+    if (downloads != null) {
+      return downloads;
     }
 
-    return directory;
+    final fallback = await path_provider.getApplicationDocumentsDirectory();
+    return fallback;
   }
 }
 
@@ -60,6 +58,19 @@ class ExportService {
   /// Returns the current active export directory path (custom if configured, otherwise default downloads).
   Future<String> getExportDirectoryPath() async {
     final customUri = await _preferences.getExportRootUri();
+
+    // On Android, resolve SAF content URI to a human-readable display string.
+    if (!kIsWeb && Platform.isAndroid) {
+      if (customUri != null && customUri.startsWith('content://')) {
+        final resolved = AndroidSafExportService.resolveDisplayPath(customUri);
+        if (resolved != null && resolved.isNotEmpty) {
+          return resolved;
+        }
+      }
+      return 'Downloads';
+    }
+
+    // On Desktop, verify that custom folder exists.
     if (customUri != null && customUri.isNotEmpty) {
       final dir = Directory(customUri);
       if (await dir.exists()) {
@@ -70,9 +81,18 @@ class ExportService {
     return downloads.path;
   }
 
-  /// Returns whether a custom export folder is currently set.
+  /// Returns whether a custom export folder is currently set and valid.
   Future<bool> isCustomExportFolder() async {
-    return _preferences.isCustomExportFolderSet();
+    final customUri = await _preferences.getExportRootUri();
+    if (customUri == null || customUri.isEmpty) {
+      return false;
+    }
+
+    if (!kIsWeb && Platform.isAndroid) {
+      return customUri.startsWith('content://');
+    }
+
+    return true;
   }
 
   /// Sets a new custom export folder path.
@@ -80,9 +100,18 @@ class ExportService {
     await _preferences.saveExportRootUri(pathOrUri);
   }
 
+  /// Prompts user to select a folder on Android via SAF and persists it.
+  Future<String?> selectAndroidExportFolder() async {
+    return _androidSafExportService.locationService.selectExportFolder();
+  }
+
   /// Resets the export folder back to default downloads.
   Future<void> resetExportFolder() async {
-    await _preferences.clearExportRootUri();
+    if (!kIsWeb && Platform.isAndroid) {
+      await _androidSafExportService.locationService.clear();
+    } else {
+      await _preferences.clearExportRootUri();
+    }
   }
 
   /// Moves existing export files (.db and .csv) from [sourcePath] to [targetPath].
@@ -133,7 +162,7 @@ class ExportService {
     try {
       // Android uses Storage Access Framework.
       if (!kIsWeb && Platform.isAndroid) {
-        return _androidSafExportService.exportFile(
+        return await _androidSafExportService.exportFile(
           sourcePath: sourcePath,
           artifactFolder: artifactFolder,
           fileName: exportedFileName,
