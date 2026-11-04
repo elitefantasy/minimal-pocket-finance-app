@@ -5,7 +5,16 @@
 
 
 # Unreleased:
-## Version 2.2.0
+
+# Version 2.2.1
+- fix(export): resolve Android SAF export error and self-heal invalid export URI
+- fix(export): auto-clear corrupted legacy/POSIX URIs (e.g. "/") and recover gracefully by prompting for a new folder
+- feat(export): route Android export folder picker through SAF pickDirectory instead of FilePicker to secure persistable permissions
+- feat(export): add AndroidSafExportService.resolveDisplayPath to format SAF tree URIs into human-readable storage paths
+- fix(export): handle export cancellation and errors gracefully with descriptive ExportException feedback
+- test(export): add unit tests for Android URI self-healing and path resolution
+
+# Version 2.2.0
 - fix(analytics): standardize monthly average calculation across dashboard and category statistics
 - feat(export): custom export folder management with file migration prompt
 - feat(export): prompt user to rename database when exporting with prefilled default
@@ -81,9 +90,3 @@ refactor(dashboard): separate top category sorting from dashboard summary and im
 - Implemented recurring transaction origin tracking with a relational nullable origin column instead of any note-based inference.
 - feat(about): add clickable GitHub link using UrlLauncherService
 - Release: v1 release codebase
-
-
-
-
-
-

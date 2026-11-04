@@ -1,28 +1,27 @@
 import 'dart:io';
 
 import 'package:minimal_pocket_finance_app/services/export/android_export_location_service.dart';
+import 'package:minimal_pocket_finance_app/services/export/export_service.dart';
 import 'package:minimal_pocket_finance_app/models/export_result.dart';
 
 import 'package:saf_stream/saf_stream.dart';
 
 /// Handles exporting files through Android's Storage Access Framework (SAF).
 ///
-/// Why do we need this?
-///
-/// Android 11+ does not allow apps to freely write into public folders
-/// like Download using normal File.copy().
-///
-/// Instead, the user grants access to a folder using SAF.
-/// After that we can safely create folders and write files there.
+/// Android 11+ (API 30+) requires Storage Access Framework permissions
+/// to write files into user-selected storage locations.
 class AndroidSafExportService {
   AndroidSafExportService({
     AndroidExportLocationService? locationService,
     SafStream? safStream,
-  }) : _locationService = locationService ?? AndroidExportLocationService(),
-       _safStream = safStream ?? SafStream();
+  })  : _locationService = locationService ?? AndroidExportLocationService(),
+        _safStream = safStream ?? SafStream();
 
   /// Responsible for asking the user to select an export folder.
   final AndroidExportLocationService _locationService;
+
+  /// Exposes the underlying location service.
+  AndroidExportLocationService get locationService => _locationService;
 
   /// Used to copy local files into SAF.
   final SafStream _safStream;
@@ -37,33 +36,32 @@ class AndroidSafExportService {
     final sourceFile = File(sourcePath);
 
     if (!await sourceFile.exists()) {
-      throw Exception('Source file not found.');
+      throw const ExportException('Source file not found.');
     }
 
-    // Ask for the export folder if needed.
+    // Ask for or retrieve the valid export folder SAF URI.
     final rootUri = await _locationService.getExportRootUri();
 
     if (rootUri == null) {
-      throw Exception('Export cancelled.');
+      throw const ExportException('Export cancelled.');
     }
 
-    // Create:
-    //
-    // Minimal Pocket Finance/
-    //     Database/
-    //
-    await _safStream.pasteLocalFile(
-      sourcePath,
-      rootUri,
-      fileName,
-      'application/octet-stream',
-      overwrite: false,
-    );
+    try {
+      await _safStream.pasteLocalFile(
+        sourcePath,
+        rootUri,
+        fileName,
+        'application/octet-stream',
+        overwrite: false,
+      );
+    } on Object catch (error) {
+      throw ExportException(
+        'Failed to save export file to the selected destination.',
+        cause: error,
+      );
+    }
 
-    final absolutePath = _resolveAbsolutePath(
-      rootUri: rootUri,
-      fileName: fileName,
-    );
+    final absolutePath = resolveDisplayPath(rootUri, fileName);
 
     // Return exported filename.
     return ExportResult(
@@ -73,10 +71,8 @@ class AndroidSafExportService {
     );
   }
 
-  String? _resolveAbsolutePath({
-    required String rootUri,
-    required String fileName,
-  }) {
+  /// Converts an Android SAF Tree URI into a human-readable storage path.
+  static String? resolveDisplayPath(String rootUri, [String? fileName]) {
     try {
       final decodedUri = Uri.decodeComponent(rootUri);
 
@@ -111,13 +107,17 @@ class AndroidSafExportService {
         }
       }
 
+      if (fileName == null || fileName.isEmpty) {
+        return basePath;
+      }
+
       if (basePath.endsWith('/')) {
         return '$basePath$fileName';
       } else {
         return '$basePath/$fileName';
       }
     } catch (_) {
-      return null;
+      return fileName != null ? '$rootUri/$fileName' : rootUri;
     }
   }
 }
