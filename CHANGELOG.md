@@ -6,6 +6,12 @@
 
 # Unreleased:
 
+# Version 2.2.2
+- fix(analytics): standardize category monthly average to use elapsed period months instead of active calendar months
+- refactor(dashboard): eliminate redundant category transaction map in dashboard summary provider
+- feat(statistics): connect year selection to statistics provider for consistent elapsed period calculation
+- test(analytics): add unit tests verifying category monthly average calculation against elapsed period
+
 # Version 2.2.1
 - fix(export): resolve Android SAF export error and self-heal invalid export URI
 - fix(export): auto-clear corrupted legacy/POSIX URIs (e.g. "/") and recover gracefully by prompting for a new folder

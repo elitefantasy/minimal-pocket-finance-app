@@ -1,9 +1,13 @@
+import 'package:minimal_pocket_finance_app/core/utils/period_calculator.dart';
+import 'package:minimal_pocket_finance_app/features/transactions/application/selected_year_provider.dart';
 import 'package:minimal_pocket_finance_app/features/transactions/application/transaction_notifier.dart';
 import 'package:minimal_pocket_finance_app/models/statistics_summary.dart';
+import 'package:minimal_pocket_finance_app/models/transaction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final statisticsProvider = Provider<AsyncValue<StatisticsSummary>>((ref) {
   final transactionsAsync = ref.watch(transactionNotifierProvider);
+  final selectedYear = ref.watch(selectedYearProvider);
 
   return transactionsAsync.whenData((transactions) {
     var totalIncome = 0.0;
@@ -11,6 +15,7 @@ final statisticsProvider = Provider<AsyncValue<StatisticsSummary>>((ref) {
     var highestIncome = 0.0;
     var highestExpense = 0.0;
     final categoryTotals = <String, _CategoryAccumulator>{};
+    final expenseTransactions = <Transaction>[];
 
     for (final transaction in transactions) {
       if (transaction.type == 'Income') {
@@ -27,6 +32,8 @@ final statisticsProvider = Provider<AsyncValue<StatisticsSummary>>((ref) {
           highestExpense = transaction.amount;
         }
 
+        expenseTransactions.add(transaction);
+
         final category = categoryTotals.putIfAbsent(
           transaction.category,
           _CategoryAccumulator.new,
@@ -36,6 +43,12 @@ final statisticsProvider = Provider<AsyncValue<StatisticsSummary>>((ref) {
       }
     }
 
+    // Calculate total elapsed period months in scope for consistent category monthly averages
+    final periodMonths = PeriodCalculator.calculatePeriodMonths(
+      selectedYear,
+      expenseTransactions,
+    );
+
     final expenseCategories =
         categoryTotals.entries
             .map(
@@ -43,9 +56,9 @@ final statisticsProvider = Provider<AsyncValue<StatisticsSummary>>((ref) {
                 name: entry.key,
                 totalExpense: entry.value.totalExpense,
                 monthsAppeared: entry.value.months.length,
-                averagePerMonth: entry.value.months.isEmpty
-                    ? 0.0
-                    : entry.value.totalExpense / entry.value.months.length,
+                averagePerMonth: periodMonths > 0
+                    ? entry.value.totalExpense / periodMonths
+                    : 0.0,
               ),
             )
             .toList()

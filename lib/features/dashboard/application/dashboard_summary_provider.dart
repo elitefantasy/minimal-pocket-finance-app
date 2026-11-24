@@ -54,35 +54,26 @@ final dashboardSummaryProvider = Provider<AsyncValue<DashboardSummary>>((ref) {
         ? 0.0
         : expense / periodMonths;
 
-    // 7. Accumulate total expenses and transactions per category
+    // 7. Accumulate total expenses per category
     final categoryTotals = <String, double>{};
-    final categoryTransactionsMap = <String, List<Transaction>>{};
     for (final transaction in expenseTransactions) {
       categoryTotals.update(
         transaction.category,
         (value) => value + transaction.amount,
         ifAbsent: () => transaction.amount,
       );
-      categoryTransactionsMap
-          .putIfAbsent(transaction.category, () => <Transaction>[])
-          .add(transaction);
     }
 
     // 8. Transform raw category analytics into a list of TopCategorySummary items
-    // Category monthly average is calculated over category-active calendar months.
+    // Category monthly average is calculated over total elapsed period months (industry standard),
+    // ensuring consistency with the overall monthly average.
     final topCategories = categoryTotals.entries
         .map(
-          (entry) {
-            final catTxs =
-                categoryTransactionsMap[entry.key] ?? const <Transaction>[];
-            final catActiveMonths =
-                PeriodCalculator.calculateCategoryActiveMonths(catTxs);
-            return TopCategorySummary(
-              name: entry.key,
-              monthlyAverage: entry.value / catActiveMonths,
-              totalExpense: entry.value,
-            );
-          },
+          (entry) => TopCategorySummary(
+            name: entry.key,
+            monthlyAverage: entry.value / periodMonths,
+            totalExpense: entry.value,
+          ),
         )
         .toList();
 
